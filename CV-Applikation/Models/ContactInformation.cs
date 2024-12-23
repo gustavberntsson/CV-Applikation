@@ -12,5 +12,10 @@ namespace CV_Applikation.Models
 
         [Key]
         public string Email { get; set; }
+
+        public int CVId { get; set; }
+
+        [ForeignKey(nameof(CVId))]
+        public virtual CV? Cv { get; set; }
     }
 }

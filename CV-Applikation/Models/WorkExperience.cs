@@ -1,4 +1,6 @@
-﻿namespace CV_Applikation.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CV_Applikation.Models
 {
     public class WorkExperience
     {
@@ -7,5 +9,9 @@
         public string Description { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
+        public int CVId { get; set; }
+
+        [ForeignKey(nameof(CVId))]
+        public virtual CV? Cv { get; set; }
     }
 }
