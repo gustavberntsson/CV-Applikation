@@ -84,29 +84,35 @@ namespace CV_Applikation.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult Profile(string UserId)
+        public async Task<IActionResult> Profile(string? UserId = null)
         {
+            // If no UserId is provided, get the current user's ID
+            if (string.IsNullOrEmpty(UserId))
+            {
+                var currentUser = await userManager.GetUserAsync(User);
+                if (currentUser == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                UserId = currentUser.Id;
+            }
 
-            //cc
-            // Koppla CV till inloggad användare
-            //cv.OwnerId = userId;
-            var userEntity = context.Users.FirstOrDefault(u => u.Id == UserId);
-            var userName = userEntity?.UserName ?? "Okänd användare"; // Sätt profilnamn
-              // Sätt UserId också (för att möta krav från databasen)
-            var CVs = context.CVs
-            .Where(cv => cv.UserId == UserId) // Filtrerar CVs för specifikt UserId
-            .Include(cv => cv.User)
-            .Include(cv => cv.Educations)
-            .Include(cv => cv.Languages)
-            .Include(cv => cv.Skills)
-            .Include(cv => cv.WorkExperiences)
-            .ToList();
+            var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+            var userName = userEntity?.UserName ?? "Okänd användare";
 
-            var projectss = context.Projects
+            var CVs = await context.CVs
+                .Where(cv => cv.UserId == UserId)
+                .Include(cv => cv.User)
+                .Include(cv => cv.Educations)
+                .Include(cv => cv.Languages)
+                .Include(cv => cv.Skills)
+                .Include(cv => cv.WorkExperiences)
+                .ToListAsync();
+
+            var projectss = await context.Projects
                 .Where(p => p.OwnerId == UserId)
                 .OrderByDescending(p => p.CreatedAt)
-                .FirstOrDefault();
-
+                .FirstOrDefaultAsync();
 
             var vmodel = new ProfileViewModel
             {
@@ -114,7 +120,6 @@ namespace CV_Applikation.Controllers
                 Cvs = CVs,
                 Projects = projectss
             };
-            //projekt ej med än
 
             return View(vmodel);
         }
