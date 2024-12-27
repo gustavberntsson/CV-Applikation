@@ -100,10 +100,15 @@
 {
     <h3>@Model.ProjectLatest.Title</h3>
     <p>@Model.ProjectLatest.Description</p>
-    <p>Skapad: @Model.ProjectLatest.CreatedAt.ToShortDateString()</p>
+   
+    <p>Skapad: @Model.ProjectLatest.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</p>
+    @* <p>Skapad: @Model.ProjectLatest.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p> *@
+    @* <p>Skapad: @Model.ProjectLatest.CreatedAt.ToShortDateString()</p> *@
 }
 else
 {
     <p>Inga projekt skapade ännu.</p>
 }
-<a asp-controller="CV" asp-action="Add"> Lägg till CV</a>
+<p> <a asp-controller="CV" asp-action="Add"> Lägg till CV</a> <p/>
+
+<p> <a asp-controller="Project" asp-action="AddProject"> Lägg till Projekt</a> <p/>

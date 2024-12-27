@@ -83,9 +83,9 @@ namespace CV_Applikation.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-
         public async Task<IActionResult> Profile(string? UserId = null)
         {
+            // If no UserId is provided, get the current user's ID
             // If no UserId is provided, get the current user's ID
             if (string.IsNullOrEmpty(UserId))
             {
@@ -100,6 +100,7 @@ namespace CV_Applikation.Controllers
             var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
             var userName = userEntity?.UserName ?? "Okänd användare";
 
+            // Hämta användarens CV
             var CVs = await context.CVs
                 .Where(cv => cv.UserId == UserId)
                 .Include(cv => cv.User)
@@ -109,19 +110,61 @@ namespace CV_Applikation.Controllers
                 .Include(cv => cv.WorkExperiences)
                 .ToListAsync();
 
-            var projectss = await context.Projects
-                .Where(p => p.OwnerId == UserId)
+            // Hämta alla projekt som användaren är med i (både som ägare och deltagare)
+            var projects = await context.Projects
+                .Include(p => p.ProjectUsers) // Inkludera koppling till deltagare
+                .ThenInclude(pu => pu.UserProject) // Inkludera användaruppgifter
+                .Where(p => p.OwnerId == UserId || p.ProjectUsers.Any(pu => pu.UserId == UserId))
                 .OrderByDescending(p => p.CreatedAt)
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
             var vmodel = new ProfileViewModel
             {
                 ProfileName = userName,
                 Cvs = CVs,
-                Projects = projectss
+                Projects = projects
             };
 
             return View(vmodel);
         }
+        //public async Task<IActionResult> Profile(string? UserId = null)
+        //{
+        //    // If no UserId is provided, get the current user's ID
+        //    if (string.IsNullOrEmpty(UserId))
+        //    {
+        //        var currentUser = await userManager.GetUserAsync(User);
+        //        if (currentUser == null)
+        //        {
+        //            return RedirectToAction("Login", "Account");
+        //        }
+        //        UserId = currentUser.Id;
+        //    }
+
+        //    var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+        //    var userName = userEntity?.UserName ?? "Okänd användare";
+
+        //    var CVs = await context.CVs
+        //        .Where(cv => cv.UserId == UserId)
+        //        .Include(cv => cv.User)
+        //        .Include(cv => cv.Educations)
+        //        .Include(cv => cv.Languages)
+        //        .Include(cv => cv.Skills)
+        //        .Include(cv => cv.WorkExperiences)
+        //        .ToListAsync();
+
+        //    var projectss = await context.Projects
+        //        .Where(p => p.OwnerId == UserId)
+        //        .OrderByDescending(p => p.CreatedAt)
+        //        .FirstOrDefaultAsync();
+
+        //    var vmodel = new ProfileViewModel
+        //    {
+        //        ProfileName = userName,
+        //        Cvs = CVs,
+        //        Projects = projectss
+        //    };
+
+        //    return View(vmodel);
+        //}
     }
 }

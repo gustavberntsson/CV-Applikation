@@ -137,4 +137,34 @@
             </div>
         </div>
     }
+
+</div>
+
+<div class="mb-4">
+    <h2 class="border-bottom pb-2">Projekt</h2>
+    @if (Model.Projects != null && Model.Projects.Any())
+    {
+        <div class="row">
+            @foreach (var project in Model.Projects)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@project.Title</h5>
+                            <p class="card-text">
+                                <strong>Beskrivning:</strong> @project.Description<br>
+                                <strong>Skapad:</strong> @project.CreatedAt.ToString("yyyy-MM-dd HH:mm")<br>
+                                <strong>Roll:</strong>
+                                @(project.OwnerId == Model.ProfileName ? "Ägare" : "Deltagare")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">Inga projekt tillagda.</p>
+    }
 </div>

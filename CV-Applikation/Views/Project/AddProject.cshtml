@@ -1,0 +1,28 @@
+﻿@model Project
+
+<form asp-action="AddProject" method="post">
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" name="Title" required />
+    </div>
+    <div class="form-group">
+        <label for="Description">Description</label>
+        <textarea class="form-control" id="Description" name="Description" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="Participants">Select Participants</label>
+        <select name="participantIds" class="form-control" multiple>
+            @foreach (var user in ViewBag.Users)
+            {
+                @* Exkludera den inloggade användaren från deltagarlistan *@
+                @if (user.Id != User.Identity.Name)
+                {
+                    <option value="@user.Id">@user.UserName</option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Project</button>
+</form>

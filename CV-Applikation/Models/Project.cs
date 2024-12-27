@@ -17,7 +17,6 @@ namespace CV_Applikation.Models
         [ForeignKey(nameof(OwnerId))] 
         public virtual User? Owner { get; set; }
 
-        // Lista över användare som deltar i projektet
-        public virtual ICollection<CV>? Participants { get; set; }
+        public virtual ICollection<ProjectUser> ProjectUsers { get; set; }
     }
 }
