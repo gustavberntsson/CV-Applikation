@@ -4,6 +4,7 @@ using CV_Applikation.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CV_Applikation.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20241226082441_i")]
+    partial class i
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,16 +65,15 @@ namespace CV_Applikation.Migrations
                     b.Property<bool>("IsPrivate")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("CVId");
-
-                    b.HasIndex("ProjectId");
 
                     b.HasIndex("UserId");
 
@@ -125,6 +127,7 @@ namespace CV_Applikation.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EndDate")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FieldOfStudy")
@@ -169,36 +172,6 @@ namespace CV_Applikation.Migrations
                     b.HasIndex("CVId");
 
                     b.ToTable("Languages");
-                });
-
-            modelBuilder.Entity("CV_Applikation.Models.Project", b =>
-                {
-                    b.Property<int>("ProjectId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ProjectId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("CV_Applikation.Models.Skills", b =>
@@ -475,10 +448,6 @@ namespace CV_Applikation.Migrations
 
             modelBuilder.Entity("CV_Applikation.Models.CV", b =>
                 {
-                    b.HasOne("CV_Applikation.Models.Project", null)
-                        .WithMany("Participants")
-                        .HasForeignKey("ProjectId");
-
                     b.HasOne("CV_Applikation.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -519,17 +488,6 @@ namespace CV_Applikation.Migrations
                         .IsRequired();
 
                     b.Navigation("Cv");
-                });
-
-            modelBuilder.Entity("CV_Applikation.Models.Project", b =>
-                {
-                    b.HasOne("CV_Applikation.Models.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("CV_Applikation.Models.Skills", b =>
@@ -614,11 +572,6 @@ namespace CV_Applikation.Migrations
                     b.Navigation("Skills");
 
                     b.Navigation("WorkExperiences");
-                });
-
-            modelBuilder.Entity("CV_Applikation.Models.Project", b =>
-                {
-                    b.Navigation("Participants");
                 });
 #pragma warning restore 612, 618
         }

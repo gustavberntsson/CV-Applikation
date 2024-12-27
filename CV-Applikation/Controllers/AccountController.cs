@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using CV_Applikation.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CV_Applikation.Controllers
 {
@@ -8,11 +9,13 @@ namespace CV_Applikation.Controllers
     {
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
+        private UserContext context;
         public AccountController(UserManager<User> userMngr,
-        SignInManager<User> signInMngr)
+        SignInManager<User> signInMngr, UserContext service)
         {
             this.userManager = userMngr;
             this.signInManager = signInMngr;
+            context = service;
         }
         [HttpGet]
         public IActionResult Register()
@@ -79,6 +82,41 @@ namespace CV_Applikation.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Profile(string UserId)
+        {
+
+            //cc
+            // Koppla CV till inloggad användare
+            //cv.OwnerId = userId;
+            var userEntity = context.Users.FirstOrDefault(u => u.Id == UserId);
+            var userName = userEntity?.UserName ?? "Okänd användare"; // Sätt profilnamn
+              // Sätt UserId också (för att möta krav från databasen)
+            var CVs = context.CVs
+            .Where(cv => cv.UserId == UserId) // Filtrerar CVs för specifikt UserId
+            .Include(cv => cv.User)
+            .Include(cv => cv.Educations)
+            .Include(cv => cv.Languages)
+            .Include(cv => cv.Skills)
+            .Include(cv => cv.WorkExperiences)
+            .ToList();
+
+            var projectss = context.Projects
+                .Where(p => p.OwnerId == UserId)
+                .OrderByDescending(p => p.CreatedAt)
+                .FirstOrDefault();
+
+
+            var vmodel = new ProfileViewModel
+            {
+                ProfileName = userName,
+                Cvs = CVs,
+                Projects = projectss
+            };
+            //projekt ej med än
+
+            return View(vmodel);
         }
     }
 }
