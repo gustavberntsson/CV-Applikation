@@ -9,7 +9,15 @@
    <h3>this website is very trustworthy</h3>
 	@if (User.Identity.IsAuthenticated){
     <img width="400" height="400" src="https://static1.srcdn.com/wordpress/wp-content/uploads/2018/03/10.-Destroying-Mojo.jpg" />
+     <form asp-controller="Account" asp-action="Logout" method="post" style="margin-top: 20px;">
+     <button type="submit" class="btn btn-danger">Logout</button>
+     </form>
     }
+else
+{
+    <a asp-controller="Account" asp-action="LogIn" class="btn btn-primary" style="margin-top: 20px;">Logga in</a>
+}    
+
  
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with or without ASP.NET Core</a>.</p>
 </div>
