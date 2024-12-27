@@ -153,7 +153,7 @@
                             <h5 class="card-title">@project.Title</h5>
                             <p class="card-text">
                                 <strong>Beskrivning:</strong> @project.Description<br>
-                                <strong>Skapad:</strong> @project.CreatedAt.ToString("yyyy-MM-dd HH:mm")<br>
+                            <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")<br>
                                 <strong>Roll:</strong>
                                 @(project.OwnerId == Model.ProfileName ? "Ägare" : "Deltagare")
                             </p>
