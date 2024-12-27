@@ -10,28 +10,9 @@
 <h1>Profil för @Model.ProfileName </h1>
 @* <h2> @Model.CVs</h2> *@
 <h2>CVs:</h2> 
-<ul> 
-    @foreach (var cv in Model.Cvs) 
-    {
-        <li>@cv.CVName</li>
-     }
- </ul>
-@if (Model.Cvs != null && Model.Cvs.Any())
-{
-    <p>CVs laddades korrekt!</p>
-}
-else
-{
-    <p>Inga CVs hittades.</p>
-}
-@foreach (var cv in Model.Cvs)
-{
-    <li>
-        <strong>CV för:</strong> @(cv.User?.UserName ?? "User är null")
-    </li>
-}
 
- <h2>Projekt:</h2>
+
+ @* <h2>Projekt:</h2> *@
 
 
 <ul>
@@ -43,7 +24,7 @@ else
                 
            
             <br />
-            <p><strong>Namn:</strong> @cv.CVName</p>
+            <p><strong>CV:</strong> @cv.CVName</p>
 
             <h4>Utbildning:</h4>
             @if (cv.Educations != null && cv.Educations.Any())
