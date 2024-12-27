@@ -1,90 +1,140 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Profile Page";
 }
-
 @model ProfileViewModel
 
- 
-            
-<h1>Profil för @Model.ProfileName </h1>
-@* <h2> @Model.CVs</h2> *@
-<h2>CVs:</h2> 
+<div class="container mt-4">
+    <h1 class="mb-4">Profil för @Model.ProfileName</h1>
 
-
- @* <h2>Projekt:</h2> *@
-
-
-<ul>
     @foreach (var cv in Model.Cvs)
     {
-        <li>
-            @* kanske vara userID *@
-          
-                
-           
-            <br />
-            <p><strong>CV:</strong> @cv.CVName</p>
-
-            <h4>Utbildning:</h4>
-            @if (cv.Educations != null && cv.Educations.Any())
-            {
-                <ul>
-                    @foreach (var education in cv.Educations)
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="mb-0">@cv.CVName</h2>
+            </div>
+            <div class="card-body">
+                <!-- Utbildning -->
+                <div class="mb-4">
+                    <h3 class="border-bottom pb-2">Utbildning</h3>
+                    @if (cv.Educations != null && cv.Educations.Any())
                     {
-                        <li>
-                            <strong>Skola:</strong> @education.School<br />
-                            <strong>Examen:</strong> @education.Degree<br />
-                            <strong>Startdatum:</strong> @education.StartDate<br />
-                            <strong>Slutdatum:</strong> @education.EndDate<br />
-                        </li>
+                        <div class="row">
+                            @foreach (var education in cv.Educations)
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@education.School</h5>
+                                            <p class="card-text">
+                                                <strong>Examen:</strong> @education.Degree<br>
+                                                <strong>Ämne:</strong> @education.FieldOfStudy<br>
+                                                <strong>Period:</strong>
+                                                @(DateTime.TryParse(education.StartDate, out var startDate)
+                                                    ? startDate.ToString("MMM yyyy")
+                                                    : "Okänd")
+                                                -
+                                                @(DateTime.TryParse(education.EndDate, out var endDate)
+                                                    ? endDate.ToString("MMM yyyy")
+                                                    : "Nuvarande")<br>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     }
-                </ul>
-            }
-
-            else
-            {
-                <p>Ingen utbildning tillagd.</p>
-            }
-
-            <h4>Språk:</h4>
-            @if (cv.Languages != null && cv.Languages.Any())
-            {
-                <ul>
-                    @foreach (var language in cv.Languages)
+                    else
                     {
-                        <li>
-                            <strong>Språk:</strong> @language.LanguageName<br />
-                        </li>
+                        <p class="text-muted">Ingen utbildning tillagd.</p>
                     }
-                </ul>
-            }
-            else
-            {
-                <p>Inga språk tillagda.</p>
-            }
+                </div>
 
-            <h4>Färdighet:</h4>
-            @if (cv.Skills != null && cv.Skills.Any())
-            {
-                <ul>
-                    @foreach (var skill in cv.Skills)
+                <!-- Språk -->
+                <div class="mb-4">
+                    <h3 class="border-bottom pb-2">Språk</h3>
+                    @if (cv.Languages != null && cv.Languages.Any())
                     {
-                        <li>
-                            <strong>Färdighet:</strong> @skill.SkillName<br />
-                        </li>
+                        <div class="row">
+                            @foreach (var language in cv.Languages)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@language.LanguageName</h5>
+                                            <p class="card-text">
+                                                <strong>Nivå:</strong> @language.Level<br>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     }
-                </ul>
-            }
-            else
-            {
-                <p>Ingen färdighet tillagd.</p>
-            }
-        </li>
+                    else
+                    {
+                        <p class="text-muted">Inga språk tillagda.</p>
+                    }
+                </div>
+
+                <!-- Färdigheter -->
+                <div class="mb-4">
+                    <h3 class="border-bottom pb-2">Färdigheter</h3>
+                    @if (cv.Skills != null && cv.Skills.Any())
+                    {
+                        <div class="row">
+                            @foreach (var skill in cv.Skills)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@skill.SkillName</h5>
+                                            @if (!string.IsNullOrEmpty(skill.SkillName))
+                                            {
+                                                <p class="card-text">@skill.SkillName</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Inga färdigheter tillagda.</p>
+                    }
+                </div>
+
+                <!-- Arbetslivserfarenhet -->
+                <div class="mb-4">
+                    <h3 class="border-bottom pb-2">Arbetslivserfarenhet</h3>
+                    @if (cv.WorkExperiences != null && cv.WorkExperiences.Any())
+                    {
+                        <div class="row">
+                            @foreach (var work in cv.WorkExperiences)
+                            {
+                                <div class="col-12 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@work.CompanyName</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">@work.Position</h6>
+                                            <p class="card-text">
+                                                <strong>Period:</strong>
+                                                @(DateTime.TryParse(work.StartDate?.ToString(), out var startDate) ? startDate.ToString("MMM yyyy") : "Okänd")
+                                                - @(DateTime.TryParse(work.EndDate?.ToString(), out var endDate) ? endDate.ToString("MMM yyyy") : "Nuvarande")<br>
+                                                <strong>Beskrivning:</strong> @work.Description
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Ingen arbetslivserfarenhet tillagd.</p>
+                    }
+                </div>
+            </div>
+        </div>
     }
-</ul>
-  @*   @foreach (var project in Model.Projects)
-    {
-        <li>@project.ProjectName</li>
-    } *@
-</ul>
+</div>
