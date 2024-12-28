@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Project Page";
+}
+@model IEnumerable<ProjectViewModel>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Projektlista</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Antal deltagare</th>
+                <th>Detaljer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in Model)
+            {
+                <tr>
+                    <td>@project.Title</td>
+                    <td>@project.ParticipantCount</td>
+                    <td>
+                        <a href="@Url.Action("ProjectDetails", "Project", new { projectId = project.ProjectId })" class="btn btn-primary btn-sm">Visa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<br />
+<p> <a asp-controller="Home" asp-action="Index"> Tillbaka </a> <p/>

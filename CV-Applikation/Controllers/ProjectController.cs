@@ -137,6 +137,48 @@ namespace CV_Applikation.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public async Task<IActionResult> ProjectList()
+        {
+            var projects = await context.Projects
+                .Include(p => p.ProjectUsers)
+                .Select(p => new ProjectViewModel
+                {
+                    ProjectId = p.ProjectId,
+                    Title = p.Title,
+                    ParticipantCount = p.ProjectUsers.Count()
+                })
+                .ToListAsync();
+
+            return View(projects);
+        }
+
+        public async Task<IActionResult> ProjectDetails(int projectId)
+        {
+            var project = await context.Projects
+                .Include(p => p.ProjectUsers)
+                .ThenInclude(pu => pu.UserProject)
+                .FirstOrDefaultAsync(p => p.ProjectId == projectId);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var projectDetailsViewModel = new ProjectDetailsViewModel
+            {
+                ProjectId = project.ProjectId,
+                Title = project.Title,
+                Description = project.Description,
+                CreatedAt = project.CreatedAt,
+                Participants = project.ProjectUsers.Select(pu => new ParticipantViewModel
+                {
+                    UserId = pu.UserId,
+                    UserName = pu.UserProject?.UserName ?? "Okänd användare"
+                }).ToList()
+            };
+
+            return View(projectDetailsViewModel);
+        }
 
 
         //public IActionResult ProjectDetails(int id)
