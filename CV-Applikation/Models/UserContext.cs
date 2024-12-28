@@ -17,6 +17,7 @@ namespace CV_Applikation.Models
         public DbSet<Project> Projects { get; set; }
         public DbSet<Skills> Skills { get; set; }
         public DbSet<WorkExperience> WorkExperiences { get; set; }
+        public DbSet<Message> Message { get; set; }
 
         public DbSet<ProjectUser> ProjectUsers { get; set; }
         //message inte lagt till än
@@ -40,6 +41,17 @@ namespace CV_Applikation.Models
                 .HasForeignKey(pu => pu.UserId)
                 .OnDelete(DeleteBehavior.Restrict); // NO ACTION kan användas istället för Restrict
 
+            modelBuilder.Entity<Message>()
+               .HasOne(m => m.Sender)
+               .WithMany()  
+               .HasForeignKey(m => m.SenderId)
+               .OnDelete(DeleteBehavior.Restrict);  // Förhindrar automatisk radering av användare
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }
     }

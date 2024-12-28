@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+
+@model Message
+@{
+    ViewData["Title"] = "Skicka meddelanden";
+}
+
+<div class="container">
+    <h2>Send New Message</h2>
+    
+    <form asp-action="SendMessage" method="post">
+        <div class="form-group mb-3">
+            <label for="receiver">To:</label>
+            <select id="receiver" name="receiver" class="form-control">
+                @foreach (var user in ViewBag.Users)
+                {
+                    <option value="@user.UserName">@user.UserName</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="content">Message:</label>
+            <textarea id="content" name="content" class="form-control" rows="5" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Send Message</button>
+        <a asp-action="Message" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
