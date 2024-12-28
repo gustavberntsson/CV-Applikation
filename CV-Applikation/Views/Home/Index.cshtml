@@ -92,31 +92,31 @@ else
     }
 </ul>
 
-@* <h2>Urval av CVs:</h2> *@
-@* <ul> *@
-@*     @foreach (var cv in Model.CVs) *@
-@*     { *@
-@*         <li> *@
-@*             <a asp-controller="CV" asp-action="CvDetails" asp-route-id="@cv.CVId"> *@
-@*                 CV för @cv.User.UserName *@
-@*             </a> *@
-@*         </li> *@
-@*     } *@
-@* </ul> *@
+
 <h2>Senaste projektet:</h2>
 @if (Model.ProjectLatest != null)
 {
     <h3>@Model.ProjectLatest.Title</h3>
     <p>@Model.ProjectLatest.Description</p>
-   
     <p>Skapad: @Model.ProjectLatest.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</p>
-    @* <p>Skapad: @Model.ProjectLatest.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p> *@
-    @* <p>Skapad: @Model.ProjectLatest.CreatedAt.ToShortDateString()</p> *@
+
+    @if (!Model.IsUserInProject)
+    {
+        <form asp-action="JoinProject" asp-controller="Project" method="post">
+            <input type="hidden" name="projectId" value="@Model.ProjectLatest.ProjectId" />
+            <button type="submit" class="btn btn-primary">Gå med i projektet</button>
+        </form>
+    }
+    else
+    {
+        <p class="text-success">Du är redan med i detta projekt.</p>
+    }
 }
 else
 {
     <p>Inga projekt skapade ännu.</p>
 }
+
 <p> <a asp-controller="CV" asp-action="Add"> Lägg till CV</a> <p/>
 
 <p> <a asp-controller="Project" asp-action="AddProject"> Lägg till Projekt</a> <p/>

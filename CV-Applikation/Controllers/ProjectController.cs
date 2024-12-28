@@ -31,8 +31,8 @@ namespace CV_Applikation.Controllers
             project.CreatedAt = DateTime.UtcNow; // Tilldela tid och datum
 
             var projectUsers = new List<ProjectUser>
-    {
-        new ProjectUser
+        {
+            new ProjectUser
         {
             ProjectId = project.ProjectId,
             UserId = currentUser.Id,
@@ -180,7 +180,36 @@ namespace CV_Applikation.Controllers
             return View(projectDetailsViewModel);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> JoinProject(int projectId)
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
+            // Kontrollera om användaren redan är med i projektet
+            var isAlreadyInProject = await context.ProjectUsers
+                .AnyAsync(pu => pu.ProjectId == projectId && pu.UserId == currentUser.Id);
+
+            if (!isAlreadyInProject)
+            {
+                // Lägg till användaren i projektet
+                var projectUser = new ProjectUser
+                {
+                    ProjectId = projectId,
+                    UserId = currentUser.Id,
+                    JoinedAt = DateTime.UtcNow,
+                    Role = "Participant" // Standardroll för ny deltagare
+                };
+
+                context.ProjectUsers.Add(projectUser);
+                await context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
         //public IActionResult ProjectDetails(int id)
         //{
         //    //c

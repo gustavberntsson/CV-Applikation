@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CV_Applikation.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,44 +10,84 @@ namespace CV_Applikation.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private UserContext context;
-
-        public HomeController(ILogger<HomeController> logger, UserContext service)
+        private UserManager<User> userManager;
+        public HomeController(ILogger<HomeController> logger, UserContext service, UserManager<User> userManagerr)
         {
             _logger = logger;
             context = service;
+            userManager = userManagerr;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            // Hämta den aktuella användaren
+            var currentUser = await userManager.GetUserAsync(User);
 
-            var Cvs = context.CVs
-            .Include(cv => cv.User)
-            .Include(cv => cv.Educations)
-            .Include(cv => cv.Languages)
-            .Include(cv => cv.Skills)
-            .Take(3)
-            .ToList();
-            
             // Hämta ett urval av CVs
-            //var cvs = context.CVs
-            //    .Include(cv => cv.User)
-            //    .Take(10) // Begränsa till 10 CVs
-            //    .ToList();
+            var Cvs = await context.CVs
+                .Include(cv => cv.User)
+                .Include(cv => cv.Educations)
+                .Include(cv => cv.Languages)
+                .Include(cv => cv.Skills)
+                .Take(3)
+                .ToListAsync();
 
             // Hämta senaste projektet
-            var lastProject = context.Projects
+            var lastProject = await context.Projects
                 .OrderByDescending(p => p.CreatedAt)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
+            // Kontrollera om användaren är med i det senaste projektet
+            bool isUserInProject = false;
+
+            if (currentUser != null && lastProject != null)
+            {
+                isUserInProject = await context.ProjectUsers
+                    .AnyAsync(pu => pu.ProjectId == lastProject.ProjectId && pu.UserId == currentUser.Id);
+            }
+
+            // Bygg vymodellen
             var model = new HomeViewModel
             {
                 CVs = Cvs,
-                ProjectLatest = lastProject
+                ProjectLatest = lastProject,
+                IsUserInProject = isUserInProject
             };
-
 
             return View(model);
         }
+
+        //public IActionResult Index()
+        //{
+
+        //    var Cvs = context.CVs
+        //    .Include(cv => cv.User)
+        //    .Include(cv => cv.Educations)
+        //    .Include(cv => cv.Languages)
+        //    .Include(cv => cv.Skills)
+        //    .Take(3)
+        //    .ToList();
+
+        //    // Hämta ett urval av CVs
+        //    //var cvs = context.CVs
+        //    //    .Include(cv => cv.User)
+        //    //    .Take(10) // Begränsa till 10 CVs
+        //    //    .ToList();
+
+        //    // Hämta senaste projektet
+        //    var lastProject = context.Projects
+        //        .OrderByDescending(p => p.CreatedAt)
+        //        .FirstOrDefault();
+
+        //    var model = new HomeViewModel
+        //    {
+        //        CVs = Cvs,
+        //        ProjectLatest = lastProject
+        //    };
+
+
+        //    return View(model);
+        //}
 
         public IActionResult Privacy()
         {
