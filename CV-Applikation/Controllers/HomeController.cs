@@ -26,14 +26,16 @@ namespace CV_Applikation.Controllers
             // Hämta ett urval av CVs
             var Cvs = await context.CVs
                 .Include(cv => cv.User)
+                .Where(cv => !cv.IsPrivate)
+                .Where(cv => cv.User.IsPrivate == false)
                 .Include(cv => cv.Educations)
                 .Include(cv => cv.Languages)
                 .Include(cv => cv.Skills)
-                .Take(3)
                 .ToListAsync();
 
             // Hämta senaste projektet
             var lastProject = await context.Projects
+                .Where(p => p.Owner.IsPrivate == false)
                 .OrderByDescending(p => p.CreatedAt)
                 .FirstOrDefaultAsync();
 

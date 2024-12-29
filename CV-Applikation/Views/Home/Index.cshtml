@@ -30,7 +30,8 @@ else
     @foreach (var cv in Model.CVs)
     {
         <li>
-            <a asp-controller="Account" asp-action="Profile" asp-route-id="@cv.UserId">
+            @* <a asp-controller="Account" asp-action="Profile" asp-route-id="@cv.UserId"> *@
+            <a href="@Url.Action("Profile", "Account", new { UserId = cv.UserId })">
                 <strong>CV för:</strong> @(cv.User?.UserName ?? "Okänd användare")
             </a>
             <br />
@@ -93,31 +94,52 @@ else
 </ul>
 
 
-<h2>Senaste projektet:</h2>
-@if (Model.ProjectLatest != null)
-{
-    <h3>@Model.ProjectLatest.Title</h3>
-    <p>@Model.ProjectLatest.Description</p>
-    <p>Skapad: @Model.ProjectLatest.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</p>
-
-    @if (!Model.IsUserInProject)
+    <h2>Senaste projektet:</h2>
+    @if (Model.ProjectLatest != null)
     {
-        <form asp-action="JoinProject" asp-controller="Project" method="post">
-            <input type="hidden" name="projectId" value="@Model.ProjectLatest.ProjectId" />
-            <button type="submit" class="btn btn-primary">Gå med i projektet</button>
-        </form>
+        <h3>@Model.ProjectLatest.Title</h3>
+        <p>@Model.ProjectLatest.Description</p>
+        <p>Skapad: @Model.ProjectLatest.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
+
+    @if (!Model.IsUserInProject && User.Identity.IsAuthenticated)
+        {
+            <form asp-action="JoinProject" asp-controller="Project" method="post">
+                <input type="hidden" name="projectId" value="@Model.ProjectLatest.ProjectId" />
+                <button type="submit" class="btn btn-primary">Gå med i projektet</button>
+            </form>
+        }
+        else if (!User.Identity.IsAuthenticated)
+        {
+          <a asp-controller="Account" asp-action="LogIn">Logga in för att delta i projektet</a>
+        }
+        else
+        {
+            <p class="text-success">Du är redan med i detta projekt.</p>
+        }
     }
     else
     {
-        <p class="text-success">Du är redan med i detta projekt.</p>
+        <p>Inga projekt skapade ännu.</p>
     }
-}
-else
-{
-    <p>Inga projekt skapade ännu.</p>
-}
-
-<p> <a asp-controller="CV" asp-action="Add"> Lägg till CV</a> <p/>
-
-<p> <a asp-controller="Project" asp-action="AddProject"> Lägg till Projekt</a> <p/>
-<p> <a asp-controller="Project" asp-action="ProjectList"> Visa Projekt</a> <p/>
+   <br/>
+   <a asp-controller="Project" asp-action="ProjectList"> Visa Projekt</a>
+   <br />
+    @if (User.Identity.IsAuthenticated)
+    {
+         <a asp-controller="CV" asp-action="Add"> Lägg till CV</a> 
+    }
+   <br />
+    @if (User.Identity.IsAuthenticated)
+    {
+       <a asp-controller="Project" asp-action="AddProject"> Lägg till Projekt</a>
+    }
+   <p> </p>
+    @if (User.Identity.IsAuthenticated)
+    {
+    <a asp-controller="Account" asp-action="ProfileSettings"> Ändra inställningar </a>
+    }
+    <br />
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a asp-controller="Project" asp-action="MyProjectsToEdit"> Redigera mina projekt </a>
+    }

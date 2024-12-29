@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Projects to edit Page";
+}
+@model IEnumerable<ProjectViewModel>
+
+<h2>Mina Projekt</h2>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var project in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h3 class="card-title">@project.Title</h3>
+                <p class="card-text">@project.Description</p>
+                <p><strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
+
+                <a asp-action="EditProject" asp-route-projectId="@project.ProjectId" class="btn btn-primary">Redigera Projekt</a>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>Du har inga projekt ännu.</p>
+}

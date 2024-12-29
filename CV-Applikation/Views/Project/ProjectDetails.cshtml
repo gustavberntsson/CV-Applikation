@@ -4,7 +4,7 @@
     <h1 class="mb-4">Projekt: @Model.Title</h1>
 
     <p><strong>Beskrivning:</strong> @Model.Description</p>
-    <p><strong>Skapad:</strong> @Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</p>
+    <p><strong>Skapad:</strong> @Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
 
     <h2 class="mt-4">Deltagare</h2>
     @if (Model.Participants != null && Model.Participants.Any())

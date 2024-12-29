@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using CV_Applikation.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CV_Applikation.Controllers
 {
@@ -83,26 +84,95 @@ namespace CV_Applikation.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> ProfileSettings()
+        {
+            // Hämta den inloggade användaren
+            var loggedInUser = await userManager.GetUserAsync(User);
+
+            // Om användaren inte är inloggad, omdirigera till inloggningssidan
+            if (loggedInUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Skapa ViewModel för inställningarna
+            var model = new ProfileSettingsViewModel
+            {
+                UserName = loggedInUser.UserName,
+                UserID = loggedInUser.Id,
+                IsPrivate = loggedInUser.IsPrivate
+            };
+
+            // Skicka ViewModel till vyn
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ProfileSettings(ProfileSettingsViewModel model)
+        {
+            var loggedInUser = await userManager.GetUserAsync(User);
+
+            // Om användaren inte är inloggad, omdirigera till inloggningssidan
+            if (loggedInUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Kontrollera att det är samma användare som försöker uppdatera
+            //if (loggedInUser.Id != model.UserID)
+            //{
+            //    return Unauthorized();
+            //}
+
+            // Uppdatera användarens synlighetsinställning
+            loggedInUser.IsPrivate = model.IsPrivate;
+
+            // Uppdatera användaren i databasen
+            var result = await userManager.UpdateAsync(loggedInUser);
+
+            if (result.Succeeded)
+            {
+                // Om uppdateringen lyckades, logga in användaren igen (refresh sign-in)
+                await signInManager.RefreshSignInAsync(loggedInUser);
+                return RedirectToAction("ProfileSettings");
+            }
+
+            // Om det uppstod problem, visa felmeddelanden
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            // Om något gick fel, skicka tillbaka användaren till vyn med felmeddelanden
+            return View(model);
+        }
+
         public async Task<IActionResult> Profile(string? UserId = null)
         {
             // If no UserId is provided, get the current user's ID
             // If no UserId is provided, get the current user's ID
-            if (string.IsNullOrEmpty(UserId))
-            {
+            //if (string.IsNullOrEmpty(UserId))
+            //{
                 var currentUser = await userManager.GetUserAsync(User);
-                if (currentUser == null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-                UserId = currentUser.Id;
-            }
+                var isUserLoggedIn = currentUser != null;
+            //    if (currentUser == null)
+            //    {
+            //        return RedirectToAction("Login", "Account");
+            //    }
+            //    UserId = currentUser.Id;
+            //}
 
             var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
             var userName = userEntity?.UserName ?? "Okänd användare";
 
             // Hämta användarens CV
             var CVs = await context.CVs
-                .Where(cv => cv.UserId == UserId)
+                //.Where(cv => cv.UserId == UserId)
+                .Where(cv => cv.UserId == UserId && (isUserLoggedIn || !cv.IsPrivate)) // Visa privata CV:n bara för inloggade
                 .Include(cv => cv.User)
                 .Include(cv => cv.Educations)
                 .Include(cv => cv.Languages)

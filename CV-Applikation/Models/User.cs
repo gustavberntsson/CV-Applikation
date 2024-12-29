@@ -9,5 +9,7 @@ namespace CV_Applikation.Models
         // Many-to-many relationship with projects
         public virtual ICollection<ProjectUser> ProjectUsers { get; set; }
 
+        public bool IsPrivate { get; set; } = false; // Default: public profile
+
     }
 }

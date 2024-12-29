@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Lägg till";
 }
 @model CV
@@ -97,6 +96,14 @@
     </div>
     <button type="button" id="addSkill">Lägg till ny färdighet</button>
 
+    <br />
+    <div class="form-group">
+        <label for="IsPrivate">Synlighet</label>
+        <select class="form-control" id="IsPrivate" name="IsPrivate">
+            <option value="false">Offentligt</option>
+            <option value="true">Privat</option>
+        </select>
+    </div>
     <br />
     <button type="submit">Lägg till CV</button>
 </form>

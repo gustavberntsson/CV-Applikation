@@ -10,7 +10,7 @@
     {
         <div class="card mb-4">
             <div class="card-header">
-                <h2 class="mb-0">@cv.CVName</h2>
+                <h2 class="mb-0"> CV: @cv.CVName</h2>
             </div>
             <div class="card-body">
                 <!-- Utbildning -->
@@ -153,10 +153,18 @@
                             <h5 class="card-title">@project.Title</h5>
                             <p class="card-text">
                                 <strong>Beskrivning:</strong> @project.Description<br>
-                            <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")<br>
+                            <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")<br>
                                 <strong>Roll:</strong>
-                                @(project.OwnerId == Model.ProfileName ? "Ägare" : "Deltagare")
-                            </p>
+                                @{
+                                    // Hitta den inloggade användarens roll i detta projekt
+                                    var userRole = project.ProjectUsers
+                                    .FirstOrDefault(pu => pu.UserId == Model.CurrentUserId)?.Role;
+
+                                    // Om det finns en roll, visa den; annars visa "Ingen roll"
+                                    var roleText = userRole ?? "Deltagare";
+                                }
+
+                                @roleText
                         </div>
                     </div>
                 </div>
