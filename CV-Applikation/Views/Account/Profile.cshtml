@@ -12,7 +12,7 @@
             }
             else
             {
-                <img src="/images/default-profile.png" alt="Standard profilbild" class="img-fluid rounded-circle" style="max-width: 200px;" />
+                <img src="/images/default-profile.png" alt="" class="img-fluid rounded-circle" style="max-width: 200px;" />
             }
         </div>
         <div class="col-md-9">
@@ -165,18 +165,18 @@
                             <h5 class="card-title">@project.Title</h5>
                             <p class="card-text">
                                 <strong>Beskrivning:</strong> @project.Description<br>
-                            <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")<br>
-                                <strong>Roll:</strong>
-                                @{
-                                    // Hitta den inloggade användarens roll i detta projekt
-                                    var userRole = project.ProjectUsers
-                                    .FirstOrDefault(pu => pu.UserId == Model.CurrentUserId)?.Role;
+                            <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")<br>
+                                @* <strong>Roll:</strong> *@
+                                @* @{ *@
+                                @*     // Hitta den inloggade användarens roll i detta projekt *@
+                                @*     var userRole = project.ProjectUsers *@
+                                @*     .FirstOrDefault(pu => pu.UserId == Model.CurrentUserId)?.Role; *@
 
-                                    // Om det finns en roll, visa den; annars visa "Ingen roll"
-                                    var roleText = userRole ?? "Deltagare";
-                                }
+                                @*     // Om det finns en roll, visa den; annars visa "Ingen roll" *@
+                                @*     var roleText = userRole ?? "Deltagare"; *@
+                                @* } *@
 
-                                @roleText
+                                @* @roleText *@
                         </div>
                     </div>
                 </div>
