@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using CV_Applikation.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Data.SqlClient;
 
 namespace CV_Applikation.Controllers
 {
@@ -196,6 +197,53 @@ namespace CV_Applikation.Controllers
 
             return View(vmodel);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string username)
+        {
+            // Hämta användaren baserat på användarnamnet
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.UserName == username);
+            var currentUser = await userManager.GetUserAsync(User);
+            var isUserLoggedIn = currentUser != null;
+
+            if (user == null)
+            {
+                // Om användaren inte hittas, visa ett felmeddelande och återgå till föregående vy
+                TempData["ErrorMessage"] = "Användaren kunde inte hittas.";
+                return RedirectToAction("Index"); // Återgå till en startvy
+            }
+
+            // Hämta användarens CV:n
+            var CVs = await context.CVs
+                .Where(cv => cv.UserId == user.Id && (isUserLoggedIn || !cv.IsPrivate))
+                .Include(cv => cv.Educations)
+                .Include(cv => cv.Languages)
+                .Include(cv => cv.Skills)
+                .Include(cv => cv.WorkExperiences)
+                .ToListAsync();
+
+            // Hämta användarens projekt
+            var projects = await context.Projects
+                .Include(p => p.ProjectUsers)
+                .ThenInclude(pu => pu.UserProject)
+                .Where(p => p.OwnerId == user.Id || p.ProjectUsers.Any(pu => pu.UserId == user.Id))
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            // Bygg profilmodellen
+            var model = new ProfileViewModel
+            {
+                ProfileName = username,
+                Cvs = CVs,
+                Projects = projects,
+                CurrentUserId = HttpContext.User.Identity?.Name
+            };
+
+            // Returnera profilen med rätt vy
+            return View("Profile", model); // Notera att vyn heter "ProfilePage"
+        }
+
         //public async Task<IActionResult> Profile(string? UserId = null)
         //{
         //    // If no UserId is provided, get the current user's ID
