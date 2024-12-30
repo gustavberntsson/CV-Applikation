@@ -244,6 +244,45 @@ namespace CV_Applikation.Controllers
             return View("Profile", model); // Notera att vyn heter "ProfilePage"
         }
 
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model); // Returnerar vyn om modellvalidering misslyckas.
+            }
+
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Ett fel inträffade. Användaren kunde inte hittas.");
+                return View(model);
+            }
+
+            // Försök ändra lösenord
+            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Lösenordet har ändrats framgångsrikt.";
+                return RedirectToAction("Profile");
+            }
+
+            // Hantera fel från Identity
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+
         //public async Task<IActionResult> Profile(string? UserId = null)
         //{
         //    // If no UserId is provided, get the current user's ID
@@ -284,4 +323,4 @@ namespace CV_Applikation.Controllers
         //    return View(vmodel);
         //}
     }
-}
+    }
