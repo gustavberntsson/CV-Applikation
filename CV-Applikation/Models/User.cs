@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace CV_Applikation.Models
 {
@@ -9,6 +10,7 @@ namespace CV_Applikation.Models
         // Many-to-many relationship with projects
         public virtual ICollection<ProjectUser> ProjectUsers { get; set; }
 
+        [Required(ErrorMessage = "Privacy ststus is required.")]
         public bool IsPrivate { get; set; } = false; // Default: public profile
 
     }
