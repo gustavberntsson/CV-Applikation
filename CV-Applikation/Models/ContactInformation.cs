@@ -5,17 +5,17 @@ namespace CV_Applikation.Models
 {
     public class ContactInformation
     {
+        [Key]
+        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-
-        [Key]
         public string Email { get; set; }
 
-        public int CVId { get; set; }
+        public string UserId { get; set; }
 
-        [ForeignKey(nameof(CVId))]
-        public virtual CV? Cv { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public virtual User? User { get; set; }
     }
 }

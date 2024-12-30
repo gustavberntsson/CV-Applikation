@@ -281,6 +281,65 @@ namespace CV_Applikation.Controllers
 
             return View(model);
         }
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
+        {
+
+            var currentUser = await userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var kontaktUppgifter = await context.ContactInformation
+        .FirstOrDefaultAsync(k => k.UserId == currentUser.Id);
+            
+            var model = new EditProfileViewModel
+            {
+                ProfilNamn = currentUser.UserName,
+                Email = kontaktUppgifter?.Email,
+                FirstName = kontaktUppgifter?.FirstName,
+                LastName = kontaktUppgifter?.LastName,
+                Address = kontaktUppgifter?.Address,
+                PhoneNumber = kontaktUppgifter?.PhoneNumber
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+        {
+         
+
+            var currentUser = await userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+;
+
+            var kontaktUppgifter = await context.ContactInformation.FirstOrDefaultAsync(c => c.UserId == currentUser.Id);
+            if (kontaktUppgifter == null)
+            {
+                kontaktUppgifter = new ContactInformation
+                {
+                    UserId = currentUser.Id
+                };
+                context.ContactInformation.Add(kontaktUppgifter);
+            }
+
+            kontaktUppgifter.Email = model.Email;
+            kontaktUppgifter.FirstName = model.FirstName;
+            kontaktUppgifter.LastName = model.LastName;
+            kontaktUppgifter.Address = model.Address;
+            kontaktUppgifter.PhoneNumber = model.PhoneNumber;
+
+            await context.SaveChangesAsync();
+            
+                return RedirectToAction("Profile");
+
+        }
 
 
         //public async Task<IActionResult> Profile(string? UserId = null)

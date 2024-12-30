@@ -4,6 +4,7 @@ using CV_Applikation.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CV_Applikation.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20241230142019_hej")]
+    partial class hej
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,19 +78,15 @@ namespace CV_Applikation.Migrations
 
             modelBuilder.Entity("CV_Applikation.Models.ContactInformation", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CVId")
+                        .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -101,13 +100,9 @@ namespace CV_Applikation.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.HasKey("Email");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("CVId");
 
                     b.ToTable("ContactInformation");
                 });
@@ -554,13 +549,13 @@ namespace CV_Applikation.Migrations
 
             modelBuilder.Entity("CV_Applikation.Models.ContactInformation", b =>
                 {
-                    b.HasOne("CV_Applikation.Models.User", "User")
+                    b.HasOne("CV_Applikation.Models.CV", "Cv")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Cv");
                 });
 
             modelBuilder.Entity("CV_Applikation.Models.Education", b =>
