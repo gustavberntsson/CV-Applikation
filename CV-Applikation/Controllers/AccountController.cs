@@ -29,10 +29,13 @@ namespace CV_Applikation.Controllers
         {
             if (ModelState.IsValid)
             {
-                User anvandare = new User();
-                anvandare.UserName = registerViewModel.AnvandarNamn;
-                var result =
-                await userManager.CreateAsync(anvandare, registerViewModel.Losenord);
+                User anvandare = new User
+                {
+                    UserName = registerViewModel.AnvandarNamn,
+                    ImageUrl = registerViewModel.ImageUrl
+                };
+
+                var result = await userManager.CreateAsync(anvandare, registerViewModel.Losenord);
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(anvandare, isPersistent: true);
@@ -153,26 +156,21 @@ namespace CV_Applikation.Controllers
 
         public async Task<IActionResult> Profile(string? UserId = null)
         {
-            // If no UserId is provided, get the current user's ID
-            // If no UserId is provided, get the current user's ID
-            //if (string.IsNullOrEmpty(UserId))
-            //{
+            if (string.IsNullOrEmpty(UserId))
+            {
                 var currentUser = await userManager.GetUserAsync(User);
-                var isUserLoggedIn = currentUser != null;
-            //    if (currentUser == null)
-            //    {
-            //        return RedirectToAction("Login", "Account");
-            //    }
-            //    UserId = currentUser.Id;
-            //}
+                if (currentUser == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+                UserId = currentUser.Id;
+            }
 
             var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
             var userName = userEntity?.UserName ?? "Okänd användare";
 
-            // Hämta användarens CV
             var CVs = await context.CVs
-                //.Where(cv => cv.UserId == UserId)
-                .Where(cv => cv.UserId == UserId && (isUserLoggedIn || !cv.IsPrivate)) // Visa privata CV:n bara för inloggade
+                .Where(cv => cv.UserId == UserId)
                 .Include(cv => cv.User)
                 .Include(cv => cv.Educations)
                 .Include(cv => cv.Languages)
@@ -180,10 +178,9 @@ namespace CV_Applikation.Controllers
                 .Include(cv => cv.WorkExperiences)
                 .ToListAsync();
 
-            // Hämta alla projekt som användaren är med i (både som ägare och deltagare)
             var projects = await context.Projects
-                .Include(p => p.ProjectUsers) // Inkludera koppling till deltagare
-                .ThenInclude(pu => pu.UserProject) // Inkludera användaruppgifter
+                .Include(p => p.ProjectUsers)
+                .ThenInclude(pu => pu.UserProject)
                 .Where(p => p.OwnerId == UserId || p.ProjectUsers.Any(pu => pu.UserId == UserId))
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
@@ -191,6 +188,8 @@ namespace CV_Applikation.Controllers
             var vmodel = new ProfileViewModel
             {
                 ProfileName = userName,
+                ImageUrl = userEntity?.ImageUrl,
+                CurrentUserId = UserId,
                 Cvs = CVs,
                 Projects = projects
             };

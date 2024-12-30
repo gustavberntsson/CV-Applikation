@@ -3,10 +3,9 @@
     public class ProfileViewModel
     {
         public string ProfileName { get; set; }
-
-        public List<Project> Projects { get; set; } = new List<Project>();
-        //public Project? Projects { get; set; }
-        public List<CV> Cvs { get; set; } = new List<CV>();
+        public string? ImageUrl { get; set; }
         public string CurrentUserId { get; set; }
+        public List<Project> Projects { get; set; } = new List<Project>();
+        public List<CV> Cvs { get; set; } = new List<CV>();
     }
 }
