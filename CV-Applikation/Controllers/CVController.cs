@@ -171,6 +171,95 @@ namespace CV_Applikation.Controllers
             context.SaveChanges(); // Sparar ändringar
             return RedirectToAction("Index", "home");
         }
+        [HttpGet]
+        public IActionResult EditCv(int cvId)
+        {
+            var cv = context.CVs
+                .Include(c => c.Educations)
+                .Include(c => c.WorkExperiences)
+                .Include(c => c.Languages)
+                .Include(c => c.Skills)
+                .FirstOrDefault(c => c.CVId == cvId);
 
+            if (cv == null)
+            {
+                return NotFound(); // Returnerar 404 om CV:t inte hittas
+            }
+
+            var viewModel = new EditCvViewModel
+            {
+                CVId = cv.CVId,
+                CVName = cv.CVName,
+                Educations = cv.Educations ?? new List<Education>(), // Om null, skapa en tom lista
+                WorkExperiences = cv.WorkExperiences ?? new List<WorkExperience>(), // Om null, skapa en tom lista
+                Languages = cv.Languages ?? new List<Languages>(), // Om null, skapa en tom lista
+                Skills = cv.Skills ?? new List<Skills>() // Om null, skapa en tom lista
+            };
+
+            return View(viewModel);
+        }
+
+
+        /* [HttpGet]
+         public async Task<IActionResult> EditCv(int cvId)
+         {
+             var cv = await context.CVs
+                 .Include(c => c.Educations)
+                 .Include(c => c.WorkExperiences)
+                 .Include(c => c.Languages)
+                 .Include(c => c.Skills)
+                 .FirstOrDefaultAsync(c => c.CVId == cvId);
+
+             if (cv == null)
+             {
+                 return NotFound();
+             }
+
+             var viewModel = new EditCvViewModel
+             {
+                 CVId = cv.CVId,
+                 CVName = cv.CVName,
+                 Educations = cv.Educations.ToList(),
+                 WorkExperiences = cv.WorkExperiences.ToList(),
+                 Languages = cv.Languages.ToList(),
+                 Skills = cv.Skills.ToList()
+             };
+
+             return View(viewModel);
+         }*/
+
+        [HttpPost]
+        public IActionResult EditCv(EditCvViewModel model)
+        {
+
+            if (ModelState.IsValid)
+            {
+
+
+                var cv = context.CVs
+                    .Include(c => c.Educations)
+                    .Include(c => c.WorkExperiences)
+                    .Include(c => c.Languages)
+                    .Include(c => c.Skills)
+                    .FirstOrDefault(c => c.CVId == model.CVId);
+
+                if (cv == null)
+                {
+                    return NotFound();
+                }
+
+                cv.CVName = model.CVName;
+                cv.Educations = model.Educations;
+                cv.WorkExperiences = model.WorkExperiences;
+                cv.Languages = model.Languages;
+                cv.Skills = model.Skills;
+
+                context.SaveChanges();  // Spara ändringarna i databasen
+
+                return RedirectToAction("Profile", "Account");  // Eller en annan vy som du vill skicka användaren till
+
+            }
+            return View(model);  // Återgå till samma vy vid ogiltig data
+        }
     }
 }

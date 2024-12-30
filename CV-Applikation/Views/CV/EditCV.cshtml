@@ -1,0 +1,120 @@
+﻿@model CV_Applikation.Models.EditCvViewModel
+
+@{
+    ViewData["Title"] = "Edit CV";
+}
+
+<div class="container mt-4">
+    <h2>Edit CV</h2>
+
+    <form asp-controller="CV" asp-action="EditCV" method="post">
+        <input type="hidden" name="CVId" value="@Model.CVId" />
+        <!-- CV Name -->
+        <div>
+            <label for="CVName">CV Name:</label>
+            <input type="text" id="CVName" name="CVName" value="@Model.CVName" />
+        </div>
+
+        <hr />
+        <h3>Educations</h3>
+        @if (Model.Educations != null && Model.Educations.Count > 0)
+        {
+            @for (int i = 0; i < Model.Educations.Count; i++)
+            {
+                <div>
+                    <label>School:</label>
+                    <input name="Educations[@i].School" value="@Model.Educations[i].School" />
+
+                    <label>Degree:</label>
+                    <input name="Educations[@i].Degree" value="@Model.Educations[i].Degree" />
+
+                    <label>Field of Study:</label>
+                    <input name="Educations[@i].FieldOfStudy" value="@Model.Educations[i].FieldOfStudy" />
+
+                    <label>Start Date:</label>
+                    <input type="date" name="Educations[@i].StartDate" value="@Model.Educations[i].StartDate" />
+
+                    <label>End Date:</label>
+                    <input type="date" name="Educations[@i].EndDate" value="@Model.Educations[i].EndDate" />
+                </div>
+                <hr />
+            }
+        }
+        else
+        {
+            <p>No education records available.</p>
+        }
+
+        <h3>Work Experiences</h3>
+        @if (Model.WorkExperiences != null && Model.WorkExperiences.Count > 0)
+        {
+            @for (int i = 0; i < Model.WorkExperiences.Count; i++)
+            {
+                <div>
+                    <label>Company Name:</label>
+                    <input name="WorkExperiences[@i].CompanyName" value="@Model.WorkExperiences[i].CompanyName" />
+
+                    <label>Position:</label>
+                    <input name="WorkExperiences[@i].Position" value="@Model.WorkExperiences[i].Position" />
+
+                    <label>Description:</label>
+                    <textarea name="WorkExperiences[@i].Description">@Model.WorkExperiences[i].Description</textarea>
+
+                    <label>Start Date:</label>
+                    <input type="date" name="WorkExperiences[@i].StartDate" value="@Model.WorkExperiences[i].StartDate" />
+
+                    <label>End Date:</label>
+                    <input type="date" name="WorkExperiences[@i].EndDate" value="@Model.WorkExperiences[i].EndDate" />
+                </div>
+                <hr />
+            }
+        }
+        else
+        {
+            <p>No work experiences available.</p>
+        }
+
+        <h3>Languages</h3>
+        @if (Model.Languages != null && Model.Languages.Count > 0)
+        {
+            @for (int i = 0; i < Model.Languages.Count; i++)
+            {
+                <div>
+                    <label>Language Name:</label>
+                    <input name="Languages[@i].LanguageName" value="@Model.Languages[i].LanguageName" />
+
+                    <label>Level:</label>
+                    <input type="number" name="Languages[@i].Level" value="@Model.Languages[i].Level" min="1" max="5" />
+                </div>
+                <hr />
+            }
+        }
+        else
+        {
+            <p>No languages available.</p>
+        }
+
+        <h3>Skills</h3>
+        @if (Model.Skills != null && Model.Skills.Count > 0)
+        {
+            @for (int i = 0; i < Model.Skills.Count; i++)
+            {
+                <div>
+                    <label>Skill Name:</label>
+                    <input name="Skills[@i].SkillName" value="@Model.Skills[i].SkillName" />
+                </div>
+                <hr />
+            }
+        }
+        else
+        {
+            <p>No skills available.</p>
+        }
+
+
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+
+</div>
