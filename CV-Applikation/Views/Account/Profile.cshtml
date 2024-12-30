@@ -17,14 +17,19 @@
         </div>
         <div class="col-md-9">
     <h1 class="mb-4">Profil för @Model.ProfileName</h1>
+			@if (Model.CurrentUserId == @Model.ProfileName) {
             <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary">Redigera Profil</a>
             <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">Ändra Lösenord</a>
+            }
     @foreach (var cv in Model.Cvs)
     {
         <div class="card mb-4">
             <div class="card-header">
                 <h2 class="mb-0"> CV: @cv.CVName</h2>
+                        @if (Model.CurrentUserId == @Model.ProfileName)
+                        {
                         <a href="@Url.Action("EditCv", "CV", new { cvId = cv.CVId })" class="btn btn-secondary">Redigera CV</a>
+                        }
             </div>
             <div class="card-body">
                 <!-- Utbildning -->
