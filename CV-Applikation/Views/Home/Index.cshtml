@@ -1,6 +1,10 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<form asp-controller="Account" asp-action="Search" method="get" class="form-inline mb-4">
+    <input type="text" name="username" class="form-control mr-2" placeholder="Sök användare..." required />
+    <button type="submit" class="btn btn-primary">Sök</button>
+</form>
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
@@ -142,4 +146,9 @@ else
     @if (User.Identity.IsAuthenticated)
     {
         <a asp-controller="Project" asp-action="MyProjectsToEdit"> Redigera mina projekt </a>
+  
     }
+
+
+
+  
