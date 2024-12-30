@@ -28,6 +28,16 @@
         <div class="col-sm-4">
             <input asp-for="BekraftaLosenord" class="form-control" />
         </div>
+        <div class="form-group row">
+            <div class="col-sm-2">
+                <label>Profilbild URL: </label>
+            </div>
+            <div class="col-sm-4">
+                <input asp-for="ImageUrl" class="form-control" placeholder="https://imgur.com/din-bild" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                <small class="form-text text-muted">Ange en länk till din profilbild (t.ex. från Imgur)</small>
+            </div>
+        </div>
     </div>
     <div class="form-group row">
         <div class="offset-2 col-sm-4">

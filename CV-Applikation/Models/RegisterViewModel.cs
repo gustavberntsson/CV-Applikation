@@ -5,16 +5,23 @@ namespace CV_Applikation.Models
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Vänligen skriv ett användarnamn.")]
-        [StringLength(255)]
+        [Required(ErrorMessage = "Du måste ange ett användarnamn")]
+        [Display(Name = "Användarnamn")]
         public string AnvandarNamn { get; set; }
-        [Required(ErrorMessage = "Vänligen skriv lösenord.")]
+
+        [Required(ErrorMessage = "Du måste ange ett lösenord")]
         [DataType(DataType.Password)]
-        [Compare("BekraftaLosenord")]
+        [Display(Name = "Lösenord")]
         public string Losenord { get; set; }
-        [Required(ErrorMessage = "Vänlingen bekräfta lösenordet")]
+
+        [Required(ErrorMessage = "Du måste bekräfta lösenordet")]
+        [Compare("Losenord", ErrorMessage = "Lösenorden matchar inte")]
         [DataType(DataType.Password)]
-        [Display(Name = "Bekrafta losenordet")]
+        [Display(Name = "Bekräfta lösenord")]
         public string BekraftaLosenord { get; set; }
+
+        [Display(Name = "Profilbild URL")]
+        [Url(ErrorMessage = "Ange en giltig URL")]
+        public string? ImageUrl { get; set; }
     }
 }
