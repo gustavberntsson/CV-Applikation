@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CV_Applikation</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CV-centralen</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -27,6 +27,28 @@
                         </li>
                         <li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Message">Meddelanden</a>
+                        </li>
+                        <li class="nav-item">
+                            <p class="loginknapp">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit" class="btn btn-danger">Logout</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="LogIn" class="btn btn-primary">Logga in</a>
+                            }
+                            </p>
+                        </li>
+                        <li class="nav-item">
+                            <p class="search">
+                                <form asp-controller="Account" asp-action="Search" method="get" class="form-inline mb-4">
+                                    <input type="text" name="username" class="form-control mr-2" placeholder="Sök användare..." required />
+                                    <button type="submit" class="btn btn-primary">Sök</button>
+                                </form>
+                            </p>
                         </li>
                     </ul>
                 </div>

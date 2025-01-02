@@ -156,42 +156,41 @@
             </div>
         </div>
     }
+            <div class="mb-4">
+                <h2 class="border-bottom pb-2">Projekt</h2>
+                @if (Model.Projects != null && Model.Projects.Any())
+                {
+                    <div class="row">
+                        @foreach (var project in Model.Projects)
+                        {
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@project.Title</h5>
+                                        <p class="card-text">
+                                            <strong>Beskrivning:</strong> @project.Description<br>
+                                            <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")<br>
+                                            @* <strong>Roll:</strong> *@
+                                            @* @{ *@
+                                            @*     // Hitta den inloggade användarens roll i detta projekt *@
+                                            @*     var userRole = project.ProjectUsers *@
+                                            @*     .FirstOrDefault(pu => pu.UserId == Model.CurrentUserId)?.Role; *@
 
-</div>
+                                            @*     // Om det finns en roll, visa den; annars visa "Ingen roll" *@
+                                            @*     var roleText = userRole ?? "Deltagare"; *@
+                                            @* } *@
 
-<div class="mb-4">
-    <h2 class="border-bottom pb-2">Projekt</h2>
-    @if (Model.Projects != null && Model.Projects.Any())
-    {
-        <div class="row">
-            @foreach (var project in Model.Projects)
-            {
-                <div class="col-md-6 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">@project.Title</h5>
-                            <p class="card-text">
-                                <strong>Beskrivning:</strong> @project.Description<br>
-                            <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")<br>
-                                @* <strong>Roll:</strong> *@
-                                @* @{ *@
-                                @*     // Hitta den inloggade användarens roll i detta projekt *@
-                                @*     var userRole = project.ProjectUsers *@
-                                @*     .FirstOrDefault(pu => pu.UserId == Model.CurrentUserId)?.Role; *@
-
-                                @*     // Om det finns en roll, visa den; annars visa "Ingen roll" *@
-                                @*     var roleText = userRole ?? "Deltagare"; *@
-                                @* } *@
-
-                                @* @roleText *@
-                        </div>
+                                            @* @roleText *@
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <p class="text-muted">Inga projekt tillagda.</p>
-    }
+                }
+                else
+                {
+                    <p class="text-muted">Inga projekt tillagda.</p>
+                }
+            </div>
 </div>
+
