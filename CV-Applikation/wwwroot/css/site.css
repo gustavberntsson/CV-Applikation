@@ -28,4 +28,67 @@ header {
     background-color: rgb(102, 221, 235); !important;
     padding: 10px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+header .navbar-brand {
+    font-size: 2rem; /* Större font */
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: auto; /* Flytta till vänster */
+    color: black;
+}
+
+    /* Länkar (center) */
+    header .navbar-nav {
+        flex-grow: 1;
+        justify-content: center;
+        display: flex;
+    }
+
+        header .navbar-nav .nav-link {
+            margin: 0 15px;
+            color: black;
+        }
+
+            header .navbar-nav .nav-link:hover {
+                color: rgba(255, 165, 0, 1); /* Orange färg */
+            }
+
+    /* Layout för knappar och sökfält till höger */
+    header .top-right {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column; /* Gör att de hamnar vertikalt */
+        align-items: flex-end; /* Justera till höger */
+    }
+
+    /* Sökfält och knapp bredvid varandra */
+    header .top-right .search {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        header .top-right .search input {
+            width: 200px; /* Sätt en bredd på sökfältet */
+            margin-right: 5px;
+          
+        }
+
+        header .top-right .search button {
+            padding: 5px 10px;
+        }
+
+    /* Login/logout (direkt under sökfältet) */
+    header .top-right .loginknapp {
+
+        margin-top: 50px;
+        margin-bottom: 50px;
+        background-color: tomato; !important;
+        padding-left: 50px;
+       /* margin-top: 10px; */
+       /* Placerar login/logout-knappen under sökfältet */
+    }   
