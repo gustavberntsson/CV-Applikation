@@ -8,15 +8,13 @@
 
 <ul>
     @foreach (var cv in Model.CVs)
-    {
-        <li>
+    {   <div class="card mb-4">
             @* <a asp-controller="Account" asp-action="Profile" asp-route-id="@cv.UserId"> *@
             <a href="@Url.Action("Profile", "Account", new { UserId = cv.UserId })">
                 <strong>CV för:</strong> @(cv.User?.UserName ?? "Okänd användare")
             </a>
             <br />
             <p><strong>Namn:</strong> @cv.CVName</p>
-            <p><strong>UserId för detta CV:</strong> @cv.UserId</p>
             <h4>Utbildning:</h4>
             @if (cv.Educations != null && cv.Educations.Any())
             {
@@ -35,7 +33,7 @@
             {
                 <p>Ingen utbildning tillagd.</p>
             }
-
+            
             <h4>Språk:</h4>
             @if (cv.Languages != null && cv.Languages.Any())
             {
@@ -69,7 +67,7 @@
             {
                 <p>Ingen färdighet tillagd.</p>
             }
-        </li>
+        </div>
     }
 </ul>
 
