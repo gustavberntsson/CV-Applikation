@@ -33,12 +33,24 @@ namespace CV_Applikation.Controllers
                 User anvandare = new User
                 {
                     UserName = registerViewModel.AnvandarNamn,
-                    ImageUrl = registerViewModel.ImageUrl
+                    ImageUrl = registerViewModel.ImageUrl,
+                };
+
+                ContactInformation kontaktUppgifter = new ContactInformation
+                {
+                    Email = registerViewModel.Email,
+                    FirstName = registerViewModel.FörNamn,
+                    LastName = registerViewModel.EfterNamn,
+                    Adress = registerViewModel.Adress,
+                    PhoneNumber = registerViewModel.TelefonNummer,
+                    UserId = anvandare.Id
                 };
 
                 var result = await userManager.CreateAsync(anvandare, registerViewModel.Losenord);
                 if (result.Succeeded)
                 {
+                    context.ContactInformation.Add(kontaktUppgifter);
+                    await context.SaveChangesAsync();
                     await signInManager.SignInAsync(anvandare, isPersistent: true);
                     return RedirectToAction("Index", "Home");
                 }
@@ -300,7 +312,7 @@ namespace CV_Applikation.Controllers
                 Email = kontaktUppgifter?.Email,
                 FirstName = kontaktUppgifter?.FirstName,
                 LastName = kontaktUppgifter?.LastName,
-                Address = kontaktUppgifter?.Address,
+                Adress = kontaktUppgifter?.Adress,
                 PhoneNumber = kontaktUppgifter?.PhoneNumber
             };
 
@@ -332,7 +344,7 @@ namespace CV_Applikation.Controllers
             kontaktUppgifter.Email = model.Email;
             kontaktUppgifter.FirstName = model.FirstName;
             kontaktUppgifter.LastName = model.LastName;
-            kontaktUppgifter.Address = model.Address;
+            kontaktUppgifter.Adress = model.Adress;
             kontaktUppgifter.PhoneNumber = model.PhoneNumber;
 
             await context.SaveChangesAsync();
