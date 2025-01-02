@@ -91,9 +91,12 @@ namespace CV_Applikation.Controllers
         //    return View(model);
         //}
 
-        public IActionResult Privacy()
+        public IActionResult Profile()
         {
-            return View();
+            var currentUser = userManager.GetUserAsync(User).Result;
+            if (currentUser == null)
+                return RedirectToAction("Login", "Account");
+            return RedirectToAction("Profile", "Account", new { UserId = currentUser.Id });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -3,6 +3,7 @@
 	public class MessageViewModel
 	{
 		public string ProfileName { get; set; }
-		public List<Message> Messages { get; set; } = new List<Message>();
+		public bool IsRead { get; set; }
+        public List<Message> Messages { get; set; } = new List<Message>();
 	}
 }

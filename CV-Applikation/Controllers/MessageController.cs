@@ -16,9 +16,12 @@ namespace CV_Applikation.Controllers
             context = service;
 
         }
-		public ActionResult SendMessage()
+		public async Task<ActionResult> SendMessageAsync()
 		{
-			var users = context.Users.ToList(); // Hämta alla användare
+            var currentUser = await userManager.GetUserAsync(User);
+            var users = context.Users
+				.Where(u => u.Id != currentUser.Id)
+				.ToList(); // Hämta alla användare förutom den inloggade
 			ViewBag.Users = users; // Skicka användarna till vyn
 			Message message = new Message();
 			return View(message);
@@ -59,8 +62,21 @@ namespace CV_Applikation.Controllers
 			if (currentUser == null)
 				return RedirectToAction("Login", "Account");
 
-			//Skapar en ny vy
-			var viewModel = new MessageViewModel
+            //Hämta alla nuvarande olästa meddelanden
+            var unreadMessages = context.Message
+                .Where(m => m.ReceiverId == currentUser.Id && m.IsRead == false)
+                .ToListAsync();
+
+            //Sätt alla meddelanden till lästa
+            foreach (var message in unreadMessages.Result)
+            {
+                message.IsRead = true;
+            }
+
+			await context.SaveChangesAsync();
+
+            //Skapar en ny vy
+            var viewModel = new MessageViewModel
 			{
 				ProfileName = currentUser.UserName,
 				Messages = await context.Message

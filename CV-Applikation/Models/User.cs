@@ -10,7 +10,7 @@ namespace CV_Applikation.Models
         // Many-to-many relationship with projects
         public virtual ICollection<ProjectUser> ProjectUsers { get; set; }
 
-        [Required(ErrorMessage = "Privacy ststus is required.")]
+        [Required(ErrorMessage = "Privacy status is required.")]
         public bool IsPrivate { get; set; } = false; // Default: public profile
 
     }
