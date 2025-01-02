@@ -21,6 +21,12 @@
                 <p><strong>Telefon:</strong> @Model.PhoneNumber</p>
                 <p><strong>E-post:</strong> @Model.Email</p>
                 <p><strong>Adress:</strong> @Model.Adress</p>
+
+                <div class="mt-4 button-container">
+                    <a asp-controller="CV" asp-action="Add" class="btn btn-primary">Lägg till CV</a>
+                    <a asp-controller="Project" asp-action="AddProject" class="btn btn-primary">Lägg till Projekt</a>
+                    <a asp-controller="Project" asp-action="MyProjectsToEdit" class="btn btn-primary">Redigera mina projekt</a>
+                </div>
             </div>
         </div>
         <div class="col-md-9">
@@ -30,7 +36,6 @@
                 <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary">Redigera Profil</a>
                 <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">Ändra Lösenord</a>
             }
-
 
     @foreach (var cv in Model.Cvs)
     {
