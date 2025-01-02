@@ -101,72 +101,6 @@ namespace CV_Applikation.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> ProfileSettings()
-        {
-            // Hämta den inloggade användaren
-            var loggedInUser = await userManager.GetUserAsync(User);
-
-            // Om användaren inte är inloggad, omdirigera till inloggningssidan
-            if (loggedInUser == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            // Skapa ViewModel för inställningarna
-            var model = new ProfileSettingsViewModel
-            {
-                UserName = loggedInUser.UserName,
-                UserID = loggedInUser.Id,
-                IsPrivate = loggedInUser.IsPrivate
-            };
-
-            // Skicka ViewModel till vyn
-            return View(model);
-        }
-
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> ProfileSettings(ProfileSettingsViewModel model)
-        {
-            var loggedInUser = await userManager.GetUserAsync(User);
-
-            // Om användaren inte är inloggad, omdirigera till inloggningssidan
-            if (loggedInUser == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            // Kontrollera att det är samma användare som försöker uppdatera
-            //if (loggedInUser.Id != model.UserID)
-            //{
-            //    return Unauthorized();
-            //}
-
-            // Uppdatera användarens synlighetsinställning
-            loggedInUser.IsPrivate = model.IsPrivate;
-
-            // Uppdatera användaren i databasen
-            var result = await userManager.UpdateAsync(loggedInUser);
-
-            if (result.Succeeded)
-            {
-                // Om uppdateringen lyckades, logga in användaren igen (refresh sign-in)
-                await signInManager.RefreshSignInAsync(loggedInUser);
-                return RedirectToAction("ProfileSettings");
-            }
-
-            // Om det uppstod problem, visa felmeddelanden
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
-            // Om något gick fel, skicka tillbaka användaren till vyn med felmeddelanden
-            return View(model);
-        }
-
         public async Task<IActionResult> Profile(string? UserId = null)
         {
             if (string.IsNullOrEmpty(UserId))
@@ -317,11 +251,13 @@ namespace CV_Applikation.Controllers
             
             var model = new EditProfileViewModel
             {
+                ProfilePicture = currentUser.ImageUrl,
                 Email = kontaktUppgifter?.Email,
                 FirstName = kontaktUppgifter?.FirstName,
                 LastName = kontaktUppgifter?.LastName,
                 Adress = kontaktUppgifter?.Adress,
-                PhoneNumber = kontaktUppgifter?.PhoneNumber
+                PhoneNumber = kontaktUppgifter?.PhoneNumber,
+                IsPrivate = currentUser.IsPrivate
             };
 
             return View(model);
@@ -349,57 +285,18 @@ namespace CV_Applikation.Controllers
                 context.ContactInformation.Add(kontaktUppgifter);
             }
 
+            currentUser.ImageUrl = model.ProfilePicture;
             kontaktUppgifter.Email = model.Email;
             kontaktUppgifter.FirstName = model.FirstName;
             kontaktUppgifter.LastName = model.LastName;
             kontaktUppgifter.Adress = model.Adress;
             kontaktUppgifter.PhoneNumber = model.PhoneNumber;
+            currentUser.IsPrivate = model.IsPrivate;
 
             await context.SaveChangesAsync();
             
                 return RedirectToAction("Profile");
 
         }
-
-
-        //public async Task<IActionResult> Profile(string? UserId = null)
-        //{
-        //    // If no UserId is provided, get the current user's ID
-        //    if (string.IsNullOrEmpty(UserId))
-        //    {
-        //        var currentUser = await userManager.GetUserAsync(User);
-        //        if (currentUser == null)
-        //        {
-        //            return RedirectToAction("Login", "Account");
-        //        }
-        //        UserId = currentUser.Id;
-        //    }
-
-        //    var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
-        //    var userName = userEntity?.UserName ?? "Okänd användare";
-
-        //    var CVs = await context.CVs
-        //        .Where(cv => cv.UserId == UserId)
-        //        .Include(cv => cv.User)
-        //        .Include(cv => cv.Educations)
-        //        .Include(cv => cv.Languages)
-        //        .Include(cv => cv.Skills)
-        //        .Include(cv => cv.WorkExperiences)
-        //        .ToListAsync();
-
-        //    var projectss = await context.Projects
-        //        .Where(p => p.OwnerId == UserId)
-        //        .OrderByDescending(p => p.CreatedAt)
-        //        .FirstOrDefaultAsync();
-
-        //    var vmodel = new ProfileViewModel
-        //    {
-        //        ProfileName = userName,
-        //        Cvs = CVs,
-        //        Projects = projectss
-        //    };
-
-        //    return View(vmodel);
-        //}
     }
     }

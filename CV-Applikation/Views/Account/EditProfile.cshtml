@@ -9,6 +9,10 @@
     <hr />
     <form asp-action="EditProfile" method="post">
         <div class="form-group">
+            <label asp-for="ProfilePicture">Profilbild</label>
+            <input asp-for="ProfilePicture" class="form-control" />
+        </div>
+        <div class="form-group">
             <label asp-for="Email">Email</label>
             <input asp-for="Email" class="form-control" />
         </div>
@@ -27,6 +31,13 @@
         <div class="form-group">
             <label asp-for="PhoneNumber">Phone Number</label>
             <input asp-for="PhoneNumber" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="IsPrivate">Vill du ändra din profilinställning till?</label>
+            <select asp-for="IsPrivate" class="form-control">
+                    <option value="false">Offentlig</option>
+                    <option value="true">Privat</option>
+            </select>
         </div>
         <div class="form-group mt-4">
             <button type="submit" class="btn btn-primary">Save Changes</button>
