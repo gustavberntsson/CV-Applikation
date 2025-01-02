@@ -182,6 +182,10 @@ namespace CV_Applikation.Controllers
             var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
             var userName = userEntity?.UserName ?? "Okänd användare";
 
+            // Hämta kontaktinformation
+            var contactInfo = await context.ContactInformation
+                .FirstOrDefaultAsync(c => c.UserId == UserId);
+
             var CVs = await context.CVs
                 .Where(cv => cv.UserId == UserId)
                 .Include(cv => cv.User)
@@ -202,7 +206,12 @@ namespace CV_Applikation.Controllers
             {
                 ProfileName = userName,
                 ImageUrl = userEntity?.ImageUrl,
-                CurrentUserId = UserId,
+                CurrentUserId = userEntity?.UserName,
+                FirstName = contactInfo?.FirstName ?? "Ej angivet",
+                LastName = contactInfo?.LastName ?? "Ej angivet",
+                Adress = contactInfo?.Adress ?? "Ej angivet",
+                Email = contactInfo?.Email ?? "Ej angivet",
+                PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
                 Cvs = CVs,
                 Projects = projects
             };
@@ -308,7 +317,6 @@ namespace CV_Applikation.Controllers
             
             var model = new EditProfileViewModel
             {
-                ProfilNamn = currentUser.UserName,
                 Email = kontaktUppgifter?.Email,
                 FirstName = kontaktUppgifter?.FirstName,
                 LastName = kontaktUppgifter?.LastName,

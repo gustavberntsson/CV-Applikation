@@ -8,19 +8,30 @@
         <div class="col-md-3">
             @if (!string.IsNullOrEmpty(Model.ImageUrl))
             {
-                <img src="@Model.ImageUrl" alt="Profilbild" class="img-fluid rounded-circle" style="max-width: 200px;" />
+                <img src="@Model.ImageUrl" alt="Profilbild" class="img-fluid rounded-circle mb-3" style="max-width: 200px;" />
             }
             else
             {
-                <img src="/images/default-profile.png" alt="" class="img-fluid rounded-circle" style="max-width: 200px;" />
+                <img src="https://media.istockphoto.com/id/610003972/vector/vector-businessman-black-silhouette-isolated.jpg?s=612x612&w=0&k=20&c=Iu6j0zFZBkswfq8VLVW8XmTLLxTLM63bfvI6uXdkacM=" alt="" class="img-fluid rounded-circle mb-3" style="max-width: 200px;" />
             }
+            
+            <div class="contact-info">
+                <h4>Kontaktuppgifter</h4>
+                <p><strong>Namn:</strong> @Model.FirstName @Model.LastName</p>
+                <p><strong>Telefon:</strong> @Model.PhoneNumber</p>
+                <p><strong>E-post:</strong> @Model.Email</p>
+                <p><strong>Adress:</strong> @Model.Adress</p>
+            </div>
         </div>
         <div class="col-md-9">
-    <h1 class="mb-4">Profil för @Model.ProfileName</h1>
-			@if (Model.CurrentUserId == @Model.ProfileName) {
-            <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary">Redigera Profil</a>
-            <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">Ändra Lösenord</a>
+            <h1 class="mb-4">Profil för @Model.ProfileName</h1>
+            @if (Model.CurrentUserId == @Model.ProfileName)
+            {
+                <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary">Redigera Profil</a>
+                <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">Ändra Lösenord</a>
             }
+
+
     @foreach (var cv in Model.Cvs)
     {
         <div class="card mb-4">
