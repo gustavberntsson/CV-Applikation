@@ -99,6 +99,14 @@ namespace CV_Applikation.Controllers
             return RedirectToAction("Profile", "Account", new { UserId = currentUser.Id });
         }
 
+        public IActionResult Message()
+        {
+            var currentUser = userManager.GetUserAsync(User).Result;
+            if (currentUser == null)
+                return RedirectToAction("Login", "Account");
+            return RedirectToAction("Message", "Message");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
