@@ -30,6 +30,9 @@
                 <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary">Redigera Profil</a>
                 <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">Ändra Lösenord</a>
             }
+            @if(Model.CurrentUserId != @Model.ProfileName) {
+                <a href="@Url.Action("SendMessage", "Message")" class="btn btn-success">Skicka meddelande</a>
+            }
 
 
     @foreach (var cv in Model.Cvs)
