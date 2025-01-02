@@ -18,29 +18,35 @@ namespace CV_Applikation.Controllers
         }
 		public async Task<ActionResult> SendMessageAsync()
 		{
+			string newSenderId = "GuestId";
             var currentUser = await userManager.GetUserAsync(User);
-            var users = context.Users
-				.Where(u => u.Id != currentUser.Id)
+
+			if (currentUser != null)
+			{
+				newSenderId = currentUser.Id;
+			}
+                var users = context.Users
+				.Where(u => u.Id != newSenderId && u.Id != "GuestId")
 				.ToList(); // Hämta alla användare förutom den inloggade
 			ViewBag.Users = users; // Skicka användarna till vyn
-			Message message = new Message();
+            Message message = new Message { SenderId = newSenderId };
 			return View(message);
 		}
 		[HttpPost]
-        public async Task<ActionResult> SendMessage(string content, string receiver)
-        {
-            var currentUser = await userManager.GetUserAsync(User);
-			if (currentUser == null)
-				return RedirectToAction("Login", "Account");
-
-			var receiverUser = await userManager.FindByNameAsync(receiver);
-			//Skicka endast meddelandet om det inte är till sig själv
-			if (currentUser.UserName != receiver)
+		public async Task<ActionResult> SendMessage(string content, string receiver)
+		{
+			string newSenderId = "GuestId";
+			var currentUser = await userManager.GetUserAsync(User);
+			if (currentUser != null)
 			{
+				newSenderId = currentUser.Id;
+			}
+			var receiverUser = await userManager.FindByNameAsync(receiver);
+			
 				//Skapar en ny lista för att skicka meddelandet
 				var newMessage = new Message
 				{
-					SenderId = currentUser.Id,
+					SenderId = newSenderId,
 					ReceiverId = receiverUser.Id,
 					Date = DateTime.UtcNow,
 					Content = content,
@@ -48,10 +54,16 @@ namespace CV_Applikation.Controllers
 				};
 				context.Message.Add(newMessage);
 				await context.SaveChangesAsync();
-			}
 			//Lägg till funktionalitet att skicka felmeddelande om man skickar till sig själv
-				
-			return RedirectToAction("Message", "Message");
+			if (currentUser != null)
+			{
+				return RedirectToAction("Message", "Message");
+			}
+			else
+			{
+				return RedirectToAction("Index", "Home");
+
+			}
 		}
 
 		public async Task<ActionResult> Message()  
