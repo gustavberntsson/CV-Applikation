@@ -1,23 +1,42 @@
 ﻿@model MessageViewModel
 @{
 	ViewData["Title"] = "Your messages";
+	@if (TempData["Message"] != null)
+	{
+		<div class="alert alert-success" role="alert">
+			@TempData["Message"]
+		</div>
+	}
 }
 
 <h1>Dina meddelanden</h1>
 <div class="mb-4">
 	<a asp-action="SendMessage" class="btn btn-primary">Skicka ett nytt meddelande</a>
 </div>
-@foreach (var message in Model.Messages)
-{
-	<div class="card mb-3">
-		<div class="card-header">
-			<h2 class="mb-0">Från: @message.Sender</h2>
+
+<form method="post" asp-action="MarkAsRead">
+	<button type="submit" class="btn btn-success">Markera valda meddelanden som lästa</button>
+	@foreach (var message in Model.Messages)
+	{
+
+		<div class="card mb-3">
+			<div class="card-header">
+				<h2 class="mb-0">Från: @message.Sender </h2>
+			</div>
+			<div class="card-header">
+				<p class="mb-1">Mottaget: @message.Date</p>
+			</div>
+			@if (!message.IsRead)
+			{
+				<!-- Om meddelandet inte är läst, visa checkboxen -->
+				<div class="card-header">
+					<input type="checkbox" name="SelectedMessages" value="@message.Id" />
+				</div>
+			}
+			
+			<div class="card-body">
+				<p>@message.Content</p>
+			</div>
 		</div>
-		<div class="card-header">
-			<p class="mb-1">Mottaget: @message.Date</p>
-		</div>
-		<div class="card-body">
-			<p>@message.Content</p>
-		</div>
-	</div>
-}
+	}
+</form>

@@ -2,8 +2,8 @@
 {
 	public class MessageViewModel
 	{
-		public string ProfileName { get; set; }
 		public bool IsRead { get; set; }
         public List<Message> Messages { get; set; } = new List<Message>();
-	}
+		public List<int> SelectedMessages { get; set; }
+    }
 }

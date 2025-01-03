@@ -26,8 +26,11 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile">Din profil</a>
                         </li>
                         <li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Message">Meddelanden</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Message">Meddelanden
+                                @await Component.InvokeAsync("UnreadMessages")
+                            </a>
                         </li>
+                       
                         <li class="nav-item">
                             <p class="loginknapp">
                             @if (User.Identity.IsAuthenticated)
