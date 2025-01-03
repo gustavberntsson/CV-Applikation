@@ -7,62 +7,56 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CV_Applikation.styles.css" asp-append-version="true" />
-    <style>
-        
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3" style="position: sticky; top: 0;  background-color: rgb(102, 221, 235); z-index: 1000; padding-top: 1.5rem; padding-bottom: 1.5rem; padding-left: 2rem;">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CV-centralen</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" style="font-weight: bolder; font-family: 'Playfair Display', serif; font-size: 2rem;">CV-centralen</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" style="margin-left: 2rem;">
+                    <ul class="navbar-nav flex-grow-1" style=" display: flex; justify-content: center; gap: 2rem;">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" style="font-size: 1rem; font-weight: 600;">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile">Din profil</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile" style="font-size: 1rem; font-weight: 600;">Din profil</a>
                         </li>
                         <li class="nav-item">
-                            @if(User.Identity.IsAuthenticated){
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Message">Meddelanden
-                                @await Component.InvokeAsync("UnreadMessages")
-                            </a>
-                            }
-                            @if(!User.Identity.IsAuthenticated) {
-                                 <a class="nav-link text-dark" asp-area="" asp-controller="Message" asp-action="SendMessage">Skicka Meddelanden</a>
-                            }
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Message" style="font-size: 1rem; font-weight: 600;">Meddelanden</a>
                         </li>
                        
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Project" asp-action="ProjectList">Projekt</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Project" asp-action="ProjectList" style="font-size: 1rem; font-weight: 600;">Projekt</a>
                         </li>
                         <li class="nav-item">
-                            <p class="loginknapp">
+                            <div class="loginknapp" style="display: inline-block;">
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <form asp-controller="Account" asp-action="Logout" method="post">
-                                    <button type="submit" class="btn btn-danger">Logout</button>
+                                    <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; border-radius: 4px; border: none;">Logout</button>
                                 </form>
                             }
                             else
                             {
-                                <a asp-controller="Account" asp-action="LogIn" class="btn btn-primary">Logga in</a>
+                                    <a asp-controller="Account" asp-action="LogIn" class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius: 4px; background-color: rgb(255, 167, 38); color: white; border: none;">Logga in</a>
                             }
-                            </p>
+                            </div>
                         </li>
                         <li class="nav-item">
-                            <p class="search">
-                                <form asp-controller="Account" asp-action="Search" method="get" class="form-inline mb-4">
-                                    <input type="text" name="username" class="form-control mr-2" placeholder="Sök användare..." required />
-                                    <button type="submit" class="btn btn-primary">Sök</button>
+                            <div class="search" style="display: flex; justify-content: flex-end; gap: 0.5rem; align-items: center; margin-left: 1rem;">
+                                <form asp-controller="Account" asp-action="Search" method="get" class="form-inline mb-4" style="display: flex; gap: 0.5rem;">
+                                    <input type="text" name="username" class="form-control" placeholder="Sök användare..." required style="padding: 0.5rem; border-radius: 4px; border: none;"/>
+                                    <button type="submit" class="btn btn-primary" style="background-color: rgb(255, 167, 38); border: none; padding: 0.5rem 1rem;">Sök</button>
                                 </form>
-                            </p>
+                            </div>
                         </li>
                     </ul>
                 </div>
