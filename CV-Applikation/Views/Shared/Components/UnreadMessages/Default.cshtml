@@ -1,8 +1,27 @@
 ﻿@model int
 
-@if (Model > 0 )
+@* @if (Model > 0 )
 {
 <span class="btn-danger">
     @Model
 </span>
 }
+ *@
+    @if (Model > 0)
+    {
+        <span class="unread-count">@Model</span>
+    }
+<style>
+    .unread-count {
+        display: inline-block;
+        background-color: #dc3545; /* Rödfärgad bakgrund */
+        color: white;
+        font-weight: bold;
+        font-size: 1rem;
+        width: 1.5rem; /* Justera bredden för oval form */
+        height: 1.5rem; /* Höjd för ovalen */
+        border-radius: 50%; /* Gör den oval */
+        text-align: center;
+        line-height: 1.5rem; /* Centrerar siffran vertikalt */
+    }
+</style>

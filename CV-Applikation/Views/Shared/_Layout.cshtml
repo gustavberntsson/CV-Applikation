@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+   
 </head>
 
 <body>
@@ -30,7 +31,18 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile" style="font-size: 1rem; font-weight: 600;">Din profil</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Message" style="font-size: 1rem; font-weight: 600;">Meddelanden</a>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Message" style="font-size: 1rem; font-weight: 600;">Meddelanden
+                                    @await Component.InvokeAsync("UnreadMessages")
+                                </a>
+
+                            }
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Message" asp-action="SendMessage" style="font-size: 1rem; font-weight: 600;">Skicka Meddelanden</a>
+                            }
+                             
                         </li>
                        
                         <li class="nav-item">
