@@ -2,11 +2,14 @@
     ViewData["Title"] = "Lägg till";
 }
 @model CV
-<form asp-action="Add" method="post">
+<form asp-action="Add" method="post" enctype="multipart/form-data">
     <label>CV Namn:</label>
     <input asp-for="CVName" />
     <br />
-
+    <div class="form-group">
+        <label for="ImagePath">Image</label>
+        <input type="file" asp-for="ImagePath" class="form-control" />
+    </div>
     <h3>Språk</h3>
     <div id="languagesContainer">
         @for (int i = 0; i < Model.Languages.Count; i++)

@@ -45,6 +45,14 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h2 class="mb-0"> CV: @cv.CVName</h2>
+                        @if (!string.IsNullOrEmpty(cv.ImagePath))
+                        {
+                            <img src="@cv.ImagePath" alt="CV bild" class="img-fluid rounded" style="max-width: 200px;">
+                        }
+                        else
+                        {
+                            <img src="/images/default-profile.png" alt="Standardbild" class="img-fluid rounded" style="max-width: 300px;">
+                        }
                         @if (Model.CurrentUserId == @Model.ProfileName)
                         {
                         <a href="@Url.Action("EditCv", "CV", new { cvId = cv.CVId })" class="btn btn-secondary">Redigera CV</a>
