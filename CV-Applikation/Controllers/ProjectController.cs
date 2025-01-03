@@ -209,11 +209,12 @@ namespace CV_Applikation.Controllers
                 Description = project.Description,
                 CreatedAt = project.CreatedAt,
                 Participants = project.ProjectUsers
-                    .Where(pu => isUserLoggedIn || !pu.UserProject.IsPrivate) // Filtrera privata profiler om användaren inte är inloggad
                     .Select(pu => new ParticipantViewModel
                     {
                         UserId = pu.UserId,
-                        UserName = pu.UserProject?.UserName ?? "Okänd användare"
+                        UserName = isUserLoggedIn 
+                            ? (pu.UserProject?.UserName ?? "Okänd användare") 
+                            : (pu.UserProject.IsPrivate ? "Privat användare" : pu.UserProject?.UserName ?? "Okänd användare")
                     })
                     .ToList()
             };

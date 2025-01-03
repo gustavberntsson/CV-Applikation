@@ -20,14 +20,16 @@ namespace CV_Applikation.Controllers
 		{
 			string newSenderId = "GuestId";
 			var currentUser = await userManager.GetUserAsync(User);
+            var isUserLoggedIn = currentUser != null;
 
-			if (currentUser != null)
+            if (currentUser != null)
 			{
 				newSenderId = currentUser.Id;
 			}
 			var users = context.Users
 			.Where(u => u.Id != newSenderId && u.Id != "GuestId")
-			.ToList(); // Hämta alla användare förutom den inloggade
+			.Where(u => isUserLoggedIn || u.IsPrivate == false)
+            .ToList(); // Hämta alla användare förutom den inloggade
 			ViewBag.Users = users; // Skicka användarna till vyn
 			Message message = new Message { SenderId = newSenderId };
 			return View(message);
