@@ -26,9 +26,14 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile">Din profil</a>
                         </li>
                         <li class="nav-item">
+                            @if(User.Identity.IsAuthenticated){
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Message">Meddelanden
                                 @await Component.InvokeAsync("UnreadMessages")
                             </a>
+                            }
+                            @if(!User.Identity.IsAuthenticated) {
+                                 <a class="nav-link text-dark" asp-area="" asp-controller="Message" asp-action="SendMessage">Skicka Meddelanden</a>
+                            }
                         </li>
                        
                         <li class="nav-item">
