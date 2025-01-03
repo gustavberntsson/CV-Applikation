@@ -8,6 +8,57 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\NewFolder10\**" />
+    <Compile Remove="wwwroot\NewFolder11\**" />
+    <Compile Remove="wwwroot\NewFolder12\**" />
+    <Compile Remove="wwwroot\NewFolder1\**" />
+    <Compile Remove="wwwroot\NewFolder2\**" />
+    <Compile Remove="wwwroot\NewFolder3\**" />
+    <Compile Remove="wwwroot\NewFolder4\**" />
+    <Compile Remove="wwwroot\NewFolder5\**" />
+    <Compile Remove="wwwroot\NewFolder6\**" />
+    <Compile Remove="wwwroot\NewFolder7\**" />
+    <Compile Remove="wwwroot\NewFolder8\**" />
+    <Compile Remove="wwwroot\NewFolder9\**" />
+    <Content Remove="wwwroot\NewFolder10\**" />
+    <Content Remove="wwwroot\NewFolder11\**" />
+    <Content Remove="wwwroot\NewFolder12\**" />
+    <Content Remove="wwwroot\NewFolder1\**" />
+    <Content Remove="wwwroot\NewFolder2\**" />
+    <Content Remove="wwwroot\NewFolder3\**" />
+    <Content Remove="wwwroot\NewFolder4\**" />
+    <Content Remove="wwwroot\NewFolder5\**" />
+    <Content Remove="wwwroot\NewFolder6\**" />
+    <Content Remove="wwwroot\NewFolder7\**" />
+    <Content Remove="wwwroot\NewFolder8\**" />
+    <Content Remove="wwwroot\NewFolder9\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder10\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder11\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder12\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder1\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder2\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder3\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder4\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder5\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder6\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder7\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder8\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder9\**" />
+    <None Remove="wwwroot\NewFolder10\**" />
+    <None Remove="wwwroot\NewFolder11\**" />
+    <None Remove="wwwroot\NewFolder12\**" />
+    <None Remove="wwwroot\NewFolder1\**" />
+    <None Remove="wwwroot\NewFolder2\**" />
+    <None Remove="wwwroot\NewFolder3\**" />
+    <None Remove="wwwroot\NewFolder4\**" />
+    <None Remove="wwwroot\NewFolder5\**" />
+    <None Remove="wwwroot\NewFolder6\**" />
+    <None Remove="wwwroot\NewFolder7\**" />
+    <None Remove="wwwroot\NewFolder8\**" />
+    <None Remove="wwwroot\NewFolder9\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
@@ -20,6 +71,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

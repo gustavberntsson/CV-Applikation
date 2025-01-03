@@ -99,29 +99,6 @@
     {
         <p>Inga projekt skapade ännu.</p>
     }
-   <br/>
-   <a asp-controller="Project" asp-action="ProjectList"> Visa Projekt</a>
-   <br />
-    @if (User.Identity.IsAuthenticated)
-    {
-         <a asp-controller="CV" asp-action="Add"> Lägg till CV</a> 
-    }
-   <br />
-    @if (User.Identity.IsAuthenticated)
-    {
-       <a asp-controller="Project" asp-action="AddProject"> Lägg till Projekt</a>
-    }
-   <p> </p>
-    @if (User.Identity.IsAuthenticated)
-    {
-    <a asp-controller="Account" asp-action="ProfileSettings"> Ändra inställningar </a>
-    }
-    <br />
-    @if (User.Identity.IsAuthenticated)
-    {
-        <a asp-controller="Project" asp-action="MyProjectsToEdit"> Redigera mina projekt </a>
-  
-    }
 
 
 

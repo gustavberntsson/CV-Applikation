@@ -2,12 +2,14 @@
     ViewData["Title"] = "Lägg till";
 }
 @model CV
-<form asp-action="Add" method="post">
+<form asp-action="Add" method="post" enctype="multipart/form-data">
     <label>CV Namn:</label>
     <input asp-for="CVName" />
     <br />
-
-    <!-- Språk -->
+    <div class="form-group">
+        <label for="ImagePath">Image</label>
+        <input type="file" asp-for="ImagePath" class="form-control" />
+    </div>
     <h3>Språk</h3>
     <div id="languagesContainer">
         @for (int i = 0; i < Model.Languages.Count; i++)
@@ -16,9 +18,8 @@
                 <label for="Languages[@i].LanguageName">Språk:</label>
                 <input asp-for="Languages[@i].LanguageName" id="Languages[@i].LanguageName" />
                 <br />
-
-                <label for="Languages[@i].Level">Nivå:</label>
-                <input asp-for="Languages[@i].Level" id="Languages[@i].Level" />
+                <label for="Languages[@i].Level">Nivå (1-5):</label>
+                <input asp-for="Languages[@i].Level" id="Languages[@i].Level" type="number" min="1" max="5" />
                 <br />
             </div>
         }
@@ -113,24 +114,22 @@
     document.getElementById("addLanguage").addEventListener("click", function () {
         let languagesDiv = document.getElementById("languagesContainer");
         let index = languagesDiv.children.length;
-
         let newLanguage = `
         <div>
             <label for="Languages[${index}].LanguageName">Språk:</label>
             <input name="Languages[${index}].LanguageName" id="Languages[${index}].LanguageName" />
             <br />
-            <label for="Languages[${index}].Level">Nivå:</label>
-            <input name="Languages[${index}].Level" id="Languages[${index}].Level" />
+            <label for="Languages[${index}].Level">Nivå (1-5):</label>
+            <input type="number" min="1" max="5" name="Languages[${index}].Level" id="Languages[${index}].Level" />
             <br />
         </div>`;
         languagesDiv.innerHTML += newLanguage;
     });
 
     // Dynamiskt lägga till ny utbildning
-    document.getElementById("addEducation").addEventListener("click", function () {
+        document.getElementById("addEducation").addEventListener("click", function () {
         let educationsDiv = document.getElementById("educationsContainer");
         let index = educationsDiv.children.length;
-
         let newEducation = `
         <div>
             <label for="Educations[${index}].School">Skola:</label>
@@ -143,20 +142,18 @@
             <input name="Educations[${index}].FieldOfStudy" id="Educations[${index}].FieldOfStudy" />
             <br />
             <label for="Educations[${index}].StartDate">Startdatum:</label>
-            <input name="Educations[${index}].StartDate" id="Educations[${index}].StartDate" />
+            <input type="date" name="Educations[${index}].StartDate" id="Educations[${index}].StartDate" />
             <br />
             <label for="Educations[${index}].EndDate">Slutdatum:</label>
-            <input name="Educations[${index}].EndDate" id="Educations[${index}].EndDate" />
+            <input type="date" name="Educations[${index}].EndDate" id="Educations[${index}].EndDate" />
             <br />
         </div>`;
         educationsDiv.innerHTML += newEducation;
     });
 
-    // Dynamiskt lägga till ny arbetslivserfarenhet
     document.getElementById("addWorkExperience").addEventListener("click", function () {
         let workExperiencesDiv = document.getElementById("workExperiencesContainer");
         let index = workExperiencesDiv.children.length;
-
         let newWorkExperience = `
         <div>
             <label for="WorkExperiences[${index}].CompanyName">Företag:</label>
@@ -169,13 +166,11 @@
             <input name="WorkExperiences[${index}].Description" id="WorkExperiences[${index}].Description" />
             <br />
             <label for="WorkExperiences[${index}].StartDate">Startdatum:</label>
-            <input name="WorkExperiences[${index}].StartDate" id="WorkExperiences[${index}].StartDate" />
+            <input type="date" name="WorkExperiences[${index}].StartDate" id="WorkExperiences[${index}].StartDate" />
             <br />
             <label for="WorkExperiences[${index}].EndDate">Slutdatum:</label>
-
-            <input name="WorkExperiences[${index}].EndDate" id="WorkExperiences[${index}].EndDate" />
+            <input type="date" name="WorkExperiences[${index}].EndDate" id="WorkExperiences[${index}].EndDate" />
             <br />
-
         </div>`;
         workExperiencesDiv.innerHTML += newWorkExperience;
     });

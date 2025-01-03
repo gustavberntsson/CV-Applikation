@@ -116,18 +116,35 @@ namespace CV_Applikation.Controllers
             var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
             var userName = userEntity?.UserName ?? "Okänd användare";
 
-            // Hämta kontaktinformation
-            var contactInfo = await context.ContactInformation
-                .FirstOrDefaultAsync(c => c.UserId == UserId);
+            //var CVs = await context.CVs
+            //    .Where(cv => cv.UserId == UserId)
+            //    .Include(cv => cv.User)
+            //    .Include(cv => cv.Educations)
+            //    .Include(cv => cv.Languages)
+            //    .Include(cv => cv.Skills)
+            //    .Include(cv => cv.WorkExperiences)
+
+            //    .ToListAsync();
 
             var CVs = await context.CVs
-                .Where(cv => cv.UserId == UserId)
-                .Include(cv => cv.User)
-                .Include(cv => cv.Educations)
-                .Include(cv => cv.Languages)
-                .Include(cv => cv.Skills)
-                .Include(cv => cv.WorkExperiences)
-                .ToListAsync();
+    .Where(cv => cv.UserId == UserId)
+    .Include(cv => cv.User)
+    .Include(cv => cv.Educations)
+    .Include(cv => cv.Languages)
+    .Include(cv => cv.Skills)
+    .Include(cv => cv.WorkExperiences)
+    .Select(cv => new CV
+    {
+        CVId = cv.CVId,
+        CVName = cv.CVName,
+        ImagePath = cv.ImagePath, // Inkludera ImagePath
+        UserId = cv.UserId,
+        Educations = cv.Educations,
+        Languages = cv.Languages,
+        Skills = cv.Skills,
+        WorkExperiences = cv.WorkExperiences
+    })
+    .ToListAsync();
 
             var projects = await context.Projects
                 .Include(p => p.ProjectUsers)
@@ -140,18 +157,65 @@ namespace CV_Applikation.Controllers
             {
                 ProfileName = userName,
                 ImageUrl = userEntity?.ImageUrl,
-                CurrentUserId = userEntity?.UserName,
-                FirstName = contactInfo?.FirstName ?? "Ej angivet",
-                LastName = contactInfo?.LastName ?? "Ej angivet",
-                Adress = contactInfo?.Adress ?? "Ej angivet",
-                Email = contactInfo?.Email ?? "Ej angivet",
-                PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
+                CurrentUserId = UserId,
                 Cvs = CVs,
                 Projects = projects
+
             };
 
             return View(vmodel);
         }
+        //public async Task<IActionResult> Profile(string? UserId = null)
+        //{
+        //    if (string.IsNullOrEmpty(UserId))
+        //    {
+        //        var currentUser = await userManager.GetUserAsync(User);
+        //        if (currentUser == null)
+        //        {
+        //            return RedirectToAction("Login", "Account");
+        //        }
+        //        UserId = currentUser.Id;
+        //    }
+
+        //    var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+        //    var userName = userEntity?.UserName ?? "Okänd användare";
+
+        //    // Hämta kontaktinformation
+        //    var contactInfo = await context.ContactInformation
+        //        .FirstOrDefaultAsync(c => c.UserId == UserId);
+
+        //    var CVs = await context.CVs
+        //        .Where(cv => cv.UserId == UserId)
+        //        .Include(cv => cv.User)
+        //        .Include(cv => cv.Educations)
+        //        .Include(cv => cv.Languages)
+        //        .Include(cv => cv.Skills)
+        //        .Include(cv => cv.WorkExperiences)
+        //        .ToListAsync();
+
+        //    var projects = await context.Projects
+        //        .Include(p => p.ProjectUsers)
+        //        .ThenInclude(pu => pu.UserProject)
+        //        .Where(p => p.OwnerId == UserId || p.ProjectUsers.Any(pu => pu.UserId == UserId))
+        //        .OrderByDescending(p => p.CreatedAt)
+        //        .ToListAsync();
+
+        //    var vmodel = new ProfileViewModel
+        //    {
+        //        ProfileName = userName,
+        //        ImageUrl = userEntity?.ImageUrl,
+        //        CurrentUserId = userEntity?.UserName,
+        //        FirstName = contactInfo?.FirstName ?? "Ej angivet",
+        //        LastName = contactInfo?.LastName ?? "Ej angivet",
+        //        Adress = contactInfo?.Adress ?? "Ej angivet",
+        //        Email = contactInfo?.Email ?? "Ej angivet",
+        //        PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
+        //        Cvs = CVs,
+        //        Projects = projects
+        //    };
+
+        //    return View(vmodel);
+        //}
 
         [HttpGet]
         public async Task<IActionResult> Search(string username)

@@ -2,15 +2,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace CV_Applikation.Controllers
 {
     public class CVController : Controller
     {
         private UserContext context;
-        public CVController(UserContext service) 
+        private readonly IWebHostEnvironment host;
+        public CVController(UserContext service, IWebHostEnvironment webHostEnvironment) 
         {
             context = service;
+            host = webHostEnvironment;
         }
         public IActionResult CvDetails(int id) //c
         {
@@ -34,21 +37,55 @@ namespace CV_Applikation.Controllers
             return View(cv);
         }
 
+
         [HttpPost]
-        public IActionResult Add(CV cv, List<Education> educations, List<Skills> skills, List<WorkExperience> workExp, List<Languages> languages)
+        public async Task<IActionResult> Add(CV cv, List<Education> educations, List<Skills> skills, List<WorkExperience> workExp, List<Languages> languages, IFormFile ImagePath)
         {
             //cc
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-               //cc
-                // Koppla CV till inloggad användare
-                //cv.OwnerId = userId;
-            cv.UserId = userId;  // Sätt UserId också (för att möta krav från databasen)
+
+            // Definiera sökvägen för uppladdning
+            //var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+
+            // Skapa mappen om den inte finns
+            //if (!Directory.Exists(uploadFolder))
+            //{
+            //    Directory.CreateDirectory(uploadFolder);
+            //}
+
+            // Hantera bilduppladdning
+            if (ImagePath != null && ImagePath.Length > 0)
+            {
+                var fileExtension = Path.GetExtension(ImagePath.FileName);
+                string uniqueFileName = Guid.NewGuid().ToString() + fileExtension;
+
+                // Sökväg för uppladdning
+                string uploadFolder = Path.Combine(host.WebRootPath, "images");
+                string filePath = Path.Combine(uploadFolder, uniqueFileName);
+                // Generera ett unikt namn för filen
+                //var fileName = Path.GetFileNameWithoutExtension(ImagePath.FileName);
+                //var fileExtension = Path.GetExtension(ImagePath.FileName);
+
+                ////var filePath = Path.Combine(uploadFolder);
+                //var filePath = Path.Combine(uploadFolder, uniqueFileName);
+                // Spara filen på servern
+                using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    await ImagePath.CopyToAsync(stream);
+                }
+
+                // Sätt relativ sökväg för att spara i databasen
+                cv.ImagePath = "/images/" + uniqueFileName;
+            }
+
+            // Koppla CV till användaren
+            cv.UserId = userId;
             context.Add(cv);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
             educations = educations.DistinctBy(e => new { e.School, e.Degree, e.StartDate }).ToList();
             skills = skills.DistinctBy(s => s.SkillName).ToList();  // Exempel för Skills
-           workExp = workExp.DistinctBy(w => new { w.CompanyName, w.StartDate, w.EndDate }).ToList();
+            workExp = workExp.DistinctBy(w => new { w.CompanyName, w.StartDate, w.EndDate }).ToList();
             languages = languages.DistinctBy(l => l.LanguageName).ToList();
             educations = educations.DistinctBy(e => new { e.School, e.Degree, e.StartDate }).ToList();
             skills = skills.DistinctBy(s => s.SkillName).ToList();  // Exempel för Skills

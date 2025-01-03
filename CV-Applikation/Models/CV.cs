@@ -10,6 +10,7 @@ namespace CV_Applikation.Models
         public string CVName { get; set; }
         //public string OwnerId { get; set; } email? eller bara user och kan ta bort?
         public Boolean IsPrivate { get; set; }
+        public string ImagePath { get; set; }
 
         public string UserId { get; set; }
         

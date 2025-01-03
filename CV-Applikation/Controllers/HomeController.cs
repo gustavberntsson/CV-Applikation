@@ -59,38 +59,6 @@ namespace CV_Applikation.Controllers
             return View(model);
         }
 
-        //public IActionResult Index()
-        //{
-
-        //    var Cvs = context.CVs
-        //    .Include(cv => cv.User)
-        //    .Include(cv => cv.Educations)
-        //    .Include(cv => cv.Languages)
-        //    .Include(cv => cv.Skills)
-        //    .Take(3)
-        //    .ToList();
-
-        //    // Hämta ett urval av CVs
-        //    //var cvs = context.CVs
-        //    //    .Include(cv => cv.User)
-        //    //    .Take(10) // Begränsa till 10 CVs
-        //    //    .ToList();
-
-        //    // Hämta senaste projektet
-        //    var lastProject = context.Projects
-        //        .OrderByDescending(p => p.CreatedAt)
-        //        .FirstOrDefault();
-
-        //    var model = new HomeViewModel
-        //    {
-        //        CVs = Cvs,
-        //        ProjectLatest = lastProject
-        //    };
-
-
-        //    return View(model);
-        //}
-
         public IActionResult Profile()
         {
             var currentUser = userManager.GetUserAsync(User).Result;
