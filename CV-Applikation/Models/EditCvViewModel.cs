@@ -11,6 +11,7 @@ namespace CV_Applikation.Models
         public List<Skills> Skills { get; set; } = new List<Skills>();
         public List<WorkExperience> WorkExperiences { get; set; } = new List<WorkExperience>();
 
+        public IFormFile ImagePath { get; set; }
 
     }
 }

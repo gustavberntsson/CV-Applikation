@@ -230,7 +230,8 @@ namespace CV_Applikation.Controllers
                 Educations = cv.Educations ?? new List<Education>(), // Om null, skapa en tom lista
                 WorkExperiences = cv.WorkExperiences ?? new List<WorkExperience>(), // Om null, skapa en tom lista
                 Languages = cv.Languages ?? new List<Languages>(), // Om null, skapa en tom lista
-                Skills = cv.Skills ?? new List<Skills>() // Om null, skapa en tom lista
+                Skills = cv.Skills ?? new List<Skills>(), // Om null, skapa en tom lista
+               
             };
 
             return View(viewModel);
@@ -266,7 +267,7 @@ namespace CV_Applikation.Controllers
          }*/
 
         [HttpPost]
-        public IActionResult EditCv(EditCvViewModel model)
+        public async Task<IActionResult> EditCv(EditCvViewModel model)
         {
 
             if (ModelState.IsValid)
@@ -290,6 +291,27 @@ namespace CV_Applikation.Controllers
                 cv.WorkExperiences = model.WorkExperiences;
                 cv.Languages = model.Languages;
                 cv.Skills = model.Skills;
+
+                // Hantera bilduppladdning
+                if (model.ImagePath != null && model.ImagePath.Length > 0)
+                {
+                    // Generera ett unikt filnamn för den nya bilden
+                    string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImagePath.FileName);
+
+                    // Bestäm sökvägen för att spara den nya bilden
+                    string uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                    string filePath = Path.Combine(uploadFolder, uniqueFileName);
+
+                    // Spara bilden på servern
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ImagePath.CopyToAsync(stream);
+                    }
+
+                    // Uppdatera ImagePath i CV:t
+                    cv.ImagePath = "/images/" + uniqueFileName;
+                }
+
 
                 context.SaveChanges();  // Spara ändringarna i databasen
 
