@@ -31,12 +31,12 @@
         </div>
         <div class="col-md-9">
             <h1 class="mb-4">Profil för @Model.ProfileName</h1>
-            @if (Model.CurrentUserId == @Model.ProfileName)
+            @if (Model.CurrentUserId == @Model.ProfileId)
             {
                 <a href="@Url.Action("EditProfile", "Account")" class="btn btn-primary">Redigera Profil</a>
                 <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">Ändra Lösenord</a>
             }
-            @if(Model.CurrentUserId != @Model.ProfileName) {
+            @if(Model.CurrentUserId != @Model.ProfileId) {
                 <a href="@Url.Action("SendMessage", "Message")" class="btn btn-success">Skicka meddelande</a>
             }
 
@@ -49,11 +49,7 @@
                         {
                             <img src="@cv.ImagePath" alt="CV bild" class="img-fluid rounded" style="max-width: 200px;">
                         }
-                        else
-                        {
-                            <img src="/images/default-profile.png" alt="Standardbild" class="img-fluid rounded" style="max-width: 300px;">
-                        }
-                        @if (Model.CurrentUserId == @Model.ProfileName)
+                        @if (Model.CurrentUserId == @Model.ProfileId)
                         {
                         <a href="@Url.Action("EditCv", "CV", new { cvId = cv.CVId })" class="btn btn-secondary">Redigera CV</a>
                         }

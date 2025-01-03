@@ -101,7 +101,7 @@ namespace CV_Applikation.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public async Task<IActionResult> Profile(string? UserId = null)
+        public async Task<IActionResult> Profile(string? UserId)
         {
             if (string.IsNullOrEmpty(UserId))
             {
@@ -116,35 +116,29 @@ namespace CV_Applikation.Controllers
             var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
             var userName = userEntity?.UserName ?? "Okänd användare";
 
-            //var CVs = await context.CVs
-            //    .Where(cv => cv.UserId == UserId)
-            //    .Include(cv => cv.User)
-            //    .Include(cv => cv.Educations)
-            //    .Include(cv => cv.Languages)
-            //    .Include(cv => cv.Skills)
-            //    .Include(cv => cv.WorkExperiences)
-
-            //    .ToListAsync();
+            // Hämta kontaktinformation
+            var contactInfo = await context.ContactInformation
+                .FirstOrDefaultAsync(c => c.UserId == UserId);
 
             var CVs = await context.CVs
-    .Where(cv => cv.UserId == UserId)
-    .Include(cv => cv.User)
-    .Include(cv => cv.Educations)
-    .Include(cv => cv.Languages)
-    .Include(cv => cv.Skills)
-    .Include(cv => cv.WorkExperiences)
-    .Select(cv => new CV
-    {
-        CVId = cv.CVId,
-        CVName = cv.CVName,
-        ImagePath = cv.ImagePath, // Inkludera ImagePath
-        UserId = cv.UserId,
-        Educations = cv.Educations,
-        Languages = cv.Languages,
-        Skills = cv.Skills,
-        WorkExperiences = cv.WorkExperiences
-    })
-    .ToListAsync();
+            .Where(cv => cv.UserId == UserId)
+            .Include(cv => cv.User)
+            .Include(cv => cv.Educations)
+            .Include(cv => cv.Languages)
+            .Include(cv => cv.Skills)
+            .Include(cv => cv.WorkExperiences)
+            .Select(cv => new CV
+                {
+                    CVId = cv.CVId,
+                    CVName = cv.CVName,
+                    ImagePath = cv.ImagePath, // Inkludera ImagePath
+                    UserId = cv.UserId,
+                    Educations = cv.Educations,
+                    Languages = cv.Languages,
+                    Skills = cv.Skills,
+                    WorkExperiences = cv.WorkExperiences
+                })
+            .ToListAsync();
 
             var projects = await context.Projects
                 .Include(p => p.ProjectUsers)
@@ -156,8 +150,14 @@ namespace CV_Applikation.Controllers
             var vmodel = new ProfileViewModel
             {
                 ProfileName = userName,
+                ProfileId = userEntity.Id,
                 ImageUrl = userEntity?.ImageUrl,
-                CurrentUserId = UserId,
+                CurrentUserId = (await userManager.GetUserAsync(User))?.Id,
+                FirstName = contactInfo?.FirstName ?? "Ej angivet",
+                LastName = contactInfo?.LastName ?? "Ej angivet",
+                Adress = contactInfo?.Adress ?? "Ej angivet",
+                Email = contactInfo?.Email ?? "Ej angivet",
+                PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
                 Cvs = CVs,
                 Projects = projects
 
@@ -182,6 +182,10 @@ namespace CV_Applikation.Controllers
                 return RedirectToAction("Index"); // Återgå till en startvy
             }
 
+            // Hämta kontaktinformation
+            var contactInfo = await context.ContactInformation
+                .FirstOrDefaultAsync(c => c.UserId == user.Id);
+
             // Hämta användarens CV:n
             var CVs = await context.CVs
                 .Where(cv => cv.UserId == user.Id && (isUserLoggedIn || !cv.IsPrivate))
@@ -203,9 +207,16 @@ namespace CV_Applikation.Controllers
             var model = new ProfileViewModel
             {
                 ProfileName = username,
+                ProfileId = user.Id,
+                ImageUrl = user.ImageUrl,
+                FirstName = contactInfo?.FirstName ?? "Ej angivet",
+                LastName = contactInfo?.LastName ?? "Ej angivet",
+                Adress = contactInfo?.Adress ?? "Ej angivet",
+                Email = contactInfo?.Email ?? "Ej angivet",
+                PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
                 Cvs = CVs,
                 Projects = projects,
-                CurrentUserId = HttpContext.User.Identity?.Name
+                CurrentUserId = currentUser?.Id
             };
 
             // Returnera profilen med rätt vy
