@@ -3,6 +3,16 @@
 }
 @model ProfileViewModel
 
+@if (Model.IsPrivate && Model.CurrentUserId == null)
+{
+	<div class="container mt-4">
+		<div class="alert alert-danger" role="alert">
+			Denna profil är privat, du måste logga in för att se den
+		</div> 
+    </div>
+}
+
+else {
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-3">
@@ -217,5 +227,7 @@
                     <p class="text-muted">Inga projekt tillagda.</p>
                 }
             </div>
+        </div>
+    </div>
 </div>
-
+}

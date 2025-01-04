@@ -11,6 +11,7 @@ public class ProfileViewModel
     public string? Email { get; set; }
     public string? Adress { get; set; }
     public string? CurrentUserId { get; set; }
+    public bool IsPrivate { get; set; }
     public List<Project> Projects { get; set; } = new List<Project>();
     public List<CV> Cvs { get; set; } = new List<CV>();
 }
