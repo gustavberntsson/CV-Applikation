@@ -20,7 +20,9 @@ namespace CV_Applikation.Controllers
 
         public ActionResult AddProject()
         {
-            var users = context.Users.ToList(); // Hämta alla användare
+            var users = context.Users
+                .Where(u => u.Id != "GuestId")
+                .ToList(); // Hämta alla användare
             ViewBag.Users = users; // Skicka användarna till vyn
             Project project = new Project();
             return View(project);
@@ -308,15 +310,10 @@ namespace CV_Applikation.Controllers
         [Authorize]
         public async Task<IActionResult> EditProject(EditProjectViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model); // Om valideringen misslyckas, visa formuläret igen
-            }
-
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUserId = await userManager.GetUserAsync(User);
 
             var project = await context.Projects
-                .FirstOrDefaultAsync(p => p.ProjectId == model.ProjectId && p.OwnerId == currentUserId);
+                .FirstOrDefaultAsync(p => p.ProjectId == model.ProjectId && p.OwnerId == currentUserId.Id);
 
             if (project == null)
             {
