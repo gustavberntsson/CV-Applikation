@@ -4,121 +4,220 @@
     ViewData["Title"] = "Edit CV";
 }
 
-<div class="container mt-4">
-    <h2>Edit CV</h2>
+@* <form asp-controller="CV" asp-action="EditCV" method="post" enctype="multipart/form-data"> *@
+<form asp-controller="CV" asp-action="EditCV" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="CVId" value="@Model.CVId" />
 
-    <form asp-controller="CV" asp-action="EditCV" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="CVId" value="@Model.CVId" />
-        <!-- CV Name -->
-        <div>
-            <label for="CVName">CV Name:</label>
-            <input type="text" id="CVName" name="CVName" value="@Model.CVName" />
-        </div>
+    <h1>Redigera CV</h1>
 
-        <hr />
-        <div class="form-group">
-            <label for="ImagePath">Image</label>
-            <input type="file" asp-for="ImagePath" class="form-control" />
-        </div>
-        <h3>Educations</h3>
-        @if (Model.Educations != null && Model.Educations.Count > 0)
+    <!-- CV-namn -->
+    <label for="CVName">CV Namn:</label>
+    <input asp-for="CVName" id="CVName" />
+    <br />
+    <h3>Bild för cv: </h3>
+    <input type="file" asp-for="ImagePath" />
+    <br />
+    <!-- Utbildningar -->
+    <h3>Utbildningar</h3>
+    <div id="educationsContainer">
+        @for (int i = 0; i < Model.Educations.Count; i++)
         {
-            @for (int i = 0; i < Model.Educations.Count; i++)
-            {
-                <div>
-                    <label>School:</label>
-                    <input name="Educations[@i].School" value="@Model.Educations[i].School" />
+            <div class="education">
+                <!-- Dolt fält för ID -->
+                <input type="hidden" asp-for="Educations[@i].Id" />
 
-                    <label>Degree:</label>
-                    <input name="Educations[@i].Degree" value="@Model.Educations[i].Degree" />
+                <label for="Educations[@i].School">Skola:</label>
+                <input asp-for="Educations[@i].School" id="Educations[@i].School" />
+                <br />
 
-                    <label>Field of Study:</label>
-                    <input name="Educations[@i].FieldOfStudy" value="@Model.Educations[i].FieldOfStudy" />
+                <label for="Educations[@i].Degree">Examen:</label>
+                <input asp-for="Educations[@i].Degree" id="Educations[@i].Degree" />
+                <br />
 
-                    <label>Start Date:</label>
-                    <input type="date" name="Educations[@i].StartDate" value="@Model.Educations[i].StartDate" />
+                <label for="Educations[@i].FieldOfStudy">Ämnesområde:</label>
+                <input asp-for="Educations[@i].FieldOfStudy" id="Educations[@i].FieldOfStudy" />
+                <br />
 
-                    <label>End Date:</label>
-                    <input type="date" name="Educations[@i].EndDate" value="@Model.Educations[i].EndDate" />
-                </div>
+                <label for="Educations[@i].StartDate">Startdatum:</label>
+                <input type="date" asp-for="Educations[@i].StartDate" id="Educations[@i].StartDate" />
+                <br />
+
+                <label for="Educations[@i].EndDate">Slutdatum:</label>
+                <input type="date" asp-for="Educations[@i].EndDate" id="Educations[@i].EndDate" />
+                <br />
                 <hr />
-            }
+            </div>
         }
-        else
+    </div>
+    <button type="button" id="addEducation">Lägg till ny utbildning</button>
+    <br />
+
+    <!-- Arbetslivserfarenheter -->
+    <h3>Arbetslivserfarenheter</h3>
+    <div id="workExperiencesContainer">
+        @for (int i = 0; i < Model.WorkExperiences.Count; i++)
         {
-            <p>No education records available.</p>
-        }
+            <div class="work-experience">
+                <!-- Dolt fält för ID -->
+                <input type="hidden" asp-for="WorkExperiences[@i].Id" />
 
-        <h3>Work Experiences</h3>
-        @if (Model.WorkExperiences != null && Model.WorkExperiences.Count > 0)
-        {
-            @for (int i = 0; i < Model.WorkExperiences.Count; i++)
-            {
-                <div>
-                    <label>Company Name:</label>
-                    <input name="WorkExperiences[@i].CompanyName" value="@Model.WorkExperiences[i].CompanyName" />
+                <label for="WorkExperiences[@i].CompanyName">Företagsnamn:</label>
+                <input asp-for="WorkExperiences[@i].CompanyName" id="WorkExperiences[@i].CompanyName" />
+                <br />
 
-                    <label>Position:</label>
-                    <input name="WorkExperiences[@i].Position" value="@Model.WorkExperiences[i].Position" />
+                <label for="WorkExperiences[@i].Position">Position:</label>
+                <input asp-for="WorkExperiences[@i].Position" id="WorkExperiences[@i].Position" />
+                <br />
 
-                    <label>Description:</label>
-                    <textarea name="WorkExperiences[@i].Description">@Model.WorkExperiences[i].Description</textarea>
+                <label for="WorkExperiences[@i].Description">Beskrivning:</label>
+                <textarea asp-for="WorkExperiences[@i].Description" id="WorkExperiences[@i].Description"></textarea>
+                <br />
 
-                    <label>Start Date:</label>
-                    <input type="date" name="WorkExperiences[@i].StartDate" value="@Model.WorkExperiences[i].StartDate" />
+                <label for="WorkExperiences[@i].StartDate">Startdatum:</label>
+                <input type="date" asp-for="WorkExperiences[@i].StartDate" id="WorkExperiences[@i].StartDate" />
+                <br />
 
-                    <label>End Date:</label>
-                    <input type="date" name="WorkExperiences[@i].EndDate" value="@Model.WorkExperiences[i].EndDate" />
-                </div>
+                <label for="WorkExperiences[@i].EndDate">Slutdatum:</label>
+                <input type="date" asp-for="WorkExperiences[@i].EndDate" id="WorkExperiences[@i].EndDate" />
+                <br />
                 <hr />
-            }
+            </div>
         }
-        else
-        {
-            <p>No work experiences available.</p>
-        }
+    </div>
+    <button type="button" id="addWorkExperience">Lägg till ny arbetslivserfarenhet</button>
+    <br />
 
-        <h3>Languages</h3>
-        @if (Model.Languages != null && Model.Languages.Count > 0)
+    <!-- Språk -->
+    <h3>Språk</h3>
+    <div id="languagesContainer">
+        @for (int i = 0; i < Model.Languages.Count; i++)
         {
-            @for (int i = 0; i < Model.Languages.Count; i++)
-            {
-                <div>
-                    <label>Language Name:</label>
-                    <input name="Languages[@i].LanguageName" value="@Model.Languages[i].LanguageName" />
+            <div class="language">
+                <!-- Dolt fält för ID -->
+                <input type="hidden" asp-for="Languages[@i].Id" />
 
-                    <label>Level:</label>
-                    <input type="number" name="Languages[@i].Level" value="@Model.Languages[i].Level" min="1" max="5" />
-                </div>
+                <label for="Languages[@i].LanguageName">Språk:</label>
+                <input asp-for="Languages[@i].LanguageName" id="Languages[@i].LanguageName" />
+                <br />
+
+                <label for="Languages[@i].Level">Nivå:</label>
+                <input asp-for="Languages[@i].Level" id="Languages[@i].Level" type="number" min="1" max="5" />
+                <br />
                 <hr />
-            }
+            </div>
         }
-        else
-        {
-            <p>No languages available.</p>
-        }
+    </div>
+    <button type="button" id="addLanguage">Lägg till nytt språk</button>
+    <br />
 
-        <h3>Skills</h3>
-        @if (Model.Skills != null && Model.Skills.Count > 0)
+    <!-- Färdigheter -->
+    <h3>Färdigheter</h3>
+    <div id="skillsContainer">
+        @for (int i = 0; i < Model.Skills.Count; i++)
         {
-            @for (int i = 0; i < Model.Skills.Count; i++)
-            {
-                <div>
-                    <label>Skill Name:</label>
-                    <input name="Skills[@i].SkillName" value="@Model.Skills[i].SkillName" />
-                </div>
+            <div class="skill">
+                <!-- Dolt fält för ID -->
+                <input type="hidden" asp-for="Skills[@i].Id" />
+
+                <label for="Skills[@i].SkillName">Färdighet:</label>
+                <input asp-for="Skills[@i].SkillName" id="Skills[@i].SkillName" />
+                <br />
                 <hr />
-            }
+            </div>
         }
-        else
-        {
-            <p>No skills available.</p>
-        }
+    </div>
+    <button type="button" id="addSkill">Lägg till ny färdighet</button>
+    <br />
 
+    <!-- Submit -->
+    <button type="submit">Spara ändringar</button>
+</form>
 
+<script>
+    // Lägg till ny utbildning
+    document.getElementById("addEducation").addEventListener("click", function () {
+        const container = document.getElementById("educationsContainer");
+        const index = container.children.length;
 
-        <button type="submit">Save Changes</button>
-    </form>
+        const newEducation = `
+        <div class="education">
+            <input type="hidden" name="Educations[${index}].Id" value="0" />
+            <label for="Educations[${index}].School">Skola:</label>
+            <input name="Educations[${index}].School" />
+            <br />
+            <label for="Educations[${index}].Degree">Examen:</label>
+            <input name="Educations[${index}].Degree" />
+            <br />
+            <label for="Educations[${index}].FieldOfStudy">Ämnesområde:</label>
+            <input name="Educations[${index}].FieldOfStudy" />
+            <br />
+            <label for="Educations[${index}].StartDate">Startdatum:</label>
+            <input type="date" name="Educations[${index}].StartDate" />
+            <br />
+            <label for="Educations[${index}].EndDate">Slutdatum:</label>
+            <input type="date" name="Educations[${index}].EndDate" />
+            <br />
+        </div>`;
+        container.insertAdjacentHTML("beforeend", newEducation);
+    });
 
+    // Lägg till ny arbetslivserfarenhet
+    document.getElementById("addWorkExperience").addEventListener("click", function () {
+        const container = document.getElementById("workExperiencesContainer");
+        const index = container.children.length;
 
-</div>
+        const newWorkExperience = `
+        <div class="work-experience">
+            <input type="hidden" name="WorkExperiences[${index}].Id" value="0" />
+            <label for="WorkExperiences[${index}].CompanyName">Företagsnamn:</label>
+            <input name="WorkExperiences[${index}].CompanyName" />
+            <br />
+            <label for="WorkExperiences[${index}].Position">Position:</label>
+            <input name="WorkExperiences[${index}].Position" />
+            <br />
+            <label for="WorkExperiences[${index}].Description">Beskrivning:</label>
+            <textarea name="WorkExperiences[${index}].Description"></textarea>
+            <br />
+            <label for="WorkExperiences[${index}].StartDate">Startdatum:</label>
+            <input type="date" name="WorkExperiences[${index}].StartDate" />
+            <br />
+            <label for="WorkExperiences[${index}].EndDate">Slutdatum:</label>
+            <input type="date" name="WorkExperiences[${index}].EndDate" />
+            <br />
+        </div>`;
+        container.insertAdjacentHTML("beforeend", newWorkExperience);
+    });
+
+    // Lägg till nytt språk
+    document.getElementById("addLanguage").addEventListener("click", function () {
+        const container = document.getElementById("languagesContainer");
+        const index = container.children.length;
+
+        const newLanguage = `
+        <div class="language">
+            <input type="hidden" name="Languages[${index}].Id" value="0" />
+            <label for="Languages[${index}].LanguageName">Språk:</label>
+            <input name="Languages[${index}].LanguageName" />
+            <br />
+            <label for="Languages[${index}].Level">Nivå:</label>
+            <input name="Languages[${index}].Level" type="number" min="1" max="5"/>
+            <br />
+        </div>`;
+        container.insertAdjacentHTML("beforeend", newLanguage);
+    });
+
+    // Lägg till ny färdighet
+    document.getElementById("addSkill").addEventListener("click", function () {
+        const container = document.getElementById("skillsContainer");
+        const index = container.children.length;
+
+        const newSkill = `
+        <div class="skill">
+            <input type="hidden" name="Skills[${index}].Id" value="0" />
+            <label for="Skills[${index}].SkillName">Färdighet:</label>
+            <input name="Skills[${index}].SkillName" />
+            <br />
+        </div>`;
+        container.insertAdjacentHTML("beforeend", newSkill);
+    });
+</script> 
