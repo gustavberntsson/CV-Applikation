@@ -3,103 +3,135 @@
 }
 @model HomeViewModel
 
-<h1>Välkommen</h1>
-<h2>Urval av CVs:</h2>
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
 
-<ul>
-    @foreach (var cv in Model.CVs)
-    {   <div class="card mb-4">
-            @* <a asp-controller="Account" asp-action="Profile" asp-route-id="@cv.UserId"> *@
-            <a href="@Url.Action("Profile", "Account", new { UserId = cv.UserId })">
-                <strong>CV för:</strong> @(cv.User?.UserName ?? "Okänd användare")
-            </a>
-            <br />
-            <p><strong>Namn:</strong> @cv.CVName</p>
-            <h4>Utbildning:</h4>
-            @if (cv.Educations != null && cv.Educations.Any())
-            {
-                <ul>
-                    @foreach (var education in cv.Educations)
-                    {
-                        <li>
-                            <strong>Skola:</strong> @education.School<br />
-                            <strong>Examen:</strong> @education.Degree<br />
-                            <strong>Slutdatum:</strong> @education.EndDate
-                        </li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>Ingen utbildning tillagd.</p>
-            }
-            
-            <h4>Språk:</h4>
-            @if (cv.Languages != null && cv.Languages.Any())
-            {
-                <ul>
-                    @foreach (var language in cv.Languages)
-                    {
-                        <li>
-                            <strong>Språk:</strong> @language.LanguageName<br />
-                        </li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>Inga språk tillagda.</p>
-            }
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 mt-5 mb-5">
+                <h1 class="fw-normal">Välkommen</h1> <!-- Här görs texten normal -->
+            </div>
+        </div>
+    </div>
 
-            <h4>Färdighet:</h4>
-            @if (cv.Skills != null && cv.Skills.Any())
+    <h2 class="fw-normal">Urval av CVs:</h2>
+
+    <div class="row">
+        <!-- Left Column: CVs -->
+        <div class="col-12 col-md-6">
+            @foreach (var cv in Model.CVs)
             {
-                <ul>
-                    @foreach (var skill in cv.Skills)
+                <div class="card mb-4">
+                    <!-- Link with inline style for custom orange color -->
+                    <a href="@Url.Action("Profile", "Account", new { UserId = cv.UserId })" style="color: rgb(255, 167, 38);">
+                        <strong>CV för:</strong> @(cv.User?.UserName ?? "Okänd användare")
+                    </a>
+                    <br />
+                    <p><strong>Namn:</strong> @cv.CVName</p>
+                    <h4 class="fw-normal">Utbildning:</h4>
+                    @if (cv.Educations != null && cv.Educations.Any())
                     {
-                        <li>
-                            <strong>Färdighet:</strong> @skill.SkillName<br />
-                        </li>
+                        <ul>
+                            @foreach (var education in cv.Educations)
+                            {
+                                <li>
+                                    <strong>Skola:</strong> @education.School<br />
+                                    <strong>Examen:</strong> @education.Degree<br />
+                                    <strong>Slutdatum:</strong> @education.EndDate
+                                </li>
+                            }
+                        </ul>
                     }
-                </ul>
-            }
-            else
-            {
-                <p>Ingen färdighet tillagd.</p>
+                    else
+                    {
+                        <p>Ingen utbildning tillagd.</p>
+                    }
+
+                    <h4 class="fw-normal">Språk:</h4>
+                    @if (cv.Languages != null && cv.Languages.Any())
+                    {
+                        <ul>
+                            @foreach (var language in cv.Languages)
+                            {
+                                <li>
+                                    <strong>Språk:</strong> @language.LanguageName<br />
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Inga språk tillagda.</p>
+                    }
+
+                    <h4 class="fw-normal">Färdighet:</h4>
+                    @if (cv.Skills != null && cv.Skills.Any())
+                    {
+                        <ul>
+                            @foreach (var skill in cv.Skills)
+                            {
+                                <li>
+                                    <strong>Färdighet:</strong> @skill.SkillName<br />
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>Ingen färdighet tillagd.</p>
+                    }
+                </div>
             }
         </div>
-    }
-</ul>
 
+        <!-- Right Column: Project -->
+        <div class="col-12 col-md-6">
+            <h2 class="fw-normal">Senaste projektet:</h2>
+            @if (Model.ProjectLatest != null)
+            {
+                <h3 class="fw-normal">@Model.ProjectLatest.Title</h3>
+                <p>@Model.ProjectLatest.Description</p>
+                <p>Skapad: @Model.ProjectLatest.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
 
-    <h2>Senaste projektet:</h2>
-    @if (Model.ProjectLatest != null)
-    {
-        <h3>@Model.ProjectLatest.Title</h3>
-        <p>@Model.ProjectLatest.Description</p>
-        <p>Skapad: @Model.ProjectLatest.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
+                @if (!Model.IsUserInProject && User.Identity.IsAuthenticated)
+                {
+                    <form asp-action="JoinProject" asp-controller="Project" method="post">
+                        <input type="hidden" name="projectId" value="@Model.ProjectLatest.ProjectId" />
+                        <!-- Button with inline style for custom orange color -->
+                        <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">
+                            Gå med i projektet
+                        </button>
+                    </form>
+                }
+                else if (!User.Identity.IsAuthenticated)
+                {
+                    <!-- Link with inline style for custom orange color -->
+                    <a asp-controller="Account" asp-action="LogIn" style="color: rgb(255, 167, 38);">
+                        Logga in för att delta i projektet
+                    </a>
+                }
+                else
+                {
+                    <p class="text-success">Du är redan med i detta projekt.</p>
+                }
+            }
+            else
+            {
+                <p>Inga projekt skapade ännu.</p>
+            }
+        </div>
+    </div>
 
-    @if (!Model.IsUserInProject && User.Identity.IsAuthenticated)
-        {
-            <form asp-action="JoinProject" asp-controller="Project" method="post">
-                <input type="hidden" name="projectId" value="@Model.ProjectLatest.ProjectId" />
-                <button type="submit" class="btn btn-primary">Gå med i projektet</button>
-            </form>
-        }
-        else if (!User.Identity.IsAuthenticated)
-        {
-          <a asp-controller="Account" asp-action="LogIn">Logga in för att delta i projektet</a>
-        }
-        else
-        {
-            <p class="text-success">Du är redan med i detta projekt.</p>
-        }
-    }
-    else
-    {
-        <p>Inga projekt skapade ännu.</p>
-    }
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
-
-
-  
+</body>
+</html>
