@@ -20,16 +20,16 @@ namespace CV_Applikation.Controllers
 		{
 			string newSenderId = "GuestId";
 			var currentUser = await userManager.GetUserAsync(User);
-            var isUserLoggedIn = currentUser != null;
+			var isUserLoggedIn = currentUser != null;
 
-            if (currentUser != null)
+			if (currentUser != null)
 			{
 				newSenderId = currentUser.Id;
 			}
 			var users = context.Users
 			.Where(u => u.Id != newSenderId && u.Id != "GuestId")
 			.Where(u => isUserLoggedIn || u.IsPrivate == false)
-            .ToList(); // Hämta alla användare förutom den inloggade
+			.ToList(); // Hämta alla användare förutom den inloggade
 			ViewBag.Users = users; // Skicka användarna till vyn
 			Message message = new Message { SenderId = newSenderId };
 			return View(message);
@@ -111,5 +111,29 @@ namespace CV_Applikation.Controllers
 			TempData["Message"] = "Valda meddelande har markerats som lästa";
 			return RedirectToAction("Message");
 		}
+
+		public async Task<ActionResult> DeleteMessage(int messageId)
+		{
+            var currentUser = await userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var message = await context.Message
+			 .FirstOrDefaultAsync(m => m.Id == messageId && m.ReceiverId == currentUser.Id);
+
+			// Om något skulle gå fel
+            if (message == null)
+            {
+                TempData["Message"] = "Meddelandet kunde inte hittas";
+                return RedirectToAction("Message");
+            }
+
+            context.Message.Remove(message);
+            await context.SaveChangesAsync();
+
+            TempData["Message"] = "Meddelandet har tagits bort";
+            return RedirectToAction("Message");
+        }
 	}
 }
