@@ -4,7 +4,7 @@ public class SearchResult
 {
     public string ProfileName { get; set; }
     public string ImageUrl { get; set; }
-    public bool isPrivate { get; set; }
+    public bool IsPrivate { get; set; }
     public string UserId { get; set; }
     public List<CV> Cvs { get; set; } = new List<CV>();
     // Helper properties för att enkelt komma åt all skills och utbildning

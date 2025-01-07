@@ -266,7 +266,7 @@ namespace CV_Applikation.Controllers
                 ProfileName = u.UserName,
                 ImageUrl = u.ImageUrl,
                 Cvs = allCVs.Where(cv => cv.UserId == u.Id).ToList(),
-                isPrivate = u.IsPrivate,
+                IsPrivate = u.IsPrivate,
             }).ToList();
 
             var model = new SearchViewModel

@@ -63,81 +63,6 @@ namespace CV_Applikation.Controllers
 
             context.Projects.Add(project);
             await context.SaveChangesAsync();
-            // Hämta den nuvarande användaren
-            //var currentUser = await userManager.GetUserAsync(User);  // Använd UserManager för att hämta användaren
-            //project.OwnerId = currentUser.Id; // Sätt ägaren av projektet
-            //project.CreatedAt = DateTime.UtcNow;
-
-            //// Lägg till den aktuella användaren i ProjectUsers (som deltagare)
-            //var projectUsers = new List<ProjectUser>
-            //{
-            //        new ProjectUser
-            //        {
-            //            ProjectId = project.ProjectId,
-            //            UserId = currentUser.Id, // Ägaren läggs till som deltagare
-            //            JoinedAt = DateTime.UtcNow,
-            //            Role = "Owner" // Sätt rollen till "Owner" för den aktuella användaren
-            //        }
-            //};
-
-            //// Lägg till de andra deltagarna om några är valda (utöver ägaren)
-            //    foreach (var participantId in participantIds)
-            //    {
-            //        // Kontrollera så att den valda användaren inte är samma som den som skapade projektet
-            //        if (participantId != currentUser.Id)
-            //        {
-            //            projectUsers.Add(new ProjectUser
-            //            {
-            //                ProjectId = project.ProjectId,
-            //                UserId = participantId,
-            //                JoinedAt = DateTime.UtcNow,
-            //                Role = "Participant" // De övriga användarna får rollen "Participant"
-            //            });
-            //        }
-            //    }
-
-            //// Lägg till ProjectUser-instans i projektet
-            //project.ProjectUsers = projectUsers;
-
-            //// Lägg till projektet i databasen
-            //context.Projects.Add(project);
-            //await context.SaveChangesAsync();
-
-            //    // Hämta den nuvarande användaren
-            //    var currentUser = await userManager.GetUserAsync(User);  // Använd UserManager för att hämta användaren
-            //    project.OwnerId = currentUser.Id; // Sätt ägaren av projektet
-
-            //    // Lägg till den aktuella användaren i ProjectUsers (som deltagare)
-            //    var projectUsers = new List<ProjectUser>
-            //{
-            //    new ProjectUser
-            //    {
-            //        ProjectId = project.ProjectId,
-            //        UserId = currentUser.Id, // Ägaren läggs till som deltagare
-            //        JoinedAt = DateTime.UtcNow,
-            //        Role = "Owner" // Sätt rollen till "Owner" för den aktuella användaren
-            //    }
-            //};
-
-            //    // Lägg till de andra deltagarna om några är valda
-            //    foreach (var participantId in participantIds)
-            //    {
-            //        projectUsers.Add(new ProjectUser
-            //        {
-            //            ProjectId = project.ProjectId,
-            //            UserId = participantId,
-            //            JoinedAt = DateTime.UtcNow,
-            //            Role = "Participant" // De övriga användarna får rollen "Participant"
-            //        });
-            //    }
-
-            //    // Lägg till ProjectUser-instans i projektet
-            //    project.ProjectUsers = projectUsers;
-
-            //    // Lägg till projektet i databasen
-            //    context.Projects.Add(project);
-            //    await context.SaveChangesAsync();
-
             return RedirectToAction("Index", "Home");
         }
 
@@ -157,34 +82,6 @@ namespace CV_Applikation.Controllers
 
             return View(projects);
         }
-
-        //public async Task<IActionResult> ProjectList()
-        //{
-        //    var currentUser = await userManager.GetUserAsync(User); // Kontrollera om användaren är inloggad
-        //    var isUserLoggedIn = currentUser != null;
-
-        //    var projects = await context.Projects
-        //        .Include(p => p.ProjectUsers)
-        //        .ThenInclude(pu => pu.UserProject) // Ladda in användarens profil
-        //        .Select(p => new ProjectViewModel
-        //        {
-        //            ProjectId = p.ProjectId,
-        //            Title = p.Title,
-        //            ParticipantCount = p.ProjectUsers
-        //                .Count(pu => isUserLoggedIn || !pu.UserProject.IsPrivate), // Filtrera bort privata profiler om användaren inte är inloggad
-        //            Participants = p.ProjectUsers
-        //                .Where(pu => isUserLoggedIn || !pu.UserProject.IsPrivate) // Filtrera deltagare baserat på inloggning
-        //                .Select(pu => new ParticipantViewModel
-        //                {
-        //                    UserId = pu.UserId,
-        //                    UserName = pu.UserProject.UserName,
-        //                })
-        //                .ToList()
-        //        })
-        //        .ToListAsync();
-
-        //    return View(projects);
-        //}
 
         public async Task<IActionResult> ProjectDetails(int projectId)
         {
@@ -223,34 +120,7 @@ namespace CV_Applikation.Controllers
 
             return View(projectDetailsViewModel);
         }
-        //public async Task<IActionResult> ProjectDetails(int projectId)
-        //{
-        //    var project = await context.Projects
-        //        .Include(p => p.ProjectUsers)
-        //        .ThenInclude(pu => pu.UserProject)
-        //        .FirstOrDefaultAsync(p => p.ProjectId == projectId);
-
-        //    if (project == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var projectDetailsViewModel = new ProjectDetailsViewModel
-        //    {
-        //        ProjectId = project.ProjectId,
-        //        Title = project.Title,
-        //        Description = project.Description,
-        //        CreatedAt = project.CreatedAt,
-        //        Participants = project.ProjectUsers.Select(pu => new ParticipantViewModel
-        //        {
-        //            UserId = pu.UserId,
-        //            UserName = pu.UserProject?.UserName ?? "Okänd användare"
-        //        }).ToList()
-        //    };
-
-        //    return View(projectDetailsViewModel);
-        //}
-
+      
         [HttpPost]
         public async Task<IActionResult> JoinProject(int projectId)
         {
@@ -350,17 +220,5 @@ namespace CV_Applikation.Controllers
             return View(projects);
         }
     }
-    //public IActionResult ProjectDetails(int id)
-    //{
-    //    //c
-    //    var project = context.Projects
-    //   .Include(p => p.Participants)
-    //   .FirstOrDefault(p => p.ProjectId == id);
-
-    //    if (project == null) return NotFound();
-
-    //    return View(project);
-    //}
-
 }
 
