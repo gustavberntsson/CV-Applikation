@@ -13,5 +13,7 @@ namespace CV_Applikation.Models
 
         public IFormFile ImagePath { get; set; }
 
+        public Boolean IsPrivate { get; set;} 
+
     }
 }

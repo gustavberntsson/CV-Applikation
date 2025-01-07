@@ -231,6 +231,7 @@ namespace CV_Applikation.Controllers
                 WorkExperiences = cv.WorkExperiences ?? new List<WorkExperience>(), // Om null, skapa en tom lista
                 Languages = cv.Languages ?? new List<Languages>(), // Om null, skapa en tom lista
                 Skills = cv.Skills ?? new List<Skills>(), // Om null, skapa en tom lista
+                IsPrivate = cv.IsPrivate
                
             };
 
@@ -271,207 +272,165 @@ namespace CV_Applikation.Controllers
         {
             //if (ModelState.IsValid)
             //{
-                // Hämta CV från databasen
-                var cv = context.CVs
-                    .Include(c => c.Educations)
-                    .Include(c => c.WorkExperiences)
-                    .Include(c => c.Languages)
-                    .Include(c => c.Skills)
-                    .FirstOrDefault(c => c.CVId == model.CVId);
+            // Hämta CV från databasen
+            var cv = context.CVs
+                .Include(c => c.Educations)
+                .Include(c => c.WorkExperiences)
+                .Include(c => c.Languages)
+                .Include(c => c.Skills)
+                .FirstOrDefault(c => c.CVId == model.CVId);
 
-                if (cv == null)
-                {
-                    return NotFound();
-                }
-
-                // Uppdatera CV-namn
-                cv.CVName = model.CVName;
-                 // Exempel för Skills
-
-                // Uppdatera utbildningar
-                foreach (var education in model.Educations)
-                {
-                    // Försök hitta en befintlig utbildning baserat på Id
-                    var existingEducation = cv.Educations
-                        .FirstOrDefault(e => e.Id == education.Id);
-
-                    if (existingEducation != null)
-                    {
-                        // Uppdatera alla egenskaper i den befintliga utbildningen
-                        existingEducation.School = education.School;
-                        existingEducation.Degree = education.Degree;
-                        existingEducation.FieldOfStudy = education.FieldOfStudy;
-                        existingEducation.StartDate = education.StartDate;
-                        existingEducation.EndDate = education.EndDate;
-                      
-                    }
-                    else
-                    {
-                        cv.Educations.Add(new Education
-                        {
-                            School = education.School,
-                            Degree = education.Degree,
-                            FieldOfStudy = education.FieldOfStudy,
-                            StartDate = education.StartDate,
-                            EndDate = education.EndDate
-                        });
-                    }
-                }
-        
-
-               
-                    foreach (var skill in model.Skills)
-                    {
-                        var existingSkill = context.Skills
-                            .FirstOrDefault(s => s.CVId == cv.CVId && s.SkillName == skill.SkillName);
-
-                        if (existingSkill == null)
-                        {
-                            skill.CVId = cv.CVId;
-                            context.Skills.Add(skill);
-                        }
-                    }
-                
-
-                //// Lägg till nya utbildningar som inte redan finns
-                //foreach (var education in model.Educations)
-                //{
-                //    // Kontrollera om utbildningen redan existerar i listan
-                //    var isExisting = cv.Educations.Any(e => e.Id == education.Id);
-
-                //    if (!isExisting)
-                //    {
-                //        // Lägg till den nya utbildningen och fyll i alla egenskaper
-                //        cv.Educations.Add(new Education
-                //        {
-                //            Id = education.Id, // Om Id behövs för att kunna spåra utbildningen
-                //            School = education.School,
-                //            Degree = education.Degree,
-                //            FieldOfStudy = education.FieldOfStudy,
-                //            StartDate = education.StartDate,
-                //            EndDate = education.EndDate,
-
-                //        });
-                //    }
-                //}
-                //foreach (var education in model.Educations)
-                //{
-                //    var existingEducation = cv.Educations
-                //        .FirstOrDefault(e => e.Id == education.Id);
-
-                //    if (existingEducation != null)
-                //    {
-                //        existingEducation.School = education.School;
-                //        existingEducation.Degree = education.Degree;
-                //        existingEducation.FieldOfStudy = education.FieldOfStudy;
-                //        existingEducation.StartDate = education.StartDate;
-                //        existingEducation.EndDate = education.EndDate;
-                //    }
-                //    else
-                //    {
-                //        cv.Educations.Add(new Education
-                //        {
-                //            School = education.School,
-                //            Degree = education.Degree,
-                //            FieldOfStudy = education.FieldOfStudy,
-                //            StartDate = education.StartDate,
-                //            EndDate = education.EndDate
-                //        });
-                //    }
-                //}
-
-                // Uppdatera arbetslivserfarenheter
-                foreach (var workExperience in model.WorkExperiences)
-                {
-                    var existingWorkExperience = cv.WorkExperiences
-                        .FirstOrDefault(w => w.Id == workExperience.Id);
-
-                    if (existingWorkExperience != null)
-                    {
-                        existingWorkExperience.CompanyName = workExperience.CompanyName;
-                        existingWorkExperience.Position = workExperience.Position;
-                        existingWorkExperience.Description = workExperience.Description;
-                        existingWorkExperience.StartDate = workExperience.StartDate;
-                        existingWorkExperience.EndDate = workExperience.EndDate;
-                    }
-                    else
-                    {
-                        cv.WorkExperiences.Add(new WorkExperience
-                        {
-                            CompanyName = workExperience.CompanyName,
-                            Position = workExperience.Position,
-                            Description = workExperience.Description,
-                            StartDate = workExperience.StartDate,
-                            EndDate = workExperience.EndDate
-                        });
-                    }
-                }
-
-                // Uppdatera språk
-                foreach (var language in model.Languages)
-                {
-                    var existingLanguage = cv.Languages
-                        .FirstOrDefault(l => l.Id == language.Id);
-
-                    if (existingLanguage != null)
-                    {
-                        existingLanguage.LanguageName = language.LanguageName;
-                        existingLanguage.Level = language.Level;
-                    }
-                    else
-                    {
-                        cv.Languages.Add(new Languages
-                        {
-                            LanguageName = language.LanguageName,
-                            Level = language.Level
-                        });
-                    }
-                }
-
-                // Uppdatera färdigheter
-                foreach (var skill in model.Skills)
-                {
-                    var existingSkill = cv.Skills
-                        .FirstOrDefault(s => s.Id == skill.Id);
-
-                    if (existingSkill != null)
-                    {
-                        existingSkill.SkillName = skill.SkillName;
-                    }
-                    else
-                    {
-                        // Lägg till ny färdighet om den inte finns
-                        skill.CVId = cv.CVId;
-                        cv.Skills.Add(skill);
-                    }
-                }
-
-                // Hantera bild om användaren laddar upp en ny
-                if (model.ImagePath != null && model.ImagePath.Length > 0)
-                {
-                    string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImagePath.FileName);
-                    string uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-                    string filePath = Path.Combine(uploadFolder, uniqueFileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.ImagePath.CopyToAsync(stream);
-                    }
-
-                    cv.ImagePath = "/images/" + uniqueFileName;
-                }
-                context.Update(cv);
-
-                // Spara ändringar
-                await context.SaveChangesAsync();
-
-                // Omdirigera till profil-sidan
-                return RedirectToAction("Profile", "Account");
+            if (cv == null)
+            {
+                return NotFound();
             }
 
-            // Om ModelState är ogiltigt, visa formuläret igen
-            //return View(model);
+            // Uppdatera CV-namn
+            cv.CVName = model.CVName;
+            // Exempel för Skills
+            cv.IsPrivate = model.IsPrivate;
+            var newEducation = new List<Education>();
+            // Uppdatera utbildningar
+            foreach (var education in model.Educations)
+            {
+                // Försök hitta en befintlig utbildning baserat på Id
+                var existingEducation = cv.Educations
+                    .FirstOrDefault(e => e.Id == education.Id);
+
+                if (existingEducation != null)
+                {
+                    // Uppdatera alla egenskaper i den befintliga utbildningen
+                    existingEducation.School = education.School;
+                    existingEducation.Degree = education.Degree;
+                    existingEducation.FieldOfStudy = education.FieldOfStudy;
+                    existingEducation.StartDate = education.StartDate;
+                    existingEducation.EndDate = education.EndDate;
+
+                }
+                else
+                {
+                    // Lägg till den nya färdigheten i en temporär lista
+                    newEducation.Add(new Education
+                    {
+                        School = education.School,
+                        Degree = education.Degree,
+                        FieldOfStudy = education.FieldOfStudy,
+                        StartDate = education.StartDate,
+                        EndDate = education.EndDate,
+                    });
+                }
+            }
+            cv.Educations.AddRange(newEducation);
+
+            var newSkills = new List<Skills>();
+
+            foreach (var skill in model.Skills)
+            {
+                // Hitta en existerande färdighet baserat på ID
+                var existingSkill = cv.Skills.FirstOrDefault(s => s.Id == skill.Id);
+
+                if (existingSkill != null)
+                {
+                    // Uppdatera den existerande färdigheten
+                    existingSkill.SkillName = skill.SkillName;
+                }
+                else
+                {
+                    // Lägg till den nya färdigheten i en temporär lista
+                    newSkills.Add(new Skills
+                    {
+                        SkillName = skill.SkillName
+                    });
+                }
+            }
+
+            // Lägg till alla nya färdigheter till cv.Skills efter loopen
+            cv.Skills.AddRange(newSkills);
+
+            var newWorkExperience = new List<WorkExperience>();
+            // Uppdatera arbetslivserfarenheter
+            foreach (var workExperience in model.WorkExperiences)
+            {
+                var existingWorkExperience = cv.WorkExperiences
+                    .FirstOrDefault(w => w.Id == workExperience.Id);
+
+                if (existingWorkExperience != null)
+                {
+                    existingWorkExperience.CompanyName = workExperience.CompanyName;
+                    existingWorkExperience.Position = workExperience.Position;
+                    existingWorkExperience.Description = workExperience.Description;
+                    existingWorkExperience.StartDate = workExperience.StartDate;
+                    existingWorkExperience.EndDate = workExperience.EndDate;
+                }
+                else
+                {
+                    // Lägg till den nya färdigheten i en temporär lista
+                    newWorkExperience.Add(new WorkExperience
+                    {
+                        CompanyName = workExperience.CompanyName,
+                        Position = workExperience.Position,
+                        Description = workExperience.Description,
+                        StartDate = workExperience.StartDate,
+                        EndDate = workExperience.EndDate
+                    });
+                }
+            }
+            cv.WorkExperiences.AddRange(newWorkExperience);
+          
+
+            // Uppdatera språk
+            var newLanguages = new List<Languages>();
+            foreach (var language in model.Languages)
+            {
+                var existingLanguage = cv.Languages
+                    .FirstOrDefault(l => l.Id == language.Id);
+
+                if (existingLanguage != null)
+                {
+                    existingLanguage.LanguageName = language.LanguageName;
+                    existingLanguage.Level = language.Level;
+                }
+                else
+                {
+                    // Lägg till den nya färdigheten i en temporär lista
+                    newLanguages.Add(new Languages
+                    {
+                        LanguageName = language.LanguageName,
+                        Level = language.Level
+
+                    });
+                }
+            }
+            cv.Languages.AddRange(newLanguages);
+
+
+            // Hantera bild om användaren laddar upp en ny
+            if (model.ImagePath != null && model.ImagePath.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImagePath.FileName);
+                string uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                string filePath = Path.Combine(uploadFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.ImagePath.CopyToAsync(stream);
+                }
+
+                cv.ImagePath = "/images/" + uniqueFileName;
+            }
+            context.Update(cv);
+
+            // Spara ändringar
+            await context.SaveChangesAsync();
+
+            // Omdirigera till profil-sidan
+            return RedirectToAction("Profile", "Account");
         }
+
+
+        // Om ModelState är ogiltigt, visa formuläret igen
+        //return View(model);
     }
+}
 
 
