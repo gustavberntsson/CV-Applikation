@@ -4,6 +4,7 @@ using CV_Applikation.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.SqlClient;
+using CV_Applikation.Migrations;
 
 namespace CV_Applikation.Controllers
 {
@@ -168,61 +169,113 @@ namespace CV_Applikation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Search(string username)
+        public async Task<IActionResult> Search(string SearchString)
         {
-            // Hämta användaren baserat på användarnamnet
-            var user = await context.Users
-                .FirstOrDefaultAsync(u => u.UserName == username);
-            var currentUser = await userManager.GetUserAsync(User);
-            var isUserLoggedIn = currentUser != null;
 
-            if (user == null)
+            if (string.IsNullOrWhiteSpace(SearchString))
             {
-                // Om användaren inte hittas, visa ett felmeddelande och återgå till föregående vy
-                TempData["ErrorMessage"] = "Användaren kunde inte hittas.";
-                return RedirectToAction("Index"); // Återgå till en startvy
+                return View("Search", "Home");
             }
 
-            // Hämta kontaktinformation
-            var contactInfo = await context.ContactInformation
-                .FirstOrDefaultAsync(c => c.UserId == user.Id);
+            // Hämta användaren baserat på användarnamnet
+            var SearchTerms = SearchString.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var currentUser = await userManager.GetUserAsync(User);
+            var isUserLoggedIn = currentUser != null;
+            var matchingUsers = await context.Users
+    .Where(u =>
+        (!u.IsPrivate || isUserLoggedIn) &&
+        SearchTerms.All(term =>
+            u.UserName.ToLower().Contains(term) || // Kontrollera användarnamn
+            context.CVs.Any(cv =>
+                cv.UserId == u.Id &&
+                (!cv.IsPrivate || isUserLoggedIn) &&
+                (
+                    cv.Skills.Any(s => s.SkillName.ToLower().Contains(term)) || // Kontrollera färdigheter
+                    cv.Educations.Any(e =>
+                        e.FieldOfStudy.ToLower().Contains(term) || // Kontrollera studieriktning
+                        e.Degree.ToLower().Contains(term)          // Kontrollera examen
+                    ) ||
+                    cv.WorkExperiences.Any(we =>
+                        we.Position.ToLower().Contains(term) ||    // Kontrollera arbetsposition
+                        we.Description.ToLower().Contains(term)    // Kontrollera arbetsbeskrivning
+                    )
+                )
+            )
+        )
+    )
+    .ToListAsync();
 
-            // Hämta användarens CV:n
-            var CVs = await context.CVs
-                .Where(cv => cv.UserId == user.Id && (isUserLoggedIn || !cv.IsPrivate))
-                .Include(cv => cv.Educations)
+
+            if (matchingUsers.Count == 1)
+            {
+                var user = matchingUsers.First();
+                // Hämta kontaktinformation
+                var contactInfo = await context.ContactInformation
+                    .FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+                // Hämta användarens CV:n
+                var CVs = await context.CVs
+                    .Where(cv => cv.UserId == user.Id && (isUserLoggedIn || !cv.IsPrivate))
+                    .Include(cv => cv.Educations)
+                    .Include(cv => cv.Languages)
+                    .Include(cv => cv.Skills)
+                    .Include(cv => cv.WorkExperiences)
+                    .ToListAsync();
+
+                // Hämta användarens projekt
+                var projects = await context.Projects
+                    .Include(p => p.ProjectUsers)
+                    .ThenInclude(pu => pu.UserProject)
+                    .Where(p => p.OwnerId == user.Id || p.ProjectUsers.Any(pu => pu.UserId == user.Id))
+                    .OrderByDescending(p => p.CreatedAt)
+                    .ToListAsync();
+
+                // Bygg profilmodellen
+                var pmodel = new ProfileViewModel
+                {
+                    ProfileName = user.UserName,
+                    ProfileId = user.Id,
+                    ImageUrl = user.ImageUrl,
+                    IsPrivate = user.IsPrivate,
+                    FirstName = contactInfo?.FirstName ?? "Ej angivet",
+                    LastName = contactInfo?.LastName ?? "Ej angivet",
+                    Adress = contactInfo?.Adress ?? "Ej angivet",
+                    Email = contactInfo?.Email ?? "Ej angivet",
+                    PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
+                    Cvs = CVs,
+                    Projects = projects,
+                    CurrentUserId = currentUser?.Id
+                };
+
+                return View("Profile", pmodel);
+
+            }
+
+            var userIds = matchingUsers.Select(u => u.Id).ToList();
+            var allCVs = await context.CVs
+                .Where(cv => userIds.Contains(cv.UserId) && (isUserLoggedIn || !cv.IsPrivate))
                 .Include(cv => cv.Languages)
                 .Include(cv => cv.Skills)
+                .Include(cv => cv.Educations)
                 .Include(cv => cv.WorkExperiences)
                 .ToListAsync();
 
-            // Hämta användarens projekt
-            var projects = await context.Projects
-                .Include(p => p.ProjectUsers)
-                .ThenInclude(pu => pu.UserProject)
-                .Where(p => p.OwnerId == user.Id || p.ProjectUsers.Any(pu => pu.UserId == user.Id))
-                .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();
-
-            // Bygg profilmodellen
-            var model = new ProfileViewModel
+            var searchResults = matchingUsers.Select(u => new SearchResult
             {
-                ProfileName = username,
-                ProfileId = user.Id,
-                ImageUrl = user.ImageUrl,
-                IsPrivate = user.IsPrivate,
-                FirstName = contactInfo?.FirstName ?? "Ej angivet",
-                LastName = contactInfo?.LastName ?? "Ej angivet",
-                Adress = contactInfo?.Adress ?? "Ej angivet",
-                Email = contactInfo?.Email ?? "Ej angivet",
-                PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
-                Cvs = CVs,
-                Projects = projects,
-                CurrentUserId = currentUser?.Id
+                UserId = u.Id,
+                ProfileName = u.UserName,
+                ImageUrl = u.ImageUrl,
+                Cvs = allCVs.Where(cv => cv.UserId == u.Id).ToList(),
+                isPrivate = u.IsPrivate,
+            }).ToList();
+
+            var model = new SearchViewModel
+            {
+                SearchString = SearchString,
+                Results = searchResults
             };
 
-            // Returnera profilen med rätt vy
-            return View("Profile", model); // Notera att vyn heter "ProfilePage"
+            return View("Search", model);
         }
 
         [HttpGet]

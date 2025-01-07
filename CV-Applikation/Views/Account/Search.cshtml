@@ -1,0 +1,101 @@
+﻿@model CV_Applikation.Models.SearchViewModel
+<div class="container mt-4">
+    <h2 class="mb-4">Sökresultat för: "@Model.SearchString"</h2>
+    @if (!Model.Results.Any())
+    {
+        <p>Inga resultat hittades.</p>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var user in Model.Results)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        @if (!string.IsNullOrEmpty(user.ImageUrl))
+                        {
+                            <img src="@user.ImageUrl" class="card-img-top" alt="Profilbild för @user.ProfileName"
+                                 onerror="this.src='https://media.istockphoto.com/id/610003972/vector/vector-businessman-black-silhouette-isolated.jpg?s=612x612&w=0&k=20&c=Iu6j0zFZBkswfq8VLVW8XmTLLxTLM63bfvI6uXdkacM=';"
+                                 style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <img src="https://media.istockphoto.com/id/610003972/vector/vector-businessman-black-silhouette-isolated.jpg?s=612x612&w=0&k=20&c=Iu6j0zFZBkswfq8VLVW8XmTLLxTLM63bfvI6uXdkacM="
+                                 class="card-img-top" alt="Standard profilbild"
+                                 style="height: 200px; object-fit: cover;">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@user.ProfileName</h5>
+
+                            @if (user.AllWorkExperiences.Any())
+                            {
+                                <div class="mb-3">
+                                    <h6 class="mb-2">Arbetslivserfarenhet:</h6>
+                                    <div class="small">
+                                        @foreach (var work in user.AllWorkExperiences.Take(4))
+                                        {
+                                            <div class="mb-1">
+                                              <div>@work.CompanyName</div>
+                                              <div class="text-muted">@work.Position</div>
+                                            </div>
+                                        }
+                                        @if (user.AllWorkExperiences.Count > 1)
+                                        {
+                                            <div class="text-muted">+@(user.AllWorkExperiences.Count - 4) till</div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            @if (user.AllEducations.Any())
+                            {
+                                <div class="mb-3">
+                                    <h6 class="mb-2">Utbildning:</h6>
+                                    <div class="small">
+                                        @foreach (var edu in user.AllEducations.Take(2))
+                                        {
+                                            <div class="mb-1">
+                                                <div>@edu.School</div>
+                                                <div class="text-muted">@edu.FieldOfStudy</div>
+                                            </div>
+                                        }
+                                        @if (user.AllEducations.Count > 2)
+                                        {
+                                            <div class="text-muted">+@(user.AllEducations.Count - 2) fler utbildningar</div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            @if (user.AllSkills.Any())
+                            {
+                                <div class="mb-3">
+                                    <h6 class="mb-2">Kompetenser:</h6>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach (var skill in user.AllSkills.Take(5))
+                                        {
+                                            <span class="badge bg-secondary">@skill.SkillName</span>
+                                        }
+                                        @if (user.AllSkills.Count > 5)
+                                        {
+                                            <span class="badge bg-info">+@(user.AllSkills.Count - 5) till</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+
+                            @if (user.Cvs != null && user.Cvs.Any())
+                            {
+                                <p class="card-text">Antal CV: @user.Cvs.Count</p>
+                            }
+
+                            <a asp-controller="Account" asp-action="Profile" asp-route-UserId="@user.UserId"
+                               class="btn btn-primary mt-2">Visa profil</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
