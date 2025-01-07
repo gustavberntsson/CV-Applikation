@@ -28,6 +28,7 @@
 
                 <label for="Educations[@i].School">Skola:</label>
                 <input asp-for="Educations[@i].School" id="Educations[@i].School" />
+
                 <br />
 
                 <label for="Educations[@i].Degree">Examen:</label>
@@ -134,90 +135,125 @@
 </form>
 
 <script>
-    // Lägg till ny utbildning
-    document.getElementById("addEducation").addEventListener("click", function () {
-        const container = document.getElementById("educationsContainer");
-        const index = container.children.length;
+    function hasValue(value) {
+        return value != null && value.trim() !== '';
+    }
 
-        const newEducation = `
-        <div class="education">
-            <input type="hidden" name="Educations[${index}].Id" value="0" />
-            <label for="Educations[${index}].School">Skola:</label>
-            <input name="Educations[${index}].School" />
-            <br />
-            <label for="Educations[${index}].Degree">Examen:</label>
-            <input name="Educations[${index}].Degree" />
-            <br />
-            <label for="Educations[${index}].FieldOfStudy">Ämnesområde:</label>
-            <input name="Educations[${index}].FieldOfStudy" />
-            <br />
-            <label for="Educations[${index}].StartDate">Startdatum:</label>
-            <input type="date" name="Educations[${index}].StartDate" />
-            <br />
-            <label for="Educations[${index}].EndDate">Slutdatum:</label>
-            <input type="date" name="Educations[${index}].EndDate" />
-            <br />
-        </div>`;
-        container.insertAdjacentHTML("beforeend", newEducation);
-    });
+    function validateSection(containerId, addButtonId, requiredFields = []) {
+        const container = document.getElementById(containerId);
+        const sections = container.children;
+        const addButton = document.getElementById(addButtonId);
 
-    // Lägg till ny arbetslivserfarenhet
-    document.getElementById("addWorkExperience").addEventListener("click", function () {
-        const container = document.getElementById("workExperiencesContainer");
-        const index = container.children.length;
+        if (sections.length > 0) {
+            const lastSection = sections[sections.length - 1];
+            const inputs = lastSection.getElementsByTagName('input');
 
-        const newWorkExperience = `
-        <div class="work-experience">
-            <input type="hidden" name="WorkExperiences[${index}].Id" value="0" />
-            <label for="WorkExperiences[${index}].CompanyName">Företagsnamn:</label>
-            <input name="WorkExperiences[${index}].CompanyName" />
-            <br />
-            <label for="WorkExperiences[${index}].Position">Position:</label>
-            <input name="WorkExperiences[${index}].Position" />
-            <br />
-            <label for="WorkExperiences[${index}].Description">Beskrivning:</label>
-            <textarea name="WorkExperiences[${index}].Description"></textarea>
-            <br />
-            <label for="WorkExperiences[${index}].StartDate">Startdatum:</label>
-            <input type="date" name="WorkExperiences[${index}].StartDate" />
-            <br />
-            <label for="WorkExperiences[${index}].EndDate">Slutdatum:</label>
-            <input type="date" name="WorkExperiences[${index}].EndDate" />
-            <br />
-        </div>`;
-        container.insertAdjacentHTML("beforeend", newWorkExperience);
-    });
+            // Om requiredFields är tom, kontrollera alla fält
+            const fieldsToCheck = requiredFields.length > 0 ?
+                Array.from(inputs).filter(input => requiredFields.some(field => input.id.includes(field))) :
+                Array.from(inputs);
 
-    // Lägg till nytt språk
+            const allFieldsHaveValue = fieldsToCheck.every(input => hasValue(input.value));
+            addButton.disabled = !allFieldsHaveValue;
+        }
+    }
+
+    function createRemoveButton() {
+        return `<button type="button" class="remove-button" onclick="removeSection(this)">Ta bort</button>`;
+    }
+
+    function removeSection(button) {
+        const section = button.closest('div');
+        const container = section.parentElement;
+        const addButtonId = container.id.replace('Container', '');
+        section.remove();
+        validateSection(container.id, 'add' + addButtonId);
+    }
+
+    // Språk
     document.getElementById("addLanguage").addEventListener("click", function () {
-        const container = document.getElementById("languagesContainer");
-        const index = container.children.length;
-
-        const newLanguage = `
-        <div class="language">
-            <input type="hidden" name="Languages[${index}].Id" value="0" />
+        let container = document.getElementById("languagesContainer");
+        let index = container.children.length;
+        let newLanguage = document.createElement('div');
+        newLanguage.innerHTML = `
+        <div class="input-row">
             <label for="Languages[${index}].LanguageName">Språk:</label>
-            <input name="Languages[${index}].LanguageName" />
-            <br />
-            <label for="Languages[${index}].Level">Nivå:</label>
-            <input name="Languages[${index}].Level" type="number" min="1" max="5"/>
-            <br />
+            <input name="Languages[${index}].LanguageName" id="Languages[${index}].LanguageName" onchange="validateSection('languagesContainer', 'addLanguage', ['LanguageName', 'Level'])" />
+            <label for="Languages[${index}].Level">Nivå (1-5):</label>
+            <input type="number" min="1" max="5" name="Languages[${index}].Level" id="Languages[${index}].Level" onchange="validateSection('languagesContainer', 'addLanguage', ['LanguageName', 'Level'])" />
+            ${createRemoveButton()}
         </div>`;
-        container.insertAdjacentHTML("beforeend", newLanguage);
+        container.appendChild(newLanguage);
+        document.getElementById('addLanguage').disabled = true;
+       
     });
 
-    // Lägg till ny färdighet
+    // Utbildning
+    document.getElementById("addEducation").addEventListener("click", function () {
+        let container = document.getElementById("educationsContainer");
+        let index = container.children.length;
+        let newEducation = document.createElement('div');
+        newEducation.innerHTML = `
+        <div class="input-row">
+            <label for="Educations[${index}].School">Skola:</label>
+            <input name="Educations[${index}].School" id="Educations[${index}].School" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+            <label for="Educations[${index}].Degree">Examen:</label>
+            <input name="Educations[${index}].Degree" id="Educations[${index}].Degree" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+            <label for="Educations[${index}].FieldOfStudy">Ämnesområde:</label>
+            <input name="Educations[${index}].FieldOfStudy" id="Educations[${index}].FieldOfStudy" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+            <label for="Educations[${index}].StartDate">Startdatum:</label>
+            <input type="date" name="Educations[${index}].StartDate" id="Educations[${index}].StartDate" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+            <label for="Educations[${index}].EndDate">Slutdatum:</label>
+            <input type="date" name="Educations[${index}].EndDate" id="Educations[${index}].EndDate" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+            ${createRemoveButton()}
+        </div>`;
+        container.appendChild(newEducation);
+        document.getElementById('addEducation').disabled = true;
+    });
+
+    // Arbetslivserfarenhet
+    document.getElementById("addWorkExperience").addEventListener("click", function () {
+        let container = document.getElementById("workExperiencesContainer");
+        let index = container.children.length;
+        let newExperience = document.createElement('div');
+        newExperience.innerHTML = `
+        <div class="input-row">
+            <label for="WorkExperiences[${index}].CompanyName">Företag:</label>
+            <input name="WorkExperiences[${index}].CompanyName" id="WorkExperiences[${index}].CompanyName" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+            <label for="WorkExperiences[${index}].Position">Position:</label>
+            <input name="WorkExperiences[${index}].Position" id="WorkExperiences[${index}].Position" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+            <label for="WorkExperiences[${index}].Description">Beskrivning:</label>
+            <input name="WorkExperiences[${index}].Description" id="WorkExperiences[${index}].Description" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+            <label for="WorkExperiences[${index}].StartDate">Startdatum:</label>
+            <input type="date" name="WorkExperiences[${index}].StartDate" id="WorkExperiences[${index}].StartDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+            <label for="WorkExperiences[${index}].EndDate">Slutdatum:</label>
+            <input type="date" name="WorkExperiences[${index}].EndDate" id="WorkExperiences[${index}].EndDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+            ${createRemoveButton()}
+        </div>`;
+        container.appendChild(newExperience);
+        document.getElementById('addWorkExperience').disabled = true;
+    });
+
+    // Färdigheter
     document.getElementById("addSkill").addEventListener("click", function () {
-        const container = document.getElementById("skillsContainer");
-        const index = container.children.length;
-
-        const newSkill = `
-        <div class="skill">
-            <input type="hidden" name="Skills[${index}].Id" value="0" />
+        let container = document.getElementById("skillsContainer");
+        let index = container.children.length;
+        let newSkill = document.createElement('div');
+        newSkill.innerHTML = `
+        <div class="input-row">
             <label for="Skills[${index}].SkillName">Färdighet:</label>
-            <input name="Skills[${index}].SkillName" />
-            <br />
+            <input name="Skills[${index}].SkillName" id="Skills[${index}].SkillName" onchange="validateSection('skillsContainer', 'addSkill', ['SkillName'])" />
+            ${createRemoveButton()}
         </div>`;
-        container.insertAdjacentHTML("beforeend", newSkill);
+        container.appendChild(newSkill);
+        document.getElementById('addSkill').disabled = true;
     });
-</script> 
+
+    // Initiera validering för alla sektioner vid start
+    document.addEventListener('DOMContentLoaded', function() {
+        validateSection('languagesContainer', 'addLanguage', ['LanguageName']);
+        validateSection('educationsContainer', 'addEducation', ['School']);
+        validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName']);
+        validateSection('skillsContainer', 'addSkill', ['SkillName']);
+    });
+</script>
