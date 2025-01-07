@@ -9,19 +9,19 @@
 	}
 }
 
-<h1>Dina meddelanden</h1>
+<h1 class="fw-normal" style="margin-bottom: 28px;">Dina meddelanden</h1>
 <div class="mb-4">
-	<a asp-action="SendMessage" class="btn btn-primary">Skicka ett nytt meddelande</a>
+	<a asp-action="SendMessage" class="btn btn-primary" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Skicka ett nytt meddelande</a>
 </div>
 
 <form method="post" asp-action="MarkAsRead">
-	<button type="submit" class="btn btn-success">Markera valda meddelanden som lästa</button>
+	<button type="submit" class="btn btn-success" style="background-color: #6c757d; border-color: #6c757d;">Markera valda meddelanden som lästa</button>
 	@foreach (var message in Model.Messages)
 	{
 
 		<div class="card mb-3">
 			<div class="card-header">
-				<h2 class="mb-0">Från: @message.Sender </h2>
+				<h2 class="mb-0 fw-normal">Från: @message.Sender </h2>
 			</div>
 			<div class="card-header">
 				<p class="mb-1">Mottaget: @message.Date</p>
@@ -40,7 +40,7 @@
 				   asp-route-messageId="@message.Id"
 				   class="btn btn-danger btn-sm mt-2"
 				   onclick="return confirm('Är du säker på att du vill ta bort detta meddelande?')"
-				   style="width: auto; margin-left: 95%;">
+				   style="width: auto; margin-left: 92%; font-size: 16px; padding: 7px 15px;">
 					Ta bort
 				</a>
 			</div>
