@@ -18,20 +18,17 @@ namespace CV_Applikation.Controllers
 		}
 		public async Task<ActionResult> SendMessageAsync()
 		{
-			string newSenderId = "GuestId";
 			var currentUser = await userManager.GetUserAsync(User);
 			var isUserLoggedIn = currentUser != null;
+			
+			var currentUserId = currentUser?.Id ?? string.Empty;
 
-			if (currentUser != null)
-			{
-				newSenderId = currentUser.Id;
-			}
-			var users = context.Users
-			.Where(u => u.Id != newSenderId && u.Id != "GuestId")
+            var users = context.Users
+			.Where(u => u.Id != currentUserId)
 			.Where(u => isUserLoggedIn || u.IsPrivate == false)
 			.ToList(); // Hämta alla användare förutom den inloggade
 			ViewBag.Users = users; // Skicka användarna till vyn
-			Message message = new Message { SenderId = newSenderId };
+			Message message = new Message {};
 			return View(message);
 		}
 		[HttpPost]
