@@ -20,7 +20,7 @@
                     <td>@project.Title</td>
                     <td>@project.ParticipantCount</td>
                     <td>
-                        <a href="@Url.Action("ProjectDetails", "Project", new { projectId = project.ProjectId })" class="btn btn-primary btn-sm">Visa</a>
+                        <a href="@Url.Action("ProjectDetails", "Project", new { projectId = project.ProjectId })" class="btn btn-primary btn-sm" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Visa</a>
                     </td>
                 </tr>
             }
@@ -28,4 +28,5 @@
     </table>
 </div>
 <br />
-<p> <a asp-controller="Home" asp-action="Index"> Tillbaka </a> <p/>
+<p> <a asp-controller="Home" asp-action="Index" style="color: rgb(255, 167, 38);"> Tillbaka </a>
+<p />

@@ -27,5 +27,31 @@
         </select>
     </div>
 
-    <button type="submit" class="btn btn-primary">Create Project</button>
+
+    <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Create Project</button>
 </form>
+
+<style>
+   /* Standard svarta borders */
+    .form-control {
+        border-color: black;
+    }
+
+    /* Ändra border och outline till orange när man fokuserar på fältet */
+    .form-control:focus {
+        border-color: rgb(255, 167, 38);
+        box-shadow: 0 0 5px rgba(255, 167, 38, 0.5);
+        outline: none;
+    }
+
+    /* Ändra bakgrundsfärg för markerade alternativ i select */
+    select.form-control option:checked {
+        background-color: rgba(255, 167, 38, 0.3);
+        color: black;
+    }
+
+    /* Ta bort standard blå focus ring för option-element */
+    select.form-control option:focus {
+        background-color: rgba(255, 167, 38, 0.5);
+    }
+</style>
