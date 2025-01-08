@@ -42,12 +42,6 @@ namespace CV_Applikation.Models
                 .OnDelete(DeleteBehavior.Restrict); // NO ACTION kan användas istället för Restrict
 
             modelBuilder.Entity<Message>()
-               .HasOne(m => m.Sender)
-               .WithMany()  
-               .HasForeignKey(m => m.SenderId)
-               .OnDelete(DeleteBehavior.Restrict);  // Förhindrar automatisk radering av användare
-
-            modelBuilder.Entity<Message>()
                 .HasOne(m => m.Receiver)
                 .WithMany()
                 .HasForeignKey(m => m.ReceiverId)

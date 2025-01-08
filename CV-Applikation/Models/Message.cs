@@ -24,9 +24,6 @@ namespace CV_Applikation.Models
         [Required]
 		public System.DateTime Date { get; set; }
 
-        [ForeignKey(nameof(SenderId))]
-        public virtual User Sender { get; set; }
-
         [ForeignKey(nameof(ReceiverId))]
         public virtual User Receiver { get; set; }
 

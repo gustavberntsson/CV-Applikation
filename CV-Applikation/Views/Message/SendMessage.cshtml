@@ -8,9 +8,16 @@
 <div class="container">
     <h2>Send New Message</h2>
     
-    <form asp-action="SendMessage" method="post">
+    <form asp-action="SendMessage" asp-controller="Message" method="post">
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <div class="form-group mb-3">
+                <label for="sender">Från:</label>
+                <input type="text" maxlength="20" id="sender" name="sender" class="form-control" required>
+            </div>
+        }
         <div class="form-group mb-3">
-            <label for="receiver">To:</label>
+            <label for="receiver">Till:</label>
             <select id="receiver" name="receiver" class="form-control">
                 @foreach (var user in ViewBag.Users)
                 {
@@ -20,7 +27,7 @@
         </div>
 
         <div class="form-group mb-3">
-            <label for="content">Message:</label>
+            <label for="content">Meddelande:</label>
             <textarea id="content" name="content" class="form-control" rows="5" required></textarea>
         </div>
 

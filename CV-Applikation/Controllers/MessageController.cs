@@ -35,28 +35,47 @@ namespace CV_Applikation.Controllers
 			return View(message);
 		}
 		[HttpPost]
-		public async Task<ActionResult> SendMessage(string content, string receiver)
+		public async Task<ActionResult> SendMessage(string content, string receiver, string sender)
 		{
-			string newSenderId = "GuestId";
-			var currentUser = await userManager.GetUserAsync(User);
-			if (currentUser != null)
-			{
-				newSenderId = currentUser.Id;
-			}
+
+            if (string.IsNullOrEmpty(content))
+            {
+                TempData["Error"] = "Du har inte fyllt i meddelanderutan.";
+                return RedirectToAction("SendMessageAsync");
+            }
+
+            var currentUser = await userManager.GetUserAsync(User);
+			string senderUsername;
+
+            if (currentUser != null)
+            {
+                senderUsername = currentUser.UserName;
+            }
+            else if (!string.IsNullOrEmpty(sender))
+            {
+                senderUsername = sender + " (Gäst)";
+            }
+            else
+            {
+                TempData["Error"] = "Avsändare måste anges";
+                return RedirectToAction("SendMessageAsync");
+            }
+
 			var receiverUser = await userManager.FindByNameAsync(receiver);
 
 			//Skapar en ny lista för att skicka meddelandet
 			var newMessage = new Message
 			{
-				SenderId = newSenderId,
+				SenderId = senderUsername,
 				ReceiverId = receiverUser.Id,
 				Date = DateTime.UtcNow,
 				Content = content,
 				IsRead = false
 			};
+
 			context.Message.Add(newMessage);
 			await context.SaveChangesAsync();
-			//Lägg till funktionalitet att skicka felmeddelande om man skickar till sig själv
+
 			if (currentUser != null)
 			{
 				return RedirectToAction("Message", "Message");
