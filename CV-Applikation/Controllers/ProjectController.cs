@@ -20,9 +20,7 @@ namespace CV_Applikation.Controllers
 
         public ActionResult AddProject()
         {
-            var users = context.Users
-                .Where(u => u.Id != "GuestId")
-                .ToList(); // Hämta alla användare
+            var users = context.Users.ToList(); // Hämta alla användare
             ViewBag.Users = users; // Skicka användarna till vyn
             Project project = new Project();
             return View(project);
