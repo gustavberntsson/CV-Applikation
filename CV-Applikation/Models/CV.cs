@@ -7,12 +7,14 @@ namespace CV_Applikation.Models
     {
         [Key]
         public int CVId { get; set; }
+        [Required(ErrorMessage = "Namn för CV är obligatoriskt.")]
         public string CVName { get; set; }
         //public string OwnerId { get; set; } email? eller bara user och kan ta bort?
+        [Required(ErrorMessage = "Status för CV är obligatoriskt.")]
         public Boolean IsPrivate { get; set; }
-        public string ImagePath { get; set; }
+        public string? ImagePath { get; set; }
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         
         [ForeignKey(nameof(UserId))]
         public virtual User? User { get; set; }

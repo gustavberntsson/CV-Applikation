@@ -4,6 +4,7 @@
 @model CV
 <form asp-action="Add" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <label class="fw-normal fs-5">CV Namn:</label>
     <input asp-for="CVName" />
     <span asp-validation-for="CVName" class="text-danger"></span>
@@ -24,12 +25,15 @@
                     <div>
                         <label for="Languages[@i].LanguageName">Språk:</label>
                         <input asp-for="Languages[@i].LanguageName" id="Languages[@i].LanguageName" />
+                        <span asp-validation-for="Languages[@i].LanguageName" class="text-danger"></span>
                         <br />
                         <label for="Languages[@i].Level">Nivå (1-5):</label>
                         <input asp-for="Languages[@i].Level" id="Languages[@i].Level" type="number" min="1" max="5" />
+                        <span asp-validation-for="Languages[@i].Level" class="text-danger"></span>
                         <br />
                     </div>
                 }
+                
             </div>
             <button type="button" class="btn" id="addLanguage" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Lägg till nytt språk</button>
         </div>
@@ -43,18 +47,23 @@
                     <div>
                         <label for="Educations[@i].School">Skola:</label>
                         <input asp-for="Educations[@i].School" id="Educations[@i].School" />
+                        <span asp-validation-for="Educations[@i].School" class="text-danger"></span>
                         <br />
                         <label for="Educations[@i].Degree">Examen:</label>
                         <input asp-for="Educations[@i].Degree" id="Educations[@i].Degree" />
+                        <span asp-validation-for="Educations[@i].Degree" class="text-danger"></span>
                         <br />
                         <label for="Educations[@i].FieldOfStudy">Ämnesområde:</label>
                         <input asp-for="Educations[@i].FieldOfStudy" id="Educations[@i].FieldOfStudy" />
+                        <span asp-validation-for="Educations[@i].FieldOfStudy" class="text-danger"></span>
                         <br />
                         <label for="Educations[@i].StartDate">Startdatum:</label>
                         <input asp-for="Educations[@i].StartDate" id="Educations[@i].StartDate" />
+                        <span asp-validation-for="Educations[@i].StartDate" class="text-danger"></span>
                         <br />
                         <label for="Educations[@i].EndDate">Slutdatum:</label>
                         <input asp-for="Educations[@i].EndDate" id="Educations[@i].EndDate" />
+                        <span asp-validation-for="Educations[@i].EndDate" class="text-danger"></span>
                         <br />
                     </div>
                 }
@@ -73,18 +82,23 @@
                     <div>
                         <label for="WorkExperiences[@i].CompanyName">Företag:</label>
                         <input asp-for="WorkExperiences[@i].CompanyName" id="WorkExperiences[@i].CompanyName" />
+                        <span asp-validation-for="WorkExperiences[@i].CompanyName" class="text-danger"></span>
                         <br />
                         <label for="WorkExperiences[@i].Position">Position:</label>
                         <input asp-for="WorkExperiences[@i].Position" id="WorkExperiences[@i].Position" />
+                        <span asp-validation-for="WorkExperiences[@i].Position" class="text-danger"></span>
                         <br />
                         <label for="WorkExperiences[@i].Description">Beskrivning:</label>
                         <input asp-for="WorkExperiences[@i].Description" id="WorkExperiences[@i].Description" />
+                        <span asp-validation-for="WorkExperiences[@i].Description" class="text-danger"></span>
                         <br />
                         <label for="WorkExperiences[@i].StartDate">Startdatum:</label>
                         <input asp-for="WorkExperiences[@i].StartDate" id="WorkExperiences[@i].StartDate" />
+                        <span asp-validation-for="WorkExperiences[@i].StartDate" class="text-danger"></span>
                         <br />
                         <label for="WorkExperiences[@i].EndDate">Slutdatum:</label>
                         <input asp-for="WorkExperiences[@i].EndDate" id="WorkExperiences[@i].EndDate" />
+                        <span asp-validation-for="WorkExperiences[@i].EndDate" class="text-danger"></span>
                         <br />
                     </div>
                 }
@@ -101,6 +115,7 @@
                     <div>
                         <label for="Skills[@i].SkillName">Färdighet:</label>
                         <input asp-for="Skills[@i].SkillName" id="Skills[@i].SkillName" />
+                        <span asp-validation-for="Skills[@i].SkillName" class="text-danger"></span>
                         <br />
                     </div>
                 }
@@ -116,6 +131,7 @@
             <option value="false">Offentligt</option>
             <option value="true">Privat</option>
         </select>
+        <span asp-validation-for="IsPrivate" class="text-danger"></span>
     </div>
     <br />
     <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Lägg till CV</button>
@@ -204,7 +220,7 @@
 
 <script>
     function hasValue(value) {
-        return value != null && value.trim() !== '';
+        return value !== undefined && value !== null && value.trim() !== '';
     }
 
     function validateSection(containerId, addButtonId, requiredFields = []) {
@@ -222,6 +238,8 @@
                 Array.from(inputs);
 
             const allFieldsHaveValue = fieldsToCheck.every(input => hasValue(input.value));
+
+            // Uppdatera knappens tillstånd
             addButton.disabled = !allFieldsHaveValue;
         }
     }
@@ -238,67 +256,24 @@
         validateSection(container.id, 'add' + addButtonId);
     }
 
-    // Språk
-    document.getElementById("addLanguage").addEventListener("click", function () {
-        let container = document.getElementById("languagesContainer");
-        let index = container.children.length;
-        let newLanguage = document.createElement('div');
-        newLanguage.innerHTML = `
-        <div class="input-row">
-            <label for="Languages[${index}].LanguageName">Språk:</label>
-            <input name="Languages[${index}].LanguageName" id="Languages[${index}].LanguageName" onchange="validateSection('languagesContainer', 'addLanguage', ['LanguageName'])" />
-            <label for="Languages[${index}].Level">Nivå (1-5):</label>
-            <input type="number" min="1" max="5" name="Languages[${index}].Level" id="Languages[${index}].Level" onchange="validateSection('languagesContainer', 'addLanguage', ['LanguageName'])" />
-            ${createRemoveButton()}
-        </div>`;
-        container.appendChild(newLanguage);
-        document.getElementById('addLanguage').disabled = true;
-    });
+    // Lägg till eventlyssnare för alla inputfält
+    document.addEventListener('DOMContentLoaded', function () {
+        // Validera sektioner vid sidladdning
+        validateSection('languagesContainer', 'addLanguage', ['LanguageName']);
+        validateSection('educationsContainer', 'addEducation', ['School']);
+        validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName']);
+        validateSection('skillsContainer', 'addSkill', ['SkillName']);
 
-    // Utbildning
-    document.getElementById("addEducation").addEventListener("click", function () {
-        let container = document.getElementById("educationsContainer");
-        let index = container.children.length;
-        let newEducation = document.createElement('div');
-        newEducation.innerHTML = `
-        <div class="input-row">
-            <label for="Educations[${index}].School">Skola:</label>
-            <input name="Educations[${index}].School" id="Educations[${index}].School" onchange="validateSection('educationsContainer', 'addEducation', ['School'])" />
-            <label for="Educations[${index}].Degree">Examen:</label>
-            <input name="Educations[${index}].Degree" id="Educations[${index}].Degree" onchange="validateSection('educationsContainer', 'addEducation', ['School'])" />
-            <label for="Educations[${index}].FieldOfStudy">Ämnesområde:</label>
-            <input name="Educations[${index}].FieldOfStudy" id="Educations[${index}].FieldOfStudy" onchange="validateSection('educationsContainer', 'addEducation', ['School'])" />
-            <label for="Educations[${index}].StartDate">Startdatum:</label>
-            <input type="date" name="Educations[${index}].StartDate" id="Educations[${index}].StartDate" onchange="validateSection('educationsContainer', 'addEducation', ['School'])" />
-            <label for="Educations[${index}].EndDate">Slutdatum:</label>
-            <input type="date" name="Educations[${index}].EndDate" id="Educations[${index}].EndDate" onchange="validateSection('educationsContainer', 'addEducation', ['School'])" />
-            ${createRemoveButton()}
-        </div>`;
-        container.appendChild(newEducation);
-        document.getElementById('addEducation').disabled = true;
-    });
-
-    // Arbetslivserfarenhet
-    document.getElementById("addWorkExperience").addEventListener("click", function () {
-        let container = document.getElementById("workExperiencesContainer");
-        let index = container.children.length;
-        let newExperience = document.createElement('div');
-        newExperience.innerHTML = `
-        <div class="input-row">
-            <label for="WorkExperiences[${index}].CompanyName">Företag:</label>
-            <input name="WorkExperiences[${index}].CompanyName" id="WorkExperiences[${index}].CompanyName" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName'])" />
-            <label for="WorkExperiences[${index}].Position">Position:</label>
-            <input name="WorkExperiences[${index}].Position" id="WorkExperiences[${index}].Position" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName'])" />
-            <label for="WorkExperiences[${index}].Description">Beskrivning:</label>
-            <input name="WorkExperiences[${index}].Description" id="WorkExperiences[${index}].Description" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName'])" />
-            <label for="WorkExperiences[${index}].StartDate">Startdatum:</label>
-            <input type="date" name="WorkExperiences[${index}].StartDate" id="WorkExperiences[${index}].StartDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName'])" />
-            <label for="WorkExperiences[${index}].EndDate">Slutdatum:</label>
-            <input type="date" name="WorkExperiences[${index}].EndDate" id="WorkExperiences[${index}].EndDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName'])" />
-            ${createRemoveButton()}
-        </div>`;
-        container.appendChild(newExperience);
-        document.getElementById('addWorkExperience').disabled = true;
+        // Lägg till eventlyssnare för alla inputfält för att trigga validering vid ändring
+        document.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", function() {
+                // Här anropas validateSection för alla containers som finns
+                validateSection('languagesContainer', 'addLanguage', ['LanguageName']);
+                validateSection('educationsContainer', 'addEducation', ['School']);
+                validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName']);
+                validateSection('skillsContainer', 'addSkill', ['SkillName']);
+            });
+        });
     });
 
     // Färdigheter
@@ -307,20 +282,80 @@
         let index = container.children.length;
         let newSkill = document.createElement('div');
         newSkill.innerHTML = `
-        <div class="input-row">
-            <label for="Skills[${index}].SkillName">Färdighet:</label>
-            <input name="Skills[${index}].SkillName" id="Skills[${index}].SkillName" onchange="validateSection('skillsContainer', 'addSkill', ['SkillName'])" />
-            ${createRemoveButton()}
-        </div>`;
+            <div class="input-row">
+                <label for="Skills[${index}].SkillName">Färdighet:</label>
+                <input name="Skills[${index}].SkillName" id="Skills[${index}].SkillName" onchange="validateSection('skillsContainer', 'addSkill', ['SkillName'])" oninput="validateSection('skillsContainer', 'addSkill', ['SkillName'])" />
+                ${createRemoveButton()}
+            </div>`;
         container.appendChild(newSkill);
-        document.getElementById('addSkill').disabled = true;
-    });
 
-    // Initiera validering för alla sektioner vid start
-    document.addEventListener('DOMContentLoaded', function() {
-        validateSection('languagesContainer', 'addLanguage', ['LanguageName']);
-        validateSection('educationsContainer', 'addEducation', ['School']);
-        validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName']);
+        // Validera direkt när nytt fält lagts till
         validateSection('skillsContainer', 'addSkill', ['SkillName']);
     });
+
+    // Språk
+    document.getElementById("addLanguage").addEventListener("click", function () {
+        let container = document.getElementById("languagesContainer");
+        let index = container.children.length;
+        let newLanguage = document.createElement('div');
+        newLanguage.innerHTML = `
+            <div class="input-row">
+                <label for="Languages[${index}].LanguageName">Språk:</label>
+                <input name="Languages[${index}].LanguageName" id="Languages[${index}].LanguageName" onchange="validateSection('languagesContainer', 'addLanguage', ['LanguageName', 'Level'])" />
+                <label for="Languages[${index}].Level">Nivå (1-5):</label>
+                <input name="Languages[${index}].Level" type="number" id="Languages[${index}].Level" min="1" max="5" value="1" />
+    @* <input name="Languages[${index}].Level" type="number" min="1" max="5"/> *@
+    @* <input type="text" name="Languages[${index}].Level" id="Languages[${index}].Level" pattern="\d*" onchange="validateSection('languagesContainer', 'addLanguage', ['LanguageName', 'Level'])" /> *@
+                ${createRemoveButton()}
+            </div>`;
+        container.appendChild(newLanguage);
+        validateSection('languagesContainer', 'addLanguage', ['LanguageName', 'Level']);
+    });
+
+    // Utbildning
+    document.getElementById("addEducation").addEventListener("click", function () {
+        let container = document.getElementById("educationsContainer");
+        let index = container.children.length;
+        let newEducation = document.createElement('div');
+        newEducation.innerHTML = `
+            <div class="input-row">
+                <label for="Educations[${index}].School">Skola:</label>
+                <input name="Educations[${index}].School" id="Educations[${index}].School" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+                <label for="Educations[${index}].Degree">Examen:</label>
+                <input name="Educations[${index}].Degree" id="Educations[${index}].Degree" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+                <label for="Educations[${index}].FieldOfStudy">Ämnesområde:</label>
+                <input name="Educations[${index}].FieldOfStudy" id="Educations[${index}].FieldOfStudy" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+                <label for="Educations[${index}].StartDate">Startdatum:</label>
+                <input type="date" name="Educations[${index}].StartDate" id="Educations[${index}].StartDate" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+                <label for="Educations[${index}].EndDate">Slutdatum:</label>
+                <input type="date" name="Educations[${index}].EndDate" id="Educations[${index}].EndDate" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+                ${createRemoveButton()}
+            </div>`;
+        container.appendChild(newEducation);
+        validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate']);
+    });
+
+    // Arbetslivserfarenhet
+    document.getElementById("addWorkExperience").addEventListener("click", function () {
+        let container = document.getElementById("workExperiencesContainer");
+        let index = container.children.length;
+        let newExperience = document.createElement('div');
+        newExperience.innerHTML = `
+            <div class="input-row">
+                <label for="WorkExperiences[${index}].CompanyName">Företag:</label>
+                <input name="WorkExperiences[${index}].CompanyName" id="WorkExperiences[${index}].CompanyName" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+                <label for="WorkExperiences[${index}].Position">Position:</label>
+                <input name="WorkExperiences[${index}].Position" id="WorkExperiences[${index}].Position" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+                <label for="WorkExperiences[${index}].Description">Beskrivning:</label>
+                <input name="WorkExperiences[${index}].Description" id="WorkExperiences[${index}].Description" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+                <label for="WorkExperiences[${index}].StartDate">Startdatum:</label>
+                <input type="date" name="WorkExperiences[${index}].StartDate" id="WorkExperiences[${index}].StartDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+                <label for="WorkExperiences[${index}].EndDate">Slutdatum:</label>
+                <input type="date" name="WorkExperiences[${index}].EndDate" id="WorkExperiences[${index}].EndDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+                ${createRemoveButton()}
+            </div>`;
+        container.appendChild(newExperience);
+        validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate']);
+    });
+
 </script>

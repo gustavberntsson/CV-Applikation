@@ -10,20 +10,13 @@ namespace CV_Applikation.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Address",
-                table: "ContactInformation");
+           
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Address",
-                table: "ContactInformation",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
+          
         }
     }
 }
