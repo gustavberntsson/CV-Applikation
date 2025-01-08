@@ -7,7 +7,11 @@ namespace CV_Applikation.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required(ErrorMessage = "Språk är obligatoriskt.")]
         public string LanguageName { get; set; }
+
+        [Required(ErrorMessage = "Nivå för språk är obligatoriskt.")]
+        [Range(1, 5, ErrorMessage = "Nivå måste vara mellan 1 och 5.")] //c
         public int Level { get; set; }
         public int CVId { get; set; }
 

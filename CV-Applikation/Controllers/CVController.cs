@@ -270,10 +270,10 @@ namespace CV_Applikation.Controllers
         [HttpPost]
         public async Task<IActionResult> EditCv(EditCvViewModel model)
         {
-            //if (ModelState.IsValid)
-            //{
-            // Hämta CV från databasen
-            var cv = context.CVs
+            if (ModelState.IsValid)
+            {
+                // Hämta CV från databasen
+                var cv = context.CVs
                 .Include(c => c.Educations)
                 .Include(c => c.WorkExperiences)
                 .Include(c => c.Languages)
@@ -426,7 +426,11 @@ namespace CV_Applikation.Controllers
             // Omdirigera till profil-sidan
             return RedirectToAction("Profile", "Account");
         }
-
+            else
+            {
+                return View(model);
+            }
+        }
 
         // Om ModelState är ogiltigt, visa formuläret igen
         //return View(model);

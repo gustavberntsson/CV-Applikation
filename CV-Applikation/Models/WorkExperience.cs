@@ -7,10 +7,16 @@ namespace CV_Applikation.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required(ErrorMessage = "Företagsnamn är obligatoriskt.")]
         public string CompanyName { get; set; }
+        [Required(ErrorMessage = "Arbetsroll är obligatoriskt.")]
         public string Position { get; set; }
+        [Required(ErrorMessage = "Arbetsbeskrivning är obligatoriskt.")]
         public string Description { get; set; }
+        [Required(ErrorMessage = "Startdatum är obligatoriskt.")]
+        [StartDateValidator]
         public string StartDate { get; set; }
+        [DateGreaterThanValidator("StartDate", ErrorMessage = "Slutdatum behöver vara senare än startdatumet.")]
         public string? EndDate { get; set; }
         public int CVId { get; set; }
 
