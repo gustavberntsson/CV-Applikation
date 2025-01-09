@@ -13,6 +13,27 @@
 }
 
 else {
+
+	<form asp-action="SparaTillXml" asp-controller="Account">
+        <input type="hidden" name="userId" value="@Model.ProfileId" />
+        <button type="Submit">Exportera profil till XML</button></form>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["FilePath"] != null && System.IO.File.Exists(TempData["FilePath"].ToString()))
+    {
+        <a href="@Url.Action($"{Model.ProfileName}_data.xml", "exports")" class="btn btn-primary">Öppna XML-data</a>
+    }
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-3">

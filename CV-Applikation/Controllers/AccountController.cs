@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.SqlClient;
 using CV_Applikation.Migrations;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace CV_Applikation.Controllers
 {
@@ -129,16 +131,16 @@ namespace CV_Applikation.Controllers
             .Include(cv => cv.Skills)
             .Include(cv => cv.WorkExperiences)
             .Select(cv => new CV
-                {
-                    CVId = cv.CVId,
-                    CVName = cv.CVName,
-                    ImagePath = cv.ImagePath, // Inkludera ImagePath
-                    UserId = cv.UserId,
-                    Educations = cv.Educations,
-                    Languages = cv.Languages,
-                    Skills = cv.Skills,
-                    WorkExperiences = cv.WorkExperiences
-                })
+            {
+                CVId = cv.CVId,
+                CVName = cv.CVName,
+                ImagePath = cv.ImagePath, // Inkludera ImagePath
+                UserId = cv.UserId,
+                Educations = cv.Educations,
+                Languages = cv.Languages,
+                Skills = cv.Skills,
+                WorkExperiences = cv.WorkExperiences
+            })
             .ToListAsync();
 
             var projects = await context.Projects
@@ -327,7 +329,7 @@ namespace CV_Applikation.Controllers
 
             var kontaktUppgifter = await context.ContactInformation
         .FirstOrDefaultAsync(k => k.UserId == currentUser.Id);
-            
+
             var model = new EditProfileViewModel
             {
                 ProfilePicture = currentUser.ImageUrl,
@@ -345,7 +347,7 @@ namespace CV_Applikation.Controllers
         [HttpPost]
         public async Task<IActionResult> EditProfile(EditProfileViewModel model)
         {
-         
+
 
             var currentUser = await userManager.GetUserAsync(User);
             if (currentUser == null)
@@ -373,9 +375,132 @@ namespace CV_Applikation.Controllers
             currentUser.IsPrivate = model.IsPrivate;
 
             await context.SaveChangesAsync();
-            
-                return RedirectToAction("Profile");
+
+            return RedirectToAction("Profile");
 
         }
+        [HttpPost]
+        public async Task<IActionResult> SparaTillXml(string userId)
+        {
+            try
+            {
+                var currentUser = await userManager.FindByIdAsync(userId);
+                if (currentUser == null)
+                {
+                    TempData["ErrorMessage"] = "Ingen användare hittades.";
+                    return RedirectToAction("Profile");
+                }
+
+                var fileName = $"{currentUser.UserName}_data.xml";
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                var kontaktUppgifter = await context.ContactInformation
+                    .FirstOrDefaultAsync(k => k.UserId == currentUser.Id);
+
+                var cvs = await context.CVs
+                    .Where(cv => cv.UserId == currentUser.Id)
+                    .Include(cv => cv.Educations)
+                    .Include(cv => cv.Languages)
+                    .Include(cv => cv.Skills)
+                    .Include(cv => cv.WorkExperiences)
+                    .ToListAsync();
+
+                var projects = await context.Projects
+                    .Include(p => p.ProjectUsers)
+                    .ThenInclude(pu => pu.UserProject)
+                    .Where(p => p.OwnerId == currentUser.Id || p.ProjectUsers.Any(pu => pu.UserId == currentUser.Id))
+                    .OrderByDescending(p => p.CreatedAt)
+                    .ToListAsync();
+
+                var userData = new UserDataXml
+                {
+                    Profile = new UserProfileXml
+                    {
+                        UserName = currentUser.UserName,
+                        ImageUrl = currentUser.ImageUrl,
+                        IsPrivate = currentUser.IsPrivate,
+                        ContactInformation = new ContactInformationXml
+                        {
+                            Email = kontaktUppgifter?.Email,
+                            FirstName = kontaktUppgifter?.FirstName,
+                            LastName = kontaktUppgifter?.LastName,
+                            Adress = kontaktUppgifter?.Adress,
+                            PhoneNumber = kontaktUppgifter?.PhoneNumber
+                        }
+                    },
+                    CVs = cvs.Select(cv => new CVXml
+                    {
+                        CVName = cv.CVName,
+                        ImagePath = cv.ImagePath,
+                        Educations = cv.Educations?.Select(e => new EducationXml
+                        {
+                            Degree = e.Degree,
+                            FieldOfStudy = e.FieldOfStudy,
+                            School = e.School,
+                            StartDate = e.StartDate,
+                            EndDate = e.EndDate
+                        }).ToList(),
+                        Languages = cv.Languages?.Select(l => new LanguageXml
+                        {
+                            LanguageName = l.LanguageName,
+                            Level = l.Level
+                        }).ToList(),
+                        Skills = cv.Skills?.Select(s => new SkillXml
+                        {
+                            SkillName = s.SkillName
+                        }).ToList(),
+                        WorkExperiences = cv.WorkExperiences?.Select(w => new WorkExperienceXml
+                        {
+                            Position = w.Position,
+                            CompanyName = w.CompanyName,
+                            Description = w.Description,
+                            StartDate = w.StartDate,
+                            EndDate = w.EndDate
+                        }).ToList()
+                    }).ToList(),
+                    Projects = projects.Select(p => new ProjectXml
+                    {
+                        Title = p.Title,
+                        Description = p.Description,
+                        CreatedAt = p.CreatedAt,
+                        OwnerId = p.OwnerId,
+                        ProjectUsers = p.ProjectUsers?.Select(pu => new ProjectUserXml
+                        {
+                            UserId = pu.UserId,
+                            UserName = pu.UserProject?.UserName
+                        }).ToList()
+                    }).ToList()
+                };
+
+                var xmlWriterSettings = new XmlWriterSettings
+                {
+                    Indent = true,
+                    IndentChars = "  "
+                };
+
+                var serializer = new XmlSerializer(typeof(UserDataXml));
+                using (var writer = XmlWriter.Create(filePath, xmlWriterSettings))
+                {
+                    serializer.Serialize(writer, userData);
+                }
+
+                TempData["SuccessMessage"] = $"XML-fil sparad: {fileName}";
+                TempData["FilePath"] = filePath;
+                return RedirectToAction("Profile", new { userId = currentUser.Id });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Ett fel uppstod: {ex.Message}";
+                return RedirectToAction("Profile");
+            }
+        }
     }
-    }
+}
+
