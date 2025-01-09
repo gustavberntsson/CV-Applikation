@@ -13,7 +13,7 @@
             <div class="card-body">
                 <h3 class="card-title">@project.Title</h3>
                 <p class="card-text">@project.Description</p>
-                <p><strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
+                <p><strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</p>
 
                 <a asp-action="EditProject" asp-route-projectId="@project.ProjectId" class="btn btn-primary" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Redigera Projekt</a>
             </div>

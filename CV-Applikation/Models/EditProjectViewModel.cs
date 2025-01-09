@@ -14,6 +14,6 @@ namespace CV_Applikation.Models
         [StringLength(500, ErrorMessage = " Titel får inte överskrida 500 tecken.")]
         public string Description { get; set; }
 
-        public ICollection<User> Participants { get; set; }
+        public ICollection<User>? Participants { get; set; }
     }
 }

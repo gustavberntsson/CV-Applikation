@@ -354,6 +354,7 @@ namespace CV_Applikation.Controllers
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            
             var project = await context.Projects
            .FirstOrDefaultAsync(p => p.ProjectId == projectId && p.OwnerId == currentUserId);
 
@@ -369,7 +370,7 @@ namespace CV_Applikation.Controllers
                 Title = project.Title,
                 Description = project.Description
             };
-            return View(model);
+              return View(model);
         }
 
         [HttpPost]
@@ -378,21 +379,37 @@ namespace CV_Applikation.Controllers
         {
             var currentUserId = await userManager.GetUserAsync(User);
 
-            var project = await context.Projects
+
+            if (ModelState.IsValid)
+            {
+
+                var project = await context.Projects
                 .FirstOrDefaultAsync(p => p.ProjectId == model.ProjectId && p.OwnerId == currentUserId.Id);
 
-            if (project == null)
-            {
-                return Unauthorized(); // Säkerställ att användaren äger projektet
+                if (project == null)
+                {
+                    return Unauthorized(); // Säkerställ att användaren äger projektet
+                }
+
+                // Uppdatera projektinformationen
+                project.Title = model.Title;
+                project.Description = model.Description;
+
+                await context.SaveChangesAsync(); // Spara ändringar i databasen
+
+                return RedirectToAction("ProjectDetails", new { projectId = project.ProjectId });
             }
-
-            // Uppdatera projektinformationen
-            project.Title = model.Title;
-            project.Description = model.Description;
-
-            await context.SaveChangesAsync(); // Spara ändringar i databasen
-
-            return RedirectToAction("ProjectDetails", new { projectId = project.ProjectId });
+            else
+            {
+                foreach (var modelState in ModelState)
+                {
+                    foreach (var error in modelState.Value.Errors)
+                    {
+                        Console.WriteLine($"Property: {modelState.Key}, Error: {error.ErrorMessage}");
+                    }
+                }
+                return View(model);
+            }
         }
 
         [Authorize]
