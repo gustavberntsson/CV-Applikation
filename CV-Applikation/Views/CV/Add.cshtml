@@ -4,7 +4,7 @@
 @model CV
 <form asp-action="Add" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    
     <label class="fw-normal fs-5">CV Namn:</label>
     <input asp-for="CVName" />
     <span asp-validation-for="CVName" class="text-danger"></span>
