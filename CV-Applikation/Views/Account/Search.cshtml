@@ -32,16 +32,16 @@
                                 <div class="mb-3">
                                     <h6 class="mb-2">Arbetslivserfarenhet:</h6>
                                     <div class="small">
-                                        @foreach (var work in user.AllWorkExperiences.Take(4))
+                                        @foreach (var work in user.AllWorkExperiences.Take(2))
                                         {
                                             <div class="mb-1">
                                               <div>@work.CompanyName</div>
                                               <div class="text-muted">@work.Position</div>
                                             </div>
                                         }
-                                        @if (user.AllWorkExperiences.Count > 1)
+                                        @if (user.AllWorkExperiences.Count > 2)
                                         {
-                                            <div class="text-muted">+@(user.AllWorkExperiences.Count - 4) till</div>
+                                            <div class="text-muted">+@(user.AllWorkExperiences.Count - 2) till</div>
                                         }
                                     </div>
                                 </div>
