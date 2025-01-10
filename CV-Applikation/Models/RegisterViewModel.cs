@@ -10,6 +10,7 @@ namespace CV_Applikation.Models
         public string AnvandarNamn { get; set; }
 
         [Required(ErrorMessage = "Du måste ange en epostadress")]
+        [Validation.EpostValidation(ErrorMessage = "Ogiltig e-postadress, korrekt format är Exempel@Exempel.com")]
         [Display(Name = "E-post")]
         public string Email { get; set; }
 
@@ -26,6 +27,7 @@ namespace CV_Applikation.Models
         public string Adress { get; set; }
 
         [Required(ErrorMessage = "Du måste ange ett telefonnummer")]
+        [Validation.PhoneValidation(ErrorMessage = "Ogiltigt telefonnummer, korrekt format är 070-1234567")]
         [Display(Name = "Telefon")]
         public string TelefonNummer { get; set; }
 
