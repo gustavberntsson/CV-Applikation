@@ -12,7 +12,7 @@ namespace CV_Applikation.Models
         public string Adress { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
-
+        public int? ViewCount { get; set; }
         public string UserId { get; set; }
 
         [ForeignKey(nameof(UserId))]

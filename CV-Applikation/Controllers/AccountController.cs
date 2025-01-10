@@ -129,9 +129,19 @@ namespace CV_Applikation.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            // Öka view count endast om besökaren inte är profilägaren
+            var currentUser = await userManager.GetUserAsync(User);
+            if (currentUser == null || currentUser?.Id != UserId)
+            {
+                var contactInfo = await GetContactInformationAsync(UserId);
+                if (contactInfo != null)
+                {
+                    contactInfo.ViewCount = (contactInfo.ViewCount ?? 0) + 1;
+                    await context.SaveChangesAsync();
+                }
+            }
 
             // Bygg ProfileViewModel med hjälp av BuildProfileViewModelAsync
-            var currentUser = await userManager.GetUserAsync(User);
             var vmodel = await BuildProfileViewModelAsync(userEntity, currentUser);
 
             return View(vmodel);
@@ -158,7 +168,16 @@ namespace CV_Applikation.Controllers
             if (matchingUsers.Count == 1)
             {
                 var user = matchingUsers.First();
-                var profileViewModel = await BuildProfileViewModelAsync(user, currentUser);
+                if (!isUserLoggedIn ||currentUser.Id != user.Id )
+                {
+                    var contactInfo = await GetContactInformationAsync(user.Id);
+                    if (contactInfo != null)
+                    {
+                        contactInfo.ViewCount = (contactInfo.ViewCount ?? 0) + 1;
+                        await context.SaveChangesAsync();
+                    }
+                }
+                    var profileViewModel = await BuildProfileViewModelAsync(user, currentUser);
                 return View("Profile", profileViewModel);
             }
 
@@ -407,6 +426,7 @@ namespace CV_Applikation.Controllers
                 Adress = contactInfo?.Adress ?? "Ej angivet",
                 Email = contactInfo?.Email ?? "Ej angivet",
                 PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
+                ViewCount = contactInfo?.ViewCount ?? 0,
                 Cvs = CVs,
                 Projects = projects,
                 CurrentUserId = currentUser?.Id

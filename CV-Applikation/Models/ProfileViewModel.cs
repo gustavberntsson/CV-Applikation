@@ -10,6 +10,7 @@ public class ProfileViewModel
     public string? PhoneNumber { get; set; }
     public string? Email { get; set; }
     public string? Adress { get; set; }
+    public int? ViewCount { get; set; }
     public string? CurrentUserId { get; set; }
     public bool IsPrivate { get; set; }
     public bool IsEnabled { get; set; }
