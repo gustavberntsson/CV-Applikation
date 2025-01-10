@@ -2,266 +2,270 @@
     ViewData["Title"] = "Profil";
 }
 @model ProfileViewModel
-@if (Model.IsEnabled == false) {
+
+@if (Model.IsEnabled == false) 
+{
     <div class="container mt-4">
         <div class="alert alert-danger" role="alert">
             Denna användare har inaktiverat sitt konto
         </div>
     </div>
 }
-else {
-@if (Model.IsPrivate && Model.CurrentUserId == null)
+else 
 {
-	<div class="container mt-4">
-		<div class="alert alert-danger" role="alert">
-			Denna profil är privat, du måste logga in för att se den
-		</div> 
-    </div>
-}
-
-else {
-
-	<form asp-action="SparaTillXml" asp-controller="Account">
-        <input type="hidden" name="userId" value="@Model.ProfileId" />
-        <button type="Submit">Exportera profil till XML</button></form>
-    @if (TempData["SuccessMessage"] != null)
+    @if (Model.IsPrivate && Model.CurrentUserId == null) 
     {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["ErrorMessage"]
-        </div>
-    }
-    @if (TempData["FilePath"] != null && System.IO.File.Exists(TempData["FilePath"].ToString()))
-    {
-        <a href="@Url.Action($"{Model.ProfileName}_data.xml", "exports")" class="btn btn-primary">Öppna XML-data</a>
-    }
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col-md-3">
-            @if (!string.IsNullOrEmpty(Model.ImageUrl))
-            {
-                    <img src="@Model.ImageUrl" class="img-fluid rounded-circle mb-3" alt="Profilbild för @Model.ProfileName"
-                         onerror="this.src='https://media.istockphoto.com/id/610003972/vector/vector-businessman-black-silhouette-isolated.jpg?s=612x612&w=0&k=20&c=Iu6j0zFZBkswfq8VLVW8XmTLLxTLM63bfvI6uXdkacM=';" style="height: 200px; object-fit: cover;">
-            }
-            else
-            {
-                <img src="https://media.istockphoto.com/id/610003972/vector/vector-businessman-black-silhouette-isolated.jpg?s=612x612&w=0&k=20&c=Iu6j0zFZBkswfq8VLVW8XmTLLxTLM63bfvI6uXdkacM=" alt="" class="img-fluid rounded-circle mb-3" style="max-width: 200px;" />
-            }
-            
-            <div class="contact-info">
-                <h4>Kontaktuppgifter</h4>
-                <p><strong>Namn:</strong> @Model.FirstName @Model.LastName</p>
-                <p><strong>Telefon:</strong> @Model.PhoneNumber</p>
-                <p><strong>E-post:</strong> @Model.Email</p>
-                <p><strong>Adress:</strong> @Model.Adress</p>
-                 @if (Model.CurrentUserId == @Model.ProfileId)
-                    {
-                    <div class="mt-4 button-container">
-                            <a asp-controller="CV" asp-action="Add" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Lägg till CV</a>
-                            <a asp-controller="Project" asp-action="AddProject" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Lägg till Projekt</a>
-                            <div class="mt-1">
-                                <a asp-controller="Project" asp-action="MyProjectsToEdit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Redigera mina projekt</a>
-                            </div>
-                            @if (Model.CurrentUserId == @Model.ProfileId)
-                            {
-                                <a href="@Url.Action("EditProfile", "Account")" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Redigera Profil</a>
-                                <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;"> Ändra Lösenord</a>
-                            }
-                    </div>
-                    }
+        <div class="container mt-4">
+            <div class="alert alert-danger" role="alert">
+                Denna profil är privat, du måste logga in för att se den
             </div>
         </div>
-        <div class="col-md-9">
-            <h1 class="mb-4">Profil för @Model.FirstName @Model.LastName</h1>
-                <a href="@Url.Action("FindSimilarUser", "Account", new { userId = Model.ProfileId })"
-                   class="btn btn-success"
-                   style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white; margin-bottom: 20px;">
-                    Hitta användare från samma skola
-                </a>
-            @if(Model.CurrentUserId != @Model.ProfileId) {
-                    <a href="@Url.Action("SendMessage", "Message")" class="btn btn-success" style=" background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white; margin-bottom: 20px;">Skicka meddelande</a>
-            }
-
-    @foreach (var cv in Model.Cvs)
+    }
+    else 
     {
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2 class="mb-0"> CV: @cv.CVName</h2>
-                        @if (!string.IsNullOrEmpty(cv.ImagePath))
-                        {
-                            <img src="@cv.ImagePath" alt="CV bild" class="img-fluid rounded" style="max-width: 200px;">
-                        }
+        <form asp-action="SparaTillXml" asp-controller="Account">
+            <input type="hidden" name="userId" value="@Model.ProfileId" />
+            <button type="Submit">Exportera profil till XML</button>
+        </form>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (TempData["FilePath"] != null && System.IO.File.Exists(TempData["FilePath"].ToString()))
+        {
+            <a href="@Url.Action($"{Model.ProfileName}_data.xml", "exports")" class="btn btn-primary">Öppna XML-data</a>
+        }
+
+        <div class="container mt-4">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="img-fluid rounded-circle mb-3" alt="Profilbild för @Model.ProfileName"
+                             onerror="this.src='https://media.istockphoto.com/id/610003972/vector/vector-businessman-black-silhouette-isolated.jpg?s=612x612&w=0&k=20&c=Iu6j0zFZBkswfq8VLVW8XmTLLxTLM63bfvI6uXdkacM=';" style="height: 200px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <img src="https://media.istockphoto.com/id/610003972/vector/vector-businessman-black-silhouette-isolated.jpg?s=612x612&w=0&k=20&c=Iu6j0zFZBkswfq8VLVW8XmTLLxTLM63bfvI6uXdkacM=" alt="" class="img-fluid rounded-circle mb-3" style="max-width: 200px;" />
+                    }
+
+                    <div class="contact-info">
+                        <h4>Kontaktuppgifter</h4>
+                        <p><strong>Namn:</strong> @Model.FirstName @Model.LastName</p>
+                        <p><strong>Telefon:</strong> @Model.PhoneNumber</p>
+                        <p><strong>E-post:</strong> @Model.Email</p>
+                        <p><strong>Adress:</strong> @Model.Adress</p>
+
                         @if (Model.CurrentUserId == @Model.ProfileId)
                         {
-                        <a href="@Url.Action("EditCv", "CV", new { cvId = cv.CVId })" class="btn btn-secondary">Redigera CV</a>
+                            <div class="mt-4 button-container">
+                                <a asp-controller="CV" asp-action="Add" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Lägg till CV</a>
+                                <a asp-controller="Project" asp-action="AddProject" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Lägg till Projekt</a>
+                                <div class="mt-1">
+                                    <a asp-controller="Project" asp-action="MyProjectsToEdit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Redigera mina projekt</a>
+                                </div>
+
+                                @if (Model.CurrentUserId == @Model.ProfileId)
+                                {
+                                    <a href="@Url.Action("EditProfile", "Account")" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Redigera Profil</a>
+                                    <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;"> Ändra Lösenord</a>
+                                }
+                            </div>
                         }
-            </div>
-            <div class="card-body">
-                <!-- Utbildning -->
-                <div class="mb-4">
-                    <h3 class="border-bottom pb-2">Utbildning</h3>
-                    @if (cv.Educations != null && cv.Educations.Any())
-                    {
-                        <div class="row">
-                            @foreach (var education in cv.Educations)
-                            {
-                                <div class="col-md-6 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h5 class="card-title">@education.School</h5>
-                                            <p class="card-text">
-                                                <strong>Examen:</strong> @education.Degree<br>
-                                                <strong>Ämne:</strong> @education.FieldOfStudy<br>
-                                                <strong>Period:</strong>
-                                                @(DateTime.TryParse(education.StartDate, out var startDate)
-                                                    ? startDate.ToString("MMM yyyy")
-                                                    : "Okänd")
-                                                -
-                                                @(DateTime.TryParse(education.EndDate, out var endDate)
-                                                    ? endDate.ToString("MMM yyyy")
-                                                    : "Nuvarande")<br>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted">Ingen utbildning tillagd.</p>
-                    }
+                    </div>
                 </div>
 
-                <!-- Språk -->
-                <div class="mb-4">
-                    <h3 class="border-bottom pb-2">Språk</h3>
-                    @if (cv.Languages != null && cv.Languages.Any())
-                    {
-                        <div class="row">
-                            @foreach (var language in cv.Languages)
-                            {
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h5 class="card-title">@language.LanguageName</h5>
-                                            <p class="card-text">
-                                                <strong>Nivå:</strong> @language.Level<br>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted">Inga språk tillagda.</p>
-                    }
-                </div>
+                <div class="col-md-9">
+                    <h1 class="mb-4">Profil för @Model.FirstName @Model.LastName</h1>
+                    <a href="@Url.Action("FindSimilarUser", "Account", new { userId = Model.ProfileId })"
+                       class="btn btn-success"
+                       style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white; margin-bottom: 20px;">
+                        Hitta användare från samma skola
+                    </a>
 
-                <!-- Färdigheter -->
-                <div class="mb-4">
-                    <h3 class="border-bottom pb-2">Färdigheter</h3>
-                    @if (cv.Skills != null && cv.Skills.Any())
+                    @if (Model.CurrentUserId != @Model.ProfileId)
                     {
-                        <div class="row">
-                            @foreach (var skill in cv.Skills)
-                            {
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h5 class="card-title">@skill.SkillName</h5>
-                                           
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                        <a href="@Url.Action("SendMessage", "Message")" class="btn btn-success" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white; margin-bottom: 20px;">Skicka meddelande</a>
                     }
-                    else
-                    {
-                        <p class="text-muted">Inga färdigheter tillagda.</p>
-                    }
-                </div>
 
-                <!-- Arbetslivserfarenhet -->
-                <div class="mb-4">
-                    <h3 class="border-bottom pb-2">Arbetslivserfarenhet</h3>
-                    @if (cv.WorkExperiences != null && cv.WorkExperiences.Any())
+                    @foreach (var cv in Model.Cvs)
                     {
-                        <div class="row">
-                            @foreach (var work in cv.WorkExperiences)
-                            {
+                        <div class="card mb-4" style="background-color: #f7f7f7; border-radius: 8px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h2 class="mb-0">
+                                    @cv.CVName
+                                </h2>  
+                                @if (Model.CurrentUserId == @Model.ProfileId)
+                                    {
+                                        <a href="@Url.Action("EditCv", "CV", new { cvId = cv.CVId })" class="btn btn-secondary" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white; margin-bottom: 5px;">Redigera CV</a>
+                                    }
+                            </div>
+                            <div class="card-body">
                                 <div class="col-12 mb-3">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h5 class="card-title">@work.CompanyName</h5>
-                                            <h6 class="card-subtitle mb-2 text-muted">@work.Position</h6>
-                                            <p class="card-text">
-                                                <strong>Period:</strong>
-                                                @(DateTime.TryParse(work.StartDate?.ToString(), out var startDate) ? startDate.ToString("MMM yyyy") : "Okänd")
-                                                - @(DateTime.TryParse(work.EndDate?.ToString(), out var endDate) ? endDate.ToString("MMM yyyy") : "Nuvarande")<br>
-                                                <strong>Beskrivning:</strong> @work.Description
-                                            </p>
+                                    <h3 class="border-bottom pb-2">Arbetslivserfarenhet</h3>
+                                    <div class="d-flex">
+                                        <!-- Arbetslivserfarenheter (på vänster sida) -->
+                                        <div class="card flex-grow-1">
+                                            <div class="card-body">
+                                                @if (cv.WorkExperiences != null && cv.WorkExperiences.Any())
+                                                {
+                                                    @foreach (var work in cv.WorkExperiences)
+                                                    {
+                                                        <h5 class="card-title">@work.CompanyName</h5>
+                                                        <h6 class="card-subtitle mb-2 text-muted">@work.Position</h6>
+                                                        <p class="card-text">
+                                                            <strong>Period:</strong>
+                                                            @(DateTime.TryParse(work.StartDate?.ToString(), out var startDate) ? startDate.ToString("MMM yyyy") : "Okänd")
+                                                            - @(DateTime.TryParse(work.EndDate?.ToString(), out var endDate) ? endDate.ToString("MMM yyyy") : "Nuvarande")<br>
+                                                            <strong>Beskrivning:</strong> @work.Description
+                                                        </p>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted">Ingen arbetslivserfarenhet tillagd.</p>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- CV bild (på höger sida) -->
+                                        <div class="d-flex align-items-center ms-3" style="max-width: 200px;">
+                                            @if (!string.IsNullOrEmpty(cv.ImagePath))
+                                            {
+                                                <img src="@cv.ImagePath" alt="CV bild" class="img-fluid rounded">
+                                            }
                                         </div>
                                     </div>
                                 </div>
-                            }
+                                <!-- Utbildning -->
+                                <div class="mb-4">
+                                    <h3 class="border-bottom pb-2">Utbildning</h3>
+                                    @if (cv.Educations != null && cv.Educations.Any())
+                                    {
+                                        <div class="row">
+                                            @foreach (var education in cv.Educations)
+                                            {
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="card h-100">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">@education.School</h5>
+                                                            <p class="card-text">
+                                                                <strong>Examen:</strong> @education.Degree<br>
+                                                                <strong>Ämne:</strong> @education.FieldOfStudy<br>
+                                                                <strong>Period:</strong>
+                                                                @(DateTime.TryParse(education.StartDate, out var startDate)
+                                                                    ? startDate.ToString("MMM yyyy")
+                                                                    : "Okänd")
+                                                                -
+                                                                @(DateTime.TryParse(education.EndDate, out var endDate)
+                                                                    ? endDate.ToString("MMM yyyy")
+                                                                    : "Nuvarande")<br>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">Ingen utbildning tillagd.</p>
+                                    }
+                                </div>
+
+                                <!-- Språk -->
+                                <div class="mb-4">
+                                    <h3 class="border-bottom pb-2">Språk</h3>
+                                    @if (cv.Languages != null && cv.Languages.Any())
+                                    {
+                                        <div class="row">
+                                            @foreach (var language in cv.Languages)
+                                            {
+                                                <div class="col-md-4 mb-3">
+                                                    <div class="card h-100">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">@language.LanguageName</h5>
+                                                            <p class="card-text">
+                                                                <strong>Nivå:</strong> @language.Level<br>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">Inga språk tillagda.</p>
+                                    }
+                                </div>
+
+                                <!-- Färdigheter -->
+                                <div class="mb-4">
+                                    <h3 class="border-bottom pb-2">Färdigheter</h3>
+                                    @if (cv.Skills != null && cv.Skills.Any())
+                                    {
+                                        <div class="row">
+                                            @foreach (var skill in cv.Skills)
+                                            {
+                                                <div class="col-md-4 mb-3">
+                                                    <div class="card h-100">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">@skill.SkillName</h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">Inga färdigheter tillagda.</p>
+                                    }
+                                </div>
+                            </div>
                         </div>
                     }
-                    else
-                    {
-                        <p class="text-muted">Ingen arbetslivserfarenhet tillagd.</p>
-                    }
+
+                    <div class="mb-4">
+                        <h2 class="border-bottom pb-2">Projekt</h2>
+                        @if (Model.Projects != null && Model.Projects.Any())
+                        {
+                            <div class="row">
+                                @foreach (var project in Model.Projects)
+                                {
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title">@project.Title</h5>
+                                                <p class="card-text">
+                                                    <strong>Beskrivning:</strong> @project.Description<br>
+                                                    <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")<br>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">Inga projekt tillagda.</p>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     }
-            <div class="mb-4">
-                <h2 class="border-bottom pb-2">Projekt</h2>
-                @if (Model.Projects != null && Model.Projects.Any())
-                {
-                    <div class="row">
-                        @foreach (var project in Model.Projects)
-                        {
-                            <div class="col-md-6 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <h5 class="card-title">@project.Title</h5>
-                                        <p class="card-text">
-                                            <strong>Beskrivning:</strong> @project.Description<br>
-                                            <strong>Skapad:</strong> @project.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")<br>
-                                            @* <strong>Roll:</strong> *@
-                                            @* @{ *@
-                                            @*     // Hitta den inloggade användarens roll i detta projekt *@
-                                            @*     var userRole = project.ProjectUsers *@
-                                            @*     .FirstOrDefault(pu => pu.UserId == Model.CurrentUserId)?.Role; *@
-
-                                            @*     // Om det finns en roll, visa den; annars visa "Ingen roll" *@
-                                            @*     var roleText = userRole ?? "Deltagare"; *@
-                                            @* } *@
-
-                                            @* @roleText *@
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted">Inga projekt tillagda.</p>
-                }
-            </div>
-        </div>
-    </div>
-</div>
-}
 }
