@@ -14,9 +14,9 @@ namespace CV_Applikation.Models
         [Required(ErrorMessage = "Ämnesområde för utbildningen är obligatoriskt.")]
         public string FieldOfStudy { get; set; }
         [Required(ErrorMessage = "Startdatum för utbildningen är obligatoriskt.")]
-        [StartDateValidator]
+        [Validation.StartDateValidator]
         public string StartDate { get; set; }
-        [DateGreaterThanValidator("StartDate", ErrorMessage = "Slutdatum behöver vara senare än startdatumet.")]
+        [Validation.DateGreaterThanValidator("StartDate", ErrorMessage = "Slutdatum behöver vara senare än startdatumet.")]
         public string?EndDate { get; set; }
         
         public int CVId { get; set; }

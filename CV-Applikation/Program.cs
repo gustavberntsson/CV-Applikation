@@ -11,6 +11,11 @@ builder.Services.AddDbContext<UserContext>(options =>
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>().AddDefaultTokenProviders();
 
 var app = builder.Build();
+var supportedCultures = new[] { "sv-SE", "en-US" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("sv-SE")  
+    .AddSupportedCultures(supportedCultures) 
+    .AddSupportedUICultures(supportedCultures);
 
 
 

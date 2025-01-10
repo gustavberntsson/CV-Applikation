@@ -14,9 +14,9 @@ namespace CV_Applikation.Models
         [Required(ErrorMessage = "Arbetsbeskrivning är obligatoriskt.")]
         public string Description { get; set; }
         [Required(ErrorMessage = "Startdatum är obligatoriskt.")]
-        [StartDateValidator]
+        [Validation.StartDateValidator]
         public string StartDate { get; set; }
-        [DateGreaterThanValidator("StartDate", ErrorMessage = "Slutdatum behöver vara senare än startdatumet.")]
+        [Validation.DateGreaterThanValidator("StartDate", ErrorMessage = "Slutdatum behöver vara senare än startdatumet.")]
         public string? EndDate { get; set; }
         public int CVId { get; set; }
 

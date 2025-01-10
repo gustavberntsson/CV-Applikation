@@ -254,7 +254,10 @@ namespace CV_Applikation.Controllers
         [HttpPost]
         public async Task<IActionResult> EditProfile(EditProfileViewModel model)
         {
-
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
             var currentUser = await userManager.GetUserAsync(User);
             if (currentUser == null)
