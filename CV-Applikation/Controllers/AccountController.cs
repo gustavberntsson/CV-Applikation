@@ -149,8 +149,12 @@ namespace CV_Applikation.Controllers
             var isUserLoggedIn = currentUser != null;
 
             // Filtrera bort inaktiverade konton från sökningen
-            var matchingUsers = await GetMatchingUsersAsync(SearchString, isUserLoggedIn);
-                
+            var matchingUsers = await context.Users
+            .Where(u => u.IsEnabled) // Endast aktiva konton
+            .Where(u => (isUserLoggedIn || !u.IsPrivate) &&
+                    u.UserName.Contains(SearchString))
+            .ToListAsync();
+
             if (matchingUsers.Count == 1)
             {
                 var user = matchingUsers.First();
