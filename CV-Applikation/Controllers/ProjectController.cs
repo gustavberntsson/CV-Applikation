@@ -38,13 +38,12 @@ namespace CV_Applikation.Controllers
         public async Task<ActionResult> AddProject()
         {
             var currentUser = await userManager.GetUserAsync(User);
-            var isUserLoggedIn = currentUser != null;
             var currentUserId = currentUser?.Id ?? string.Empty;
 
-            // Hämta användare förutom den inloggade
+            // Hämta användare förutom den inloggade, filtrera bort inaktiverade och hantera privata konton
             var users = context.Users
-                .Where(u => u.Id != currentUserId)
-                .Where(u => isUserLoggedIn || u.IsPrivate == false)
+                .Where(u => u.Id != currentUserId && u.IsEnabled) // Exkluderar inaktiverade användare
+                .Where(u => currentUser != null || !u.IsPrivate)  // Exkluderar privata konton om användaren inte är inloggad
                 .Select(u => new SelectListItem
                 {
                     Value = u.Id,
@@ -79,61 +78,46 @@ namespace CV_Applikation.Controllers
         public async Task<ActionResult> AddProject(Project project)
         {
             var currentUser = await userManager.GetUserAsync(User);
+            var currentUserId = currentUser?.Id ?? string.Empty;
 
-            // Tilldela OwnerId och initialisera ProjectUsers
-            project.OwnerId = currentUser.Id;
-            project.ProjectUsers ??= new List<ProjectUser>();
-
+            // Om ModelState inte är giltigt, hantera valideringsfel och fyll på användarlistan igen
             if (!ModelState.IsValid)
             {
-                // Logga valideringsfel
-                foreach (var modelState in ModelState)
-                {
-                    foreach (var error in modelState.Value.Errors)
-                    {
-                        Console.WriteLine($"Property: {modelState.Key}, Error: {error.ErrorMessage}");
-                    }
-                }
-
-                // Behåll användarlistan vid valideringsfel
+                // Behåll användarlistan med korrekt filtrering
                 var users = context.Users
-                .Where(u => u.Id != currentUser.Id)
-                .Select(u => new SelectListItem
-                {
-                    Value = u.Id,
-                    Text = u.UserName
-                }).ToList();
+                    .Where(u => u.Id != currentUserId && u.IsEnabled) // Exkludera inaktiverade användare
+                    .Where(u => currentUser != null || !u.IsPrivate)  // Exkludera privata konton för icke-inloggade
+                    .Select(u => new SelectListItem
+                    {
+                        Value = u.Id,
+                        Text = u.UserName
+                    }).ToList();
 
                 ViewBag.Users = new SelectList(users, "Value", "Text");
-                //var users = context.Users.Select(u => new SelectListItem
-                //{
-                //    Value = u.Id,
-                //    Text = u.UserName
-                //}).ToList();
-                //ViewBag.Users = new SelectList(users, "Value", "Text");
 
-                return View(project);
+                return View(project); // Skicka tillbaka formuläret med valideringsfel
             }
 
-            // Tilldela projektdata och hantera deltagare
+            // Logik för att spara projektet om ModelState är giltigt
+            project.OwnerId = currentUser.Id;
             project.CreatedAt = DateTime.UtcNow;
-
-            var projectUsers = new List<ProjectUser>
+            project.ProjectUsers = new List<ProjectUser>
+    {
+        new ProjectUser
         {
-            new ProjectUser
-            {
-                ProjectId = project.ProjectId,
-                UserId = currentUser.Id,
-                JoinedAt = DateTime.UtcNow,
-                Role = "Owner"
-            }
-        };
+            ProjectId = project.ProjectId,
+            UserId = currentUser.Id,
+            JoinedAt = DateTime.UtcNow,
+            Role = "Owner"
+        }
+    };
 
+            // Lägg till deltagare om de finns
             if (project.ParticipantIds != null)
             {
                 foreach (var participantId in project.ParticipantIds)
                 {
-                    projectUsers.Add(new ProjectUser
+                    project.ProjectUsers.Add(new ProjectUser
                     {
                         ProjectId = project.ProjectId,
                         UserId = participantId,
@@ -143,124 +127,11 @@ namespace CV_Applikation.Controllers
                 }
             }
 
-            project.ProjectUsers = projectUsers;
-
             context.Projects.Add(project);
             await context.SaveChangesAsync();
+
             return RedirectToAction("Index", "Home");
         }
-        //    [HttpPost]
-        //    public async Task<ActionResult> AddProject(Project project, List<string> participantIds)
-        //    {
-        //        var currentUser = await userManager.GetUserAsync(User);
-
-        //        // Kontrollera om användaren är inloggad
-        //        var isUserLoggedIn = currentUser != null;
-        //        var currentUserId = currentUser?.Id ?? string.Empty;
-
-        //        // Om ModelState är ogiltig, måste vi fylla ViewBag.Users på nytt
-        //        if (ModelState.IsValid)
-        //        {
-
-
-
-        //            project.OwnerId = currentUser.Id;
-        //            project.CreatedAt = DateTime.UtcNow;
-
-        //            var projectUsers = new List<ProjectUser>
-        //{
-        //    new ProjectUser
-        //    {
-        //        ProjectId = project.ProjectId,
-        //        UserId = currentUser.Id,
-        //        JoinedAt = DateTime.UtcNow,
-        //        Role = "Owner"
-        //    }
-        //};
-
-        //            if (participantIds != null)
-        //            {
-        //                foreach (var participantId in participantIds)
-        //                {
-        //                    if (participantId != currentUser.Id)
-        //                    {
-        //                        projectUsers.Add(new ProjectUser
-        //                        {
-        //                            ProjectId = project.ProjectId,
-        //                            UserId = participantId,
-        //                            JoinedAt = DateTime.UtcNow,
-        //                            Role = "Participant"
-        //                        });
-        //                    }
-        //                }
-        //            }
-
-        //            project.ProjectUsers = projectUsers;
-
-        //            context.Projects.Add(project);
-        //            await context.SaveChangesAsync();
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //        else
-        //        {
-        //            var users = context.Users
-        //               .Where(u => u.Id != currentUserId)
-        //               .Where(u => isUserLoggedIn || u.IsPrivate == false)
-        //               .ToList();
-        //            ViewBag.Users = users;
-
-        //            return View(project);
-
-        //        }
-        //    }
-        //[HttpPost]
-        //public async Task<ActionResult> AddProject(Project project, List<string> participantIds)
-        //{
-        //    var currentUser = await userManager.GetUserAsync(User);
-        //    project.OwnerId = currentUser.Id;
-        //    if (ModelState.IsValid)
-        //    {
-        //        //var currentUser = await userManager.GetUserAsync(User);
-        //        //project.OwnerId = currentUser.Id;
-        //        project.CreatedAt = DateTime.UtcNow; // Tilldela tid och datum
-
-        //        var projectUsers = new List<ProjectUser>
-        //        {
-        //                new ProjectUser
-        //                {
-        //                    ProjectId = project.ProjectId,
-        //                    UserId = currentUser.Id,
-        //                    JoinedAt = DateTime.UtcNow,
-        //                    Role = "Owner"
-        //                }
-        //        };
-
-        //        foreach (var participantId in participantIds)
-        //        {
-        //            if (participantId != currentUser.Id)
-        //            {
-        //                projectUsers.Add(new ProjectUser
-        //                {
-        //                    ProjectId = project.ProjectId,
-        //                    UserId = participantId,
-        //                    JoinedAt = DateTime.UtcNow,
-        //                    Role = "Participant"
-        //                });
-        //            }
-        //        }
-
-        //        project.ProjectUsers = projectUsers;
-
-        //        context.Projects.Add(project);
-        //        await context.SaveChangesAsync();
-        //        return RedirectToAction("Index", "Home");
-        //    }
-        //    else
-        //    {
-        //        return View(project);
-        //    }
-        //}
-
 
         [HttpGet]
         public async Task<IActionResult> ProjectList()
@@ -281,14 +152,12 @@ namespace CV_Applikation.Controllers
         [HttpGet]
         public async Task<IActionResult> ProjectDetails(int projectId)
         {
-            // Kontrollera om användaren är inloggad
-            var currentUser = await userManager.GetUserAsync(User); // Hämta aktuell användare
+            var currentUser = await userManager.GetUserAsync(User);
             var isUserLoggedIn = currentUser != null;
 
-            // Hämta projektet och dess deltagare
             var project = await context.Projects
                 .Include(p => p.ProjectUsers)
-                .ThenInclude(pu => pu.UserProject) // Ladda in användarens profil
+                .ThenInclude(pu => pu.UserProject)
                 .FirstOrDefaultAsync(p => p.ProjectId == projectId);
 
             if (project == null)
@@ -296,7 +165,6 @@ namespace CV_Applikation.Controllers
                 return NotFound();
             }
 
-            // Bygg upp ViewModel och filtrera deltagare baserat på inloggning
             var projectDetailsViewModel = new ProjectDetailsViewModel
             {
                 ProjectId = project.ProjectId,
@@ -307,16 +175,18 @@ namespace CV_Applikation.Controllers
                     .Select(pu => new ParticipantViewModel
                     {
                         UserId = pu.UserId,
-                        UserName = isUserLoggedIn 
-                            ? (pu.UserProject?.UserName ?? "Okänd användare") 
-                            : (pu.UserProject.IsPrivate ? "Privat användare" : pu.UserProject?.UserName ?? "Okänd användare")
+                        UserName = pu.UserProject.IsEnabled
+                            ? (isUserLoggedIn || !pu.UserProject.IsPrivate
+                                ? pu.UserProject.UserName
+                                : "Okänd användare")
+                                : "Inaktiverat konto"
                     })
                     .ToList()
             };
 
             return View(projectDetailsViewModel);
         }
-      
+
         [HttpPost]
         public async Task<IActionResult> JoinProject(int projectId)
         {
@@ -354,6 +224,7 @@ namespace CV_Applikation.Controllers
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            
             var project = await context.Projects
            .FirstOrDefaultAsync(p => p.ProjectId == projectId && p.OwnerId == currentUserId);
 
@@ -369,7 +240,7 @@ namespace CV_Applikation.Controllers
                 Title = project.Title,
                 Description = project.Description
             };
-            return View(model);
+              return View(model);
         }
 
         [HttpPost]
@@ -378,21 +249,37 @@ namespace CV_Applikation.Controllers
         {
             var currentUserId = await userManager.GetUserAsync(User);
 
-            var project = await context.Projects
+
+            if (ModelState.IsValid)
+            {
+
+                var project = await context.Projects
                 .FirstOrDefaultAsync(p => p.ProjectId == model.ProjectId && p.OwnerId == currentUserId.Id);
 
-            if (project == null)
-            {
-                return Unauthorized(); // Säkerställ att användaren äger projektet
+                if (project == null)
+                {
+                    return Unauthorized(); // Säkerställ att användaren äger projektet
+                }
+
+                // Uppdatera projektinformationen
+                project.Title = model.Title;
+                project.Description = model.Description;
+
+                await context.SaveChangesAsync(); // Spara ändringar i databasen
+
+                return RedirectToAction("ProjectDetails", new { projectId = project.ProjectId });
             }
-
-            // Uppdatera projektinformationen
-            project.Title = model.Title;
-            project.Description = model.Description;
-
-            await context.SaveChangesAsync(); // Spara ändringar i databasen
-
-            return RedirectToAction("ProjectDetails", new { projectId = project.ProjectId });
+            else
+            {
+                foreach (var modelState in ModelState)
+                {
+                    foreach (var error in modelState.Value.Errors)
+                    {
+                        Console.WriteLine($"Property: {modelState.Key}, Error: {error.ErrorMessage}");
+                    }
+                }
+                return View(model);
+            }
         }
 
         [Authorize]

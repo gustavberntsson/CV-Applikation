@@ -20,6 +20,7 @@ namespace CV_Applikation.Models
 
         public string? ProfilePicture { get; set; }
         public bool IsPrivate { get; set; }
+        public bool IsEnabled { get; set; }
 
     }
 }

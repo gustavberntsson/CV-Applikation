@@ -11,6 +11,6 @@ public class SearchResult
     public List<Skills> AllSkills => Cvs.SelectMany(cv => cv.Skills).DistinctBy(s => s.SkillName).ToList();
     public List<Education> AllEducations => Cvs.SelectMany(cv => cv.Educations).DistinctBy(e => e.School).ToList();
     public List<WorkExperience> AllWorkExperiences => Cvs.SelectMany(cv => cv.WorkExperiences).DistinctBy(w => w.CompanyName).ToList();
-
+    public bool IsEnabled { get; set; }
 
 }
