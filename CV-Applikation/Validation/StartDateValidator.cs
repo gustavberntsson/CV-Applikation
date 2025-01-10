@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CV_Applikation.Models
+namespace CV_Applikation.Validation
 {
     public class StartDateValidator : ValidationAttribute
     {
-    
+
         public StartDateValidator()
         {
             ErrorMessage = "Startdatum kan inte vara i framtiden.";

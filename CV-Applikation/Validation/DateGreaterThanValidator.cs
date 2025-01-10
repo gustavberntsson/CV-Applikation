@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CV_Applikation.Models
+namespace CV_Applikation.Validation
 {
     public class DateGreaterThanValidator : ValidationAttribute
     {

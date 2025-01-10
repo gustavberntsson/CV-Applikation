@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using CV_Applikation.Models;
 
-namespace CV_Applikation
+namespace CV_Applikation.Validation
 {
     public static class Validation
     {
@@ -14,14 +14,20 @@ namespace CV_Applikation
         public static bool CheckEmail(string email)
         {
             // Enkel e-postvalidering med regex
-            string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-            return Regex.IsMatch(email, pattern);
+            string pattern = @"^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$";
+            
+            // Förhindrar att ha till exempel @gmail.com.com
+            int atIndex = email.IndexOf('@');
+            string domainPart = email.Substring(atIndex + 1);
+            int dotCount = domainPart.Count(c => c == '.');
+
+            return Regex.IsMatch(email, pattern) && dotCount == 1;
         }
 
         public static bool CheckPhone(string phone)
         {
-            // Kollar att telefonnummer bara innehåller siffror och ev. plus/minus/mellanslag
-            return string.IsNullOrEmpty(phone) || Regex.IsMatch(phone, @"^[\d\s\+\-]+$");
+            // Kollar att telefonnummer är i format 000-0000000
+            return Regex.IsMatch(phone, @"^\d{3}-\d{7}$");
         }
 
         public static bool CheckDate(DateTime startDate, DateTime? endDate)
