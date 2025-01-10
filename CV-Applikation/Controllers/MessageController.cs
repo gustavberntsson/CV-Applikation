@@ -17,37 +17,32 @@ namespace CV_Applikation.Controllers
 			context = service;
 
 		}
+        
         [HttpGet]
         public async Task<ActionResult> SendMessageAsync()
         {
-            // Hämta inloggad användare (kan vara null om det är en gäst)
             var currentUser = await userManager.GetUserAsync(User);
-
-            // Hämta aktuell användar-ID (gäst = tom sträng)
             var currentUserId = currentUser?.Id ?? string.Empty;
 
             try
             {
-                // Hämta tillgängliga användare (exkludera inloggad användare om någon är inloggad)
+                // Hämta endast aktiva användare och exkludera den inloggade användaren
                 var users = context.Users
-                    .Where(u => string.IsNullOrEmpty(currentUserId) || u.Id != currentUserId) // Tillåt gäster
+                    .Where(u => u.IsEnabled) // Endast aktiva konton
+                    .Where(u => u.Id != currentUserId) // Exkludera den inloggade användaren
                     .Select(u => new SelectListItem
                     {
                         Value = u.Id,
                         Text = u.UserName
                     }).ToList();
 
-                // Kontrollera om det finns några användare att skicka till
                 if (!users.Any())
                 {
                     TempData["Error"] = "Det finns inga användare att skicka meddelanden till.";
                     return RedirectToAction("Index", "Home");
                 }
 
-                // Skicka användarlistan till vyn
                 ViewBag.Users = new SelectList(users, "Value", "Text");
-
-                // Returnera vyn med en ny meddelandemodell
                 return View(new Message());
             }
             catch (Exception ex)
@@ -57,7 +52,7 @@ namespace CV_Applikation.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-    
+
 
         [HttpPost]
         public async Task<ActionResult> SendMessage(Message model)
@@ -91,6 +86,14 @@ namespace CV_Applikation.Controllers
                     TempData["Error"] = "Du måste välja en mottagare.";
                     return RedirectToAction("SendMessageAsync");
                 }
+
+                var receiver = await context.Users.FirstOrDefaultAsync(u => u.Id == model.ReceiverId && u.IsEnabled);
+                if (receiver == null)
+                {
+                    TempData["Error"] = "Mottagaren är inaktiverad och kan inte ta emot meddelanden.";
+                    return RedirectToAction("SendMessageAsync");
+                }
+
 
                 // Kontrollera om innehåll är angivet
                 if (string.IsNullOrEmpty(model.Content))

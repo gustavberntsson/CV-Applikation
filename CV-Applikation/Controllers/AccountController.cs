@@ -149,8 +149,12 @@ namespace CV_Applikation.Controllers
             var isUserLoggedIn = currentUser != null;
 
             // Filtrera bort inaktiverade konton från sökningen
-            var matchingUsers = await GetMatchingUsersAsync(SearchString, isUserLoggedIn);
-                
+            var matchingUsers = await context.Users
+            .Where(u => u.IsEnabled) // Endast aktiva konton
+            .Where(u => (isUserLoggedIn || !u.IsPrivate) &&
+                    u.UserName.Contains(SearchString))
+            .ToListAsync();
+
             if (matchingUsers.Count == 1)
             {
                 var user = matchingUsers.First();
@@ -526,6 +530,54 @@ namespace CV_Applikation.Controllers
                 TempData["ErrorMessage"] = "Ett fel uppstod vid inaktivering av kontot.";
                 return RedirectToAction("EditProfile");
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FindSimilarUser(string userId)
+        {
+            // Hämta aktuell användare
+            var currentUser = await GetUserAsync(userId);
+            if (currentUser == null)
+            {
+                TempData["ErrorMessage"] = "Användaren kunde inte hittas.";
+                return RedirectToAction("Profile", new { userId });
+            }
+
+            // Hitta skolor för den aktuella användarens CV
+            var userSchools = await context.CVs
+                .Where(cv => cv.UserId == userId)
+                .SelectMany(cv => cv.Educations)
+                .Select(e => e.School)
+                .Distinct()
+                .ToListAsync();
+
+            if (!userSchools.Any())
+            {
+                TempData["ErrorMessage"] = "Inga skolor hittades för denna användare.";
+                return RedirectToAction("Profile", new { userId });
+            }
+
+            // Hitta användare som gått på samma skolor
+            var similarUsers = await context.Users
+                .Where(u => u.Id != userId) // Exkludera den aktuella användaren
+                .Where(u => context.CVs
+                    .Where(cv => cv.UserId == u.Id)
+                    .SelectMany(cv => cv.Educations)
+                    .Any(e => userSchools.Contains(e.School))) // Kontrollera om någon utbildning matchar skolorna
+                .ToListAsync();
+
+            if (!similarUsers.Any())
+            {
+                TempData["ErrorMessage"] = "Inga liknande användare hittades.";
+                return RedirectToAction("Profile", new { userId });
+            }
+
+            // Välj en slumpmässig användare
+            var random = new Random();
+            var randomUser = similarUsers[random.Next(similarUsers.Count)];
+
+            // Omdirigera till den slumpmässiga användarens profil
+            return RedirectToAction("Profile", new { userId = randomUser.Id });
         }
 
         private async Task HandleDisabledOwner(int projectId)

@@ -68,17 +68,22 @@ else {
                             <div class="mt-1">
                                 <a asp-controller="Project" asp-action="MyProjectsToEdit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Redigera mina projekt</a>
                             </div>
+                            @if (Model.CurrentUserId == @Model.ProfileId)
+                            {
+                                <a href="@Url.Action("EditProfile", "Account")" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Redigera Profil</a>
+                                <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;"> Ändra Lösenord</a>
+                            }
                     </div>
                     }
             </div>
         </div>
         <div class="col-md-9">
             <h1 class="mb-4">Profil för @Model.FirstName @Model.LastName</h1>
-            @if (Model.CurrentUserId == @Model.ProfileId)
-            {
-                    <a href="@Url.Action("EditProfile", "Account")" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Redigera Profil</a>
-                <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">Ändra Lösenord</a>
-            }
+                <a href="@Url.Action("FindSimilarUser", "Account", new { userId = Model.ProfileId })"
+                   class="btn btn-success"
+                   style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white; margin-bottom: 20px;">
+                    Hitta användare från samma skola
+                </a>
             @if(Model.CurrentUserId != @Model.ProfileId) {
                     <a href="@Url.Action("SendMessage", "Message")" class="btn btn-success" style=" background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white; margin-bottom: 20px;">Skicka meddelande</a>
             }
