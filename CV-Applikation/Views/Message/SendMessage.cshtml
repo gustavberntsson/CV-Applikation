@@ -6,29 +6,34 @@
 }
 
 <div class="container">
-    <h2>Send New Message</h2>
+    <h2>Skicka nytt meddelande</h2>
     
     <form asp-action="SendMessage" asp-controller="Message" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         @if (!User.Identity.IsAuthenticated)
         {
             <div class="form-group mb-3">
-                <label for="sender">Från:</label>
-                <input type="text" maxlength="20" id="sender" name="sender" class="form-control" required>
+                <label for="SenderId">Från:</label>
+                <input type="text" maxlength="20" id="SenderId" asp-for="SenderId" class="form-control" placeholder="Ditt namn (gäst)">
+                <span asp-validation-for="SenderId" class="text-danger"></span>
+               
             </div>
         }
+        else
+        {
+            <!-- Osynligt fält för inloggade användare -->
+            <input type="hidden" asp-for="SenderId" value="@User.Identity.Name" />
+        }
         <div class="form-group mb-3">
-            <label for="receiver">Till:</label>
-            <select id="receiver" name="receiver" class="form-control">
-                @foreach (var user in ViewBag.Users)
-                {
-                    <option value="@user.UserName">@user.UserName</option>
-                }
-            </select>
+            <label for="ReceiverId">Till:</label>
+            <select asp-for="ReceiverId" asp-items="@ViewBag.Users" class="form-control"> </select>
+
         </div>
 
         <div class="form-group mb-3">
-            <label for="content">Meddelande:</label>
-            <textarea id="content" name="content" class="form-control" rows="5" required></textarea>
+            <label for="Content">Meddelande:</label>
+            <textarea asp-for="Content" id="Content" class="form-control" rows="5"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span> <!-- Visar felmeddelande för Content -->
         </div>
 
         <button type="submit" class="btn btn-primary" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Send Message</button>

@@ -24,7 +24,7 @@
 				<h2 class="mb-0 fw-normal">Från: @message.SenderId </h2>
 			</div>
 			<div class="card-header">
-				<p class="mb-1">Mottaget: @message.Date</p>
+				<p class="mb-1">Mottaget: @message.Date.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
 			</div>
 			@if (!message.IsRead)
 			{
