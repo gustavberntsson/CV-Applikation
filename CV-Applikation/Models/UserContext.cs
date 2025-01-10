@@ -9,7 +9,6 @@ namespace CV_Applikation.Models
         public UserContext(DbContextOptions<UserContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<AboutMe> AboutMes { get; set; }
         public DbSet<ContactInformation> ContactInformation { get; set; }
         public DbSet<CV> CVs { get; set; }
         public DbSet<Education> Educations { get; set; }
