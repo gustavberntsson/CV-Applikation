@@ -2,7 +2,14 @@
     ViewData["Title"] = "Profil";
 }
 @model ProfileViewModel
-
+@if (Model.IsEnabled == false) {
+    <div class="container mt-4">
+        <div class="alert alert-danger" role="alert">
+            Denna användare har inaktiverat sitt konto
+        </div>
+    </div>
+}
+else {
 @if (Model.IsPrivate && Model.CurrentUserId == null)
 {
 	<div class="container mt-4">
@@ -251,4 +258,5 @@ else {
         </div>
     </div>
 </div>
+}
 }
