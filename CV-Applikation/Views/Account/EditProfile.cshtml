@@ -35,13 +35,21 @@
         <div class="form-group">
             <label for="IsPrivate">Vill du ändra din profilinställning till?</label>
             <select asp-for="IsPrivate" class="form-control">
-                    <option value="false">Offentlig</option>
-                    <option value="true">Privat</option>
+                <option value="false">Offentlig</option>
+                <option value="true">Privat</option>
             </select>
         </div>
         <div class="form-group mt-4">
-            <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Save Changes</button>
-            <a asp-action="Profile" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Spara ändringar</button>
         </div>
+    </form>
+
+    <form asp-action="DisableAccount" method="post" style="display: inline;">
+        <button type="submit"
+                class="btn"
+                onclick="return confirm('Är du säker på att du vill inaktivera ditt konto? Denna åtgärd går inte att ångra.')"
+                style="background-color: rgb(120, 6, 6); border-color: rgb(120, 6, 6); color: white;">
+            Inaktivera konto
+        </button>
     </form>
 </div>

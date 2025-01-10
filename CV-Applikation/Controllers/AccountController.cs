@@ -77,18 +77,27 @@ namespace CV_Applikation.Controllers
         {
             if (ModelState.IsValid)
             {
+                var user = await userManager.FindByNameAsync(loginViewModel.AnvandarNamn);
+
+                if (user != null && !user.IsEnabled)
+                {
+                    ModelState.AddModelError("", "Detta konto har inaktiverats. Kontakta administratör om du önskar återaktivera kontot.");
+                    return View(loginViewModel);
+                }
+
                 var result = await signInManager.PasswordSignInAsync(
-                loginViewModel.AnvandarNamn,
-                loginViewModel.Losenord,
-                isPersistent: loginViewModel.RememberMe,
-                lockoutOnFailure: false);
+                    loginViewModel.AnvandarNamn,
+                    loginViewModel.Losenord,
+                    isPersistent: loginViewModel.RememberMe,
+                    lockoutOnFailure: false);
+
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Fel användarnam/lösenord.");
+                    ModelState.AddModelError("", "Fel användarnamn/lösenord.");
                 }
             }
             return View(loginViewModel);
@@ -114,9 +123,11 @@ namespace CV_Applikation.Controllers
             }
 
             var userEntity = await GetUserAsync(UserId);
-            if (userEntity == null)
+
+            // Kontrollerar att konto ej är inaktiverat och skickar tillbaka användare hem och om så är fallet
+            if (userEntity == null || !userEntity.IsEnabled) 
             {
-                return RedirectToAction("Login", "Account"); // Om användaren inte finns, omdirigera till login
+                return RedirectToAction("Index", "Home");
             }
 
             // Bygg ProfileViewModel med hjälp av BuildProfileViewModelAsync
@@ -137,21 +148,39 @@ namespace CV_Applikation.Controllers
             var currentUser = await userManager.GetUserAsync(User);
             var isUserLoggedIn = currentUser != null;
 
-            // Extrahera användare som matchar sökningen
-            var matchingUsers = await GetMatchingUsersAsync(SearchString, isUserLoggedIn);
+            // Filtrera bort inaktiverade konton från sökningen
+            var matchingUsers = await context.Users
+                .Where(u =>
+                    u.IsEnabled && // Lägger till kontroll för aktiva konton
+                    (!u.IsPrivate || isUserLoggedIn) &&
+                    (u.UserName.ToLower().Contains(SearchString.ToLower()) ||
+                    context.CVs.Any(cv =>
+                        cv.UserId == u.Id &&
+                        (!cv.IsPrivate || isUserLoggedIn) &&
+                        (
+                            cv.Skills.Any(s => s.SkillName.ToLower().Contains(SearchString.ToLower())) ||
+                            cv.Educations.Any(e =>
+                                e.FieldOfStudy.ToLower().Contains(SearchString.ToLower()) ||
+                                e.Degree.ToLower().Contains(SearchString.ToLower())
+                            ) ||
+                            cv.WorkExperiences.Any(we =>
+                                we.Position.ToLower().Contains(SearchString.ToLower()) ||
+                                we.Description.ToLower().Contains(SearchString.ToLower())
+                            )
+                        )
+                    ))
+                )
+                .ToListAsync();
 
             if (matchingUsers.Count == 1)
             {
                 var user = matchingUsers.First();
-                // Bygg och returnera profil för en användare
                 var profileViewModel = await BuildProfileViewModelAsync(user, currentUser);
                 return View("Profile", profileViewModel);
             }
 
-            // Hämta alla CV:n för de matchande användarna
             var allCVs = await GetAllCVsForUsersAsync(matchingUsers, isUserLoggedIn);
 
-            // Skapa sökresultatmodell
             var searchResults = matchingUsers.Select(u => new SearchResult
             {
                 UserId = u.Id,
@@ -204,7 +233,6 @@ namespace CV_Applikation.Controllers
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-
             return View(model);
         }
         [HttpGet]
@@ -466,6 +494,84 @@ namespace CV_Applikation.Controllers
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
         }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DisableAccount()
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                // Inaktivera användarens konto
+                currentUser.IsEnabled = false;
+
+                // Uppdatera databasen
+                var result = await userManager.UpdateAsync(currentUser);
+
+                if (result.Succeeded)
+                {
+                    // Hantera projekt där användaren är ägare
+                    var projectsOwnedByUser = await context.Projects
+                        .Where(p => p.OwnerId == currentUser.Id)
+                        .ToListAsync();
+
+                    foreach (var project in projectsOwnedByUser)
+                    {
+                        await HandleDisabledOwner(project.ProjectId); // Byt ägare om det behövs
+                    }
+
+                    // Logga ut användaren
+                    await signInManager.SignOutAsync();
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return RedirectToAction("EditProfile");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Ett fel uppstod vid inaktivering av kontot.";
+                return RedirectToAction("EditProfile");
+            }
+        }
+
+        private async Task HandleDisabledOwner(int projectId)
+        {
+            var project = await context.Projects
+                .Include(p => p.ProjectUsers)
+                .ThenInclude(pu => pu.UserProject)
+                .FirstOrDefaultAsync(p => p.ProjectId == projectId);
+
+            if (project == null) return;
+
+            // Kontrollera om ägaren är inaktiverad
+            var owner = await context.Users.FirstOrDefaultAsync(u => u.Id == project.OwnerId);
+            if (owner != null && !owner.IsEnabled)
+            {
+                // Välj en ny ägare från deltagarna
+                var newOwner = project.ProjectUsers
+                    .Where(pu => pu.UserProject.IsEnabled) // Endast aktiva deltagare
+                    .Select(pu => pu.UserId)
+                    .FirstOrDefault();
+
+                if (newOwner != null)
+                {
+                    project.OwnerId = newOwner; // Ändra ägare till en aktiv deltagare
+                    await context.SaveChangesAsync(); // Spara ändringarna
+                }
+            }
+        }
+
     }
 }
 

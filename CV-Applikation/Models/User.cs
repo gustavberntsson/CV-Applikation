@@ -12,6 +12,7 @@ namespace CV_Applikation.Models
 
         [Required(ErrorMessage = "Privacy status is required.")]
         public bool IsPrivate { get; set; } = false; // Default: public profile
+        public bool IsEnabled { get; set; } = true;
 
     }
 }

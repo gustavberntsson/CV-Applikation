@@ -28,6 +28,7 @@ namespace CV_Applikation.Controllers
                 .Include(cv => cv.User)
                 .Where(cv => !cv.IsPrivate)
                 .Where(cv => cv.User.IsPrivate == false)
+                .Where (cv => cv.User.IsEnabled == true)
                 .Include(cv => cv.Educations)
                 .Include(cv => cv.Languages)
                 .Include(cv => cv.Skills)
@@ -36,6 +37,7 @@ namespace CV_Applikation.Controllers
             // Hämta senaste projektet
             var lastProject = await context.Projects
                 .Where(p => p.Owner.IsPrivate == false)
+                .Where(p => p.Owner.IsEnabled == true)
                 .OrderByDescending(p => p.CreatedAt)
                 .FirstOrDefaultAsync();
 

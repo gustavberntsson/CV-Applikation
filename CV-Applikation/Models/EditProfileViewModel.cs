@@ -10,6 +10,7 @@
         public string PhoneNumber { get; set; }
         public string ProfilePicture { get; set; }
         public bool IsPrivate { get; set; }
+        public bool IsEnabled { get; set; }
 
     }
 }
