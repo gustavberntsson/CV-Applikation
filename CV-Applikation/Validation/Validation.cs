@@ -5,12 +5,6 @@ namespace CV_Applikation.Validation
 {
     public static class Validation
     {
-        public static bool CheckName(string name)
-        {
-            // Kollar så namn inte är tomt och har rätt längd
-            return !string.IsNullOrWhiteSpace(name) && name.Length >= 2 && name.Length <= 100;
-        }
-
         public static bool CheckEmail(string email)
         {
             // Enkel e-postvalidering med regex
