@@ -149,29 +149,8 @@ namespace CV_Applikation.Controllers
             var isUserLoggedIn = currentUser != null;
 
             // Filtrera bort inaktiverade konton från sökningen
-            var matchingUsers = await context.Users
-                .Where(u =>
-                    u.IsEnabled && // Lägger till kontroll för aktiva konton
-                    (!u.IsPrivate || isUserLoggedIn) &&
-                    (u.UserName.ToLower().Contains(SearchString.ToLower()) ||
-                    context.CVs.Any(cv =>
-                        cv.UserId == u.Id &&
-                        (!cv.IsPrivate || isUserLoggedIn) &&
-                        (
-                            cv.Skills.Any(s => s.SkillName.ToLower().Contains(SearchString.ToLower())) ||
-                            cv.Educations.Any(e =>
-                                e.FieldOfStudy.ToLower().Contains(SearchString.ToLower()) ||
-                                e.Degree.ToLower().Contains(SearchString.ToLower())
-                            ) ||
-                            cv.WorkExperiences.Any(we =>
-                                we.Position.ToLower().Contains(SearchString.ToLower()) ||
-                                we.Description.ToLower().Contains(SearchString.ToLower())
-                            )
-                        )
-                    ))
-                )
-                .ToListAsync();
-
+            var matchingUsers = await GetMatchingUsersAsync(SearchString, isUserLoggedIn);
+                
             if (matchingUsers.Count == 1)
             {
                 var user = matchingUsers.First();
