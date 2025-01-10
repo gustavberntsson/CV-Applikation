@@ -401,6 +401,7 @@ namespace CV_Applikation.Controllers
                 ProfileId = user.Id,
                 ImageUrl = user.ImageUrl,
                 IsPrivate = user.IsPrivate,
+                IsEnabled = user.IsEnabled,
                 FirstName = contactInfo?.FirstName ?? "Ej angivet",
                 LastName = contactInfo?.LastName ?? "Ej angivet",
                 Adress = contactInfo?.Adress ?? "Ej angivet",
