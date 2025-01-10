@@ -530,7 +530,6 @@ namespace CV_Applikation.Controllers
                 return RedirectToAction("EditProfile");
             }
         }
-
         [HttpGet]
         public async Task<IActionResult> FindSimilarUser(string userId)
         {
@@ -556,9 +555,10 @@ namespace CV_Applikation.Controllers
                 return RedirectToAction("Profile", new { userId });
             }
 
-            // Hitta användare som gått på samma skolor
+            // Hitta användare som gått på samma skolor och som är aktiva
             var similarUsers = await context.Users
                 .Where(u => u.Id != userId) // Exkludera den aktuella användaren
+                .Where(u => u.IsEnabled) // Endast aktiva användare
                 .Where(u => context.CVs
                     .Where(cv => cv.UserId == u.Id)
                     .SelectMany(cv => cv.Educations)
@@ -567,7 +567,7 @@ namespace CV_Applikation.Controllers
 
             if (!similarUsers.Any())
             {
-                TempData["ErrorMessage"] = "Inga liknande användare hittades.";
+                TempData["ErrorMessage"] = "Inga användare från samma skola hittades.";
                 return RedirectToAction("Profile", new { userId });
             }
 
