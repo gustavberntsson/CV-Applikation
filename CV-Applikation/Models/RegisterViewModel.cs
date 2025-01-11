@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CV_Applikation.Validation;
 using Microsoft.AspNetCore.Identity;
 
 namespace CV_Applikation.Models
@@ -32,6 +33,10 @@ namespace CV_Applikation.Models
         public string TelefonNummer { get; set; }
 
         [Required(ErrorMessage = "Du måste ange ett lösenord")]
+        [StringLength(100, ErrorMessage = "Lösenordet måste vara minst {2} tecken långt.", MinimumLength = 6)]
+        [RegularExpression(@"^(?=.*\d).*$", ErrorMessage = "Lösenordet måste innehålla minst en siffra.")]
+        [SpecialCharacterValidation(ErrorMessage = "Ett specialtecken är obligatoriskt")]
+        [UpperCaseValidation(ErrorMessage = "En storbokstav är obligatoriskt")]
         [DataType(DataType.Password)]
         [Display(Name = "Lösenord")]
         public string Losenord { get; set; }

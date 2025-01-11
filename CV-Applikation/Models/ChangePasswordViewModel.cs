@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CV_Applikation.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace CV_Applikation.Models
 {
@@ -12,7 +13,12 @@ namespace CV_Applikation.Models
 
         [Required(ErrorMessage = "Nytt lösenord är nödvändigt.")]
         [DataType(DataType.Password)]
+        //[DataType(DataType.Password)]
         [StringLength(100, ErrorMessage = "Lösenordet måste vara minst {2} tecken långt.", MinimumLength = 6)]
+        [RegularExpression(@"^(?=.*\d).*$", ErrorMessage = "Lösenordet måste innehålla minst en siffra.")]
+        [PasswordValidation("CurrentPassword", ErrorMessage = "Det nya lösenordet får inte vara samma som det nuvarande lösenordet.")]
+        [SpecialCharacterValidation(ErrorMessage ="Ett specialtecken är obligatoriskt")]
+        [UpperCaseValidation(ErrorMessage = "En storbokstav är obligatoriskt")]
         public string NewPassword { get; set; }
 
         [Required(ErrorMessage = "Bekräftelse av lösenord är nödvändigt.")]

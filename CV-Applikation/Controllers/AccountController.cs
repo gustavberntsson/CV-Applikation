@@ -222,6 +222,13 @@ namespace CV_Applikation.Controllers
                 return View(model);
             }
 
+            var isCurrentPasswordValid = await userManager.CheckPasswordAsync(user, model.CurrentPassword);
+            if (!isCurrentPasswordValid)
+            {
+                // Lägg till ett felmeddelande om det nuvarande lösenordet är felaktigt
+                ModelState.AddModelError("CurrentPassword", "Det nuvarande lösenordet är felaktigt.");
+                return View(model); // Returnera vyn med felmeddelandet
+            }
             // Försök ändra lösenord
             var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
             if (result.Succeeded)
