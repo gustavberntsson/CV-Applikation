@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace CV_Applikation.Models
 {
@@ -14,6 +15,16 @@ namespace CV_Applikation.Models
         [StringLength(500, ErrorMessage = " Titel får inte överskrida 500 tecken.")]
         public string Description { get; set; }
 
-        public ICollection<User>? Participants { get; set; }
+        // Deltagare som redan är kopplade till projektet
+        public List<SelectListItem> CurrentParticipants { get; set; } = new List<SelectListItem>();
+
+        // Lista med alla tillgängliga användare för val
+        public List<SelectListItem> AvailableUsers { get; set; } = new List<SelectListItem>();
+
+        // Valda deltagare att lägga till
+        public List<string> ParticipantsToAdd { get; set; } = new List<string>();
+
+        // Valda deltagare att ta bort
+        public List<string> ParticipantsToRemove { get; set; } = new List<string>();
     }
 }

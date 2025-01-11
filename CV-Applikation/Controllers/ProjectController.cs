@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Security.Claims;
 
 namespace CV_Applikation.Controllers
@@ -224,62 +225,134 @@ namespace CV_Applikation.Controllers
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            
             var project = await context.Projects
-           .FirstOrDefaultAsync(p => p.ProjectId == projectId && p.OwnerId == currentUserId);
+                .Include(p => p.ProjectUsers)
+                .ThenInclude(pu => pu.UserProject) // Ladda relaterade användare
+                .FirstOrDefaultAsync(p => p.ProjectId == projectId && p.OwnerId == currentUserId);
 
             if (project == null)
             {
-                return Unauthorized(); // Om användaren inte äger projektet, neka åtkomst
+                return Unauthorized(); // Om projektet inte finns eller om användaren inte är ägaren
             }
 
-            // Skapa en view model för redigering
+            // Hämta alla aktiverade användare
+            var allUsers = await context.Users.Where(u => u.IsEnabled).ToListAsync();
+
+            // Filtrera bort de användare som redan är med i projektet
+            var currentUserIds = project.ProjectUsers.Select(pu => pu.UserId).ToList();
+
+            var availableUsers = allUsers
+                .Where(u => !currentUserIds.Contains(u.Id) && u.Id != project.OwnerId) // Utesluter projektägaren
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id,
+                    Text = u.UserName // Eller använd någon annan egenskap som FullName om den finns
+                })
+                .ToList();
+
+            // Filtrera bort de användare som redan är med i projektet och som är inaktiverade
+            var currentParticipants = project.ProjectUsers
+                .Where(pu => pu.UserId != project.OwnerId && pu.UserProject?.IsEnabled == true) // Utesluter projektägaren och inaktiverade användare
+                .Select(pu => new SelectListItem
+                {
+                    Value = pu.UserId,
+                    Text = pu.UserProject?.UserName ?? pu.UserId // Visa användarnamn eller ID om det inte finns
+                })
+                .ToList();
+
+            // Skapa ViewModel och skicka till vy
             var model = new EditProjectViewModel
             {
                 ProjectId = project.ProjectId,
                 Title = project.Title,
-                Description = project.Description
+                Description = project.Description,
+                CurrentParticipants = currentParticipants,
+                AvailableUsers = availableUsers
             };
-              return View(model);
+
+            return View(model); // Återgå till vyn med projektdata och användare
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> EditProject(EditProjectViewModel model)
+        public async Task<IActionResult> EditProject(EditProjectViewModel model, string action)
         {
-            var currentUserId = await userManager.GetUserAsync(User);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            var project = await context.Projects
+                .Include(p => p.ProjectUsers)
+                .FirstOrDefaultAsync(p => p.ProjectId == model.ProjectId && p.OwnerId == currentUserId);
 
-            if (ModelState.IsValid)
+            if (project == null)
             {
-
-                var project = await context.Projects
-                .FirstOrDefaultAsync(p => p.ProjectId == model.ProjectId && p.OwnerId == currentUserId.Id);
-
-                if (project == null)
-                {
-                    return Unauthorized(); // Säkerställ att användaren äger projektet
-                }
-
-                // Uppdatera projektinformationen
-                project.Title = model.Title;
-                project.Description = model.Description;
-
-                await context.SaveChangesAsync(); // Spara ändringar i databasen
-
-                return RedirectToAction("ProjectDetails", new { projectId = project.ProjectId });
+                return Unauthorized(); // Om projektet inte finns eller om användaren inte är ägaren
             }
-            else
+
+            if (!ModelState.IsValid)
             {
-                foreach (var modelState in ModelState)
-                {
-                    foreach (var error in modelState.Value.Errors)
+                // Om valideringen misslyckas, fyll på deltagar- och användarlistor för att bevara data
+                var allUsers = await context.Users.Where(u => u.IsEnabled).ToListAsync(); // Filtrera bort inaktiverade användare
+
+                // Filtrera bort de användare som redan är med i projektet
+                var currentUserIds = project.ProjectUsers.Select(pu => pu.UserId).ToList();
+
+                var availableUsers = allUsers
+                    .Where(u => !currentUserIds.Contains(u.Id) && u.Id != project.OwnerId)
+                    .Select(u => new SelectListItem
                     {
-                        Console.WriteLine($"Property: {modelState.Key}, Error: {error.ErrorMessage}");
-                    }
-                }
+                        Value = u.Id,
+                        Text = u.UserName
+                    })
+                    .ToList();
+
+                model.CurrentParticipants = project.ProjectUsers
+                    .Where(pu => pu.UserId != project.OwnerId && pu.UserProject?.IsEnabled == true) // Utesluter inaktiverade användare
+                    .Select(pu => new SelectListItem
+                    {
+                        Value = pu.UserId,
+                        Text = pu.UserProject?.UserName ?? pu.UserId
+                    }).ToList();
+
+                model.AvailableUsers = availableUsers;
+
+                // Retur till vyn om validering misslyckas
                 return View(model);
             }
+
+            // Uppdatera projektets titel och beskrivning
+            project.Title = model.Title;
+            project.Description = model.Description;
+
+            // Lägg till nya deltagare (bara aktiverade användare)
+            foreach (var userId in model.ParticipantsToAdd)
+            {
+                if (!project.ProjectUsers.Any(pu => pu.UserId == userId))
+                {
+                    project.ProjectUsers.Add(new ProjectUser
+                    {
+                        ProjectId = project.ProjectId,
+                        UserId = userId,
+                        JoinedAt = DateTime.UtcNow,
+                        Role = "Participant" // Eller annan roll
+                    });
+                }
+            }
+
+            // Ta bort deltagare (bara aktiverade användare)
+            foreach (var userId in model.ParticipantsToRemove)
+            {
+                var projectUser = project.ProjectUsers.FirstOrDefault(pu => pu.UserId == userId);
+                if (projectUser != null)
+                {
+                    context.ProjectUsers.Remove(projectUser);
+                }
+            }
+
+            // Spara ändringarna i databasen
+            await context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Projektet uppdaterades framgångsrikt.";
+            return RedirectToAction("ProjectDetails", new { projectId = project.ProjectId });
         }
 
         [Authorize]
