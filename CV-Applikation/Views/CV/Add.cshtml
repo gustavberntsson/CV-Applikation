@@ -58,11 +58,11 @@
                         <span asp-validation-for="Educations[@i].FieldOfStudy" class="text-danger"></span>
                         <br />
                         <label for="Educations[@i].StartDate">Startdatum:</label>
-                        <input asp-for="Educations[@i].StartDate" id="Educations[@i].StartDate" />
+                        <input asp-for="Educations[@i].StartDate" id="Educations[@i].StartDate" type="date" oninvalid="this.type='date'" />
                         <span asp-validation-for="Educations[@i].StartDate" class="text-danger"></span>
                         <br />
                         <label for="Educations[@i].EndDate">Slutdatum:</label>
-                        <input asp-for="Educations[@i].EndDate" id="Educations[@i].EndDate" />
+                        <input asp-for="Educations[@i].EndDate" id="Educations[@i].EndDate" type="date" oninvalid="this.type='date'" />
                         <span asp-validation-for="Educations[@i].EndDate" class="text-danger"></span>
                         <br />
                     </div>
@@ -93,11 +93,11 @@
                         <span asp-validation-for="WorkExperiences[@i].Description" class="text-danger"></span>
                         <br />
                         <label for="WorkExperiences[@i].StartDate">Startdatum:</label>
-                        <input asp-for="WorkExperiences[@i].StartDate" id="WorkExperiences[@i].StartDate" />
+                        <input asp-for="WorkExperiences[@i].StartDate" id="WorkExperiences[@i].StartDate" type="date" oninvalid="this.type='date'" />
                         <span asp-validation-for="WorkExperiences[@i].StartDate" class="text-danger"></span>
                         <br />
                         <label for="WorkExperiences[@i].EndDate">Slutdatum:</label>
-                        <input asp-for="WorkExperiences[@i].EndDate" id="WorkExperiences[@i].EndDate" />
+                        <input asp-for="WorkExperiences[@i].EndDate" id="WorkExperiences[@i].EndDate" type="date" oninvalid="this.type='date'" />
                         <span asp-validation-for="WorkExperiences[@i].EndDate" class="text-danger"></span>
                         <br />
                     </div>
@@ -219,6 +219,29 @@
 
 
 <script>
+
+        // Add this at the beginning of your script section
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to ensure date inputs maintain their type
+        function maintainDateInputs() {
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                input.addEventListener('invalid', function() {
+                    this.type = 'date';
+                });
+            });
+        }
+
+        // Run initially
+        maintainDateInputs();
+
+        // Run when new elements are added
+        const observer = new MutationObserver(maintainDateInputs);
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+
     function hasValue(value) {
         return value !== undefined && value !== null && value.trim() !== '';
     }
@@ -312,6 +335,7 @@
         validateSection('languagesContainer', 'addLanguage', ['LanguageName', 'Level']);
     });
 
+
     // Utbildning
     document.getElementById("addEducation").addEventListener("click", function () {
         let container = document.getElementById("educationsContainer");
@@ -326,9 +350,9 @@
                 <label for="Educations[${index}].FieldOfStudy">Ämnesområde:</label>
                 <input name="Educations[${index}].FieldOfStudy" id="Educations[${index}].FieldOfStudy" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
                 <label for="Educations[${index}].StartDate">Startdatum:</label>
-                <input type="date" name="Educations[${index}].StartDate" id="Educations[${index}].StartDate" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+                <input type="date" name="Educations[${index}].StartDate" id="Educations[${index}].StartDate" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" oninvalid="this.type='date'" />
                 <label for="Educations[${index}].EndDate">Slutdatum:</label>
-                <input type="date" name="Educations[${index}].EndDate" id="Educations[${index}].EndDate" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" />
+                <input type="date" name="Educations[${index}].EndDate" id="Educations[${index}].EndDate" onchange="validateSection('educationsContainer', 'addEducation', ['School', 'Degree', 'FieldOfStudy', 'StartDate', 'EndDate'])" oninvalid="this.type='date'" />
                 ${createRemoveButton()}
             </div>`;
         container.appendChild(newEducation);
@@ -336,6 +360,7 @@
     });
 
     // Arbetslivserfarenhet
+        // Arbetslivserfarenhet
     document.getElementById("addWorkExperience").addEventListener("click", function () {
         let container = document.getElementById("workExperiencesContainer");
         let index = container.children.length;
@@ -349,9 +374,9 @@
                 <label for="WorkExperiences[${index}].Description">Beskrivning:</label>
                 <input name="WorkExperiences[${index}].Description" id="WorkExperiences[${index}].Description" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
                 <label for="WorkExperiences[${index}].StartDate">Startdatum:</label>
-                <input type="date" name="WorkExperiences[${index}].StartDate" id="WorkExperiences[${index}].StartDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+                <input type="date" name="WorkExperiences[${index}].StartDate" id="WorkExperiences[${index}].StartDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" oninvalid="this.type='date'" />
                 <label for="WorkExperiences[${index}].EndDate">Slutdatum:</label>
-                <input type="date" name="WorkExperiences[${index}].EndDate" id="WorkExperiences[${index}].EndDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" />
+                <input type="date" name="WorkExperiences[${index}].EndDate" id="WorkExperiences[${index}].EndDate" onchange="validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName', 'Position', 'Description', 'StartDate', 'EndDate'])" oninvalid="this.type='date'" />
                 ${createRemoveButton()}
             </div>`;
         container.appendChild(newExperience);
