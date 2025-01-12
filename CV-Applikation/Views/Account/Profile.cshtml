@@ -69,6 +69,7 @@ else
 
                         @if (Model.CurrentUserId == @Model.ProfileId)
                         {
+                            <p><strong>Profilvisningar:</strong> @Model.ViewCount</p>
                             <div class="mt-4 button-container">
                                 <a asp-controller="CV" asp-action="Add" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Lägg till CV</a>
                                 <a asp-controller="Project" asp-action="AddProject" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Lägg till Projekt</a>
