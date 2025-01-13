@@ -7,11 +7,12 @@ namespace CV_Applikation.Models
     public class RegisterViewModel
     {
         [Required(ErrorMessage = "Du måste ange ett användarnamn")]
+        [Validation.UsernameValidation(ErrorMessage = "Ogiltigt användarnamn. Endast bokstäver (A-Z, a-z) och siffror är tillåtna.")]
         [Display(Name = "Användarnamn")]
         public string AnvandarNamn { get; set; }
 
         [Required(ErrorMessage = "Du måste ange en epostadress")]
-        [Validation.EpostValidation(ErrorMessage = "Ogiltig e-postadress, korrekt format är Exempel@Exempel.com")]
+        [Validation.EpostValidation(ErrorMessage = "Ogiltig e-postadress, korrekt format är exempel@exempel.com")]
         [Display(Name = "E-post")]
         public string Email { get; set; }
 
