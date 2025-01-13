@@ -16,7 +16,6 @@ namespace CV_Applikation.Models
         public Boolean IsPrivate { get; set; }
         public string? ImagePath { get; set; }
 
-        [Required] //UserId ska alltid vara kopplat till en användare
         public string? UserId { get; set; }
         
         [ForeignKey(nameof(UserId))]

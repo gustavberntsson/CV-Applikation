@@ -32,10 +32,25 @@
                         <strong>CV för:</strong> @(cv.User?.UserName ?? "Okänd användare")
                     </a>
                     <br />
-                    <p><strong>Namn:</strong> @cv.CVName</p>
-                    <h4 class="fw-normal">Utbildning:</h4>
+                    <p><strong>Titel:</strong> @cv.CVName</p>
+                    @if (cv.WorkExperiences != null && cv.WorkExperiences.Any())
+                    {
+						<h4 class="fw-normal">Arbetslivserfarenhet:</h4>
+						<ul>
+							@foreach (var workExperience in cv.WorkExperiences)
+							{
+								<li>
+									<strong>Arbetsplats:</strong> @workExperience.CompanyName<br />
+									<strong>Titel:</strong> @workExperience.Position<br />
+									<strong>Startdatum:</strong> @workExperience.StartDate<br />
+									<strong>Slutdatum:</strong> @workExperience.EndDate
+								</li>
+							}
+						</ul>
+                    }
                     @if (cv.Educations != null && cv.Educations.Any())
                     {
+                        <h4 class="fw-normal">Utbildning:</h4>
                         <ul>
                             @foreach (var education in cv.Educations)
                             {
@@ -47,14 +62,10 @@
                             }
                         </ul>
                     }
-                    else
-                    {
-                        <p>Ingen utbildning tillagd.</p>
-                    }
 
-                    <h4 class="fw-normal">Språk:</h4>
                     @if (cv.Languages != null && cv.Languages.Any())
                     {
+                        <h4 class="fw-normal">Språk:</h4>
                         <ul>
                             @foreach (var language in cv.Languages)
                             {
@@ -64,14 +75,9 @@
                             }
                         </ul>
                     }
-                    else
-                    {
-                        <p>Inga språk tillagda.</p>
-                    }
-
-                    <h4 class="fw-normal">Färdighet:</h4>
                     @if (cv.Skills != null && cv.Skills.Any())
                     {
+                        <h4 class="fw-normal">Färdigheter:</h4>
                         <ul>
                             @foreach (var skill in cv.Skills)
                             {
@@ -80,10 +86,6 @@
                                 </li>
                             }
                         </ul>
-                    }
-                    else
-                    {
-                        <p>Ingen färdighet tillagd.</p>
                     }
                 </div>
             }
