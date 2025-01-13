@@ -13,7 +13,6 @@ namespace CV_Applikation.Models
 
         [Required(ErrorMessage = "Nytt lösenord är nödvändigt.")]
         [DataType(DataType.Password)]
-        //[DataType(DataType.Password)]
         [StringLength(100, ErrorMessage = "Lösenordet måste vara minst {2} tecken långt.", MinimumLength = 6)]
         [RegularExpression(@"^(?=.*\d).*$", ErrorMessage = "Lösenordet måste innehålla minst en siffra.")]
         [PasswordValidation("CurrentPassword", ErrorMessage = "Det nya lösenordet får inte vara samma som det nuvarande lösenordet.")]
