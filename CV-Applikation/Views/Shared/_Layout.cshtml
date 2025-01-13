@@ -24,7 +24,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" style="margin-left: 2rem;">
                     <ul class="navbar-nav flex-grow-1" style=" display: flex; justify-content: center; gap: 2rem;">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" style="font-size: 1rem; font-weight: 600;">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" style="font-size: 1rem; font-weight: 600;">Hem</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Profile" style="font-size: 1rem; font-weight: 600;">Din profil</a>
@@ -52,7 +52,7 @@
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <form asp-controller="Account" asp-action="Logout" method="post">
-                                        <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; border-radius: 4px; border: none; background-color:#dc3545; color: white;">Logout</button>
+                                        <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; border-radius: 4px; border: none; background-color:#dc3545; color: white;">Logga ut</button>
                                 </form>
                             }
                             else
