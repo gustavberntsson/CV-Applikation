@@ -11,13 +11,15 @@ namespace CV_Applikation.Validation
         {
             var input = value as string;
 
-            // Om värdet är null eller tomt, gör ingen validering
+
+            //Ifall värdet är tomt eller null, ingen validering.
             if (string.IsNullOrEmpty(input))
             {
                 return ValidationResult.Success;
             }
 
-            // Kontrollera om strängen innehåller minst ett specialtecken
+
+            //Kollar ifall minst ett specialtecken förekommer i strängen.
             if (!Regex.IsMatch(input, @"[!@#$%^&*(),.?""':;|<>_+={}\[\]\\/`~&]"))
             {
                 return new ValidationResult(ErrorMessage ?? "Lösenordet måste innehålla minst ett specialtecken.");

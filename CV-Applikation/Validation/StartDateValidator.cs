@@ -7,27 +7,28 @@ namespace CV_Applikation.Validation
 
         public StartDateValidator()
         {
-            ErrorMessage = "Startdatum kan inte vara i framtiden.";
+            ErrorMessage = "";
         }
 
         public override bool IsValid(object value)
         {
+
+            //Kollar ifall värdet är null.
             if (value == null)
             {
-                return true; // Om det är null, validiteten kontrolleras av [Required] attributet.
+                return true; //Ifall värdet är null tillåts det.
             }
 
             DateTime parsedDate;
 
-            // Försök att parsning värdet till DateTime
+            //Försök med att omvandla värdet till DateTime-objekt.
             if (DateTime.TryParse(value.ToString(), out parsedDate))
             {
-                // Kontrollera om datumet är i framtiden
+
+                //Kollar ifall datumet finns i framtiden.
                 return parsedDate <= DateTime.Now;
             }
 
-            return false; // Om inte ett giltigt datum, är det ogiltigt.
+            return false; // Ifall värdet inte parsas till ett giltigt datum, ogiltigt datum då.
         }
     }
-}
-

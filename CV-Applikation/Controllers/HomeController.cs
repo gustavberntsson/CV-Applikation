@@ -20,37 +20,39 @@ namespace CV_Applikation.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Hämta den aktuella användaren
+
+            //Den aktuella användaren hämtas, kopplat till inloggningen.
             var currentUser = await userManager.GetUserAsync(User);
 
-            // Hämta ett urval av CVs
+            //Urval av CVs hämtas som uppfyller särskilda kriterier.
             var Cvs = await context.CVs
                 .Include(cv => cv.User)
-                .Where(cv => !cv.IsPrivate)
-                .Where(cv => cv.User.IsPrivate == false)
-                .Where (cv => cv.User.IsEnabled == true)
+                .Where(cv => !cv.IsPrivate) //Privata CV:n filtreras bort 
+                .Where(cv => cv.User.IsPrivate == false) //CV:n som har en privat ägare filtreras bort.
+                .Where(cv => cv.User.IsEnabled == true) //CV:n som har en inaktiverad ägare filtreras bort.
                 .Include(cv => cv.Educations)
                 .Include(cv => cv.Languages)
                 .Include(cv => cv.Skills)
                 .ToListAsync();
 
-            // Hämta senaste projektet
+            //Senaste projektet hämtas som följer särskilda kriterier.
             var lastProject = await context.Projects
                 .Where(p => p.Owner.IsPrivate == false)
                 .Where(p => p.Owner.IsEnabled == true)
-                .OrderByDescending(p => p.CreatedAt)
-                .FirstOrDefaultAsync();
+                .OrderByDescending(p => p.CreatedAt) //Projekten sorteras efter senaste skapande.
+                .FirstOrDefaultAsync(); //Det senaste (första) projektet hämtas. 
 
-            // Kontrollera om användaren är med i det senaste projektet
+
             bool isUserInProject = false;
 
             if (currentUser != null && lastProject != null)
             {
+                //Kontrollerar ifall det existerar en koppling mellan den aktuella användaren och det senaste projektet.
                 isUserInProject = await context.ProjectUsers
                     .AnyAsync(pu => pu.ProjectId == lastProject.ProjectId && pu.UserId == currentUser.Id);
             }
 
-            // Bygg vymodellen
+
             var model = new HomeViewModel
             {
                 CVs = Cvs,
