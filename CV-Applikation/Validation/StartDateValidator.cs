@@ -7,7 +7,7 @@ namespace CV_Applikation.Validation
 
         public StartDateValidator()
         {
-            ErrorMessage = "";
+            ErrorMessage = "Startdatum är obligatoriskt";
         }
 
         public override bool IsValid(object value)
