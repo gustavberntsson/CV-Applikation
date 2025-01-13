@@ -7,7 +7,9 @@ namespace CV_Applikation.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required(ErrorMessage = "Färdighet är obligatoriskt.")]
+        [StringLength(100, ErrorMessage = "Färdighetens namn får inte överskrida 100 tecken.")]
         public string SkillName { get; set; }
         public int CVId { get; set; }
 

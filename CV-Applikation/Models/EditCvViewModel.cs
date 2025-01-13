@@ -6,7 +6,9 @@ namespace CV_Applikation.Models
     public class EditCvViewModel
     {
         public int CVId { get; set; }
+
         [Required(ErrorMessage = "Namn för CV är obligatoriskt.")]
+        [StringLength(100, ErrorMessage = "CV-namnet får inte överskrida 100 tecken.")]
         public string CVName { get; set; }
         public List<Education> Educations { get; set; } = new List<Education>();
         public List<Languages> Languages { get; set; } = new List<Languages>();

@@ -7,12 +7,19 @@ namespace CV_Applikation.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required(ErrorMessage = "Utbildning är obligatoriskt.")]
+        [StringLength(100, ErrorMessage = "Skolnamnet får inte överskrida 100 tecken.")]
         public string School { get; set; }
+
         [Required(ErrorMessage = "Examensform för utbildningen är obligatoriskt.")]
+        [StringLength(100, ErrorMessage = "Examensform får inte överskrida 100 tecken.")]
         public string Degree { get; set; }
+
         [Required(ErrorMessage = "Ämnesområde för utbildningen är obligatoriskt.")]
+        [StringLength(100, ErrorMessage = "Ämnesområde får inte överskrida 100 tecken.")]
         public string FieldOfStudy { get; set; }
+
         [Required(ErrorMessage = "Startdatum för utbildningen är obligatoriskt.")]
         [Validation.StartDateValidator(ErrorMessage = "Startdatum kan inte vara i framtiden.")]
         public string StartDate { get; set; }
