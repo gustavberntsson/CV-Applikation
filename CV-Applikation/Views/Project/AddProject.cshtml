@@ -18,15 +18,8 @@
     <div class="form-group">
         <label for="Participants">Välj deltagare</label>
 
-        @if (ViewBag.Users != null && ViewBag.Users.Any())
-        {
             <select asp-for="ParticipantIds" asp-items="@ViewBag.Users" class="form-control" multiple="multiple"></select>
-        }
-        else
-        {
-            <p>Inga användare tillgängliga</p>
-        }
-    </div>
+    
 
 
     <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Skapa projekt</button>
