@@ -33,12 +33,12 @@ namespace CV_Applikation.Models
                 .HasForeignKey(pu => pu.ProjectId)
                 .OnDelete(DeleteBehavior.Restrict); // NO ACTION kan användas istället för Restrict
 
-            // Specifiera att det inte ska finnas någon kaskadborttagning för UserId
+            // Samma som den första
             modelBuilder.Entity<ProjectUser>()
                 .HasOne(pu => pu.UserProject)
                 .WithMany(u => u.ProjectUsers)
                 .HasForeignKey(pu => pu.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // NO ACTION kan användas istället för Restrict
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.Receiver)
