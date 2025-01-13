@@ -25,7 +25,7 @@
 
     <div class="row">
         <div class="col-12 col-md-6">
-            @foreach (var cv in Model.CVs)
+            @foreach (var cv in Model.CVs.Take(3))
             {
                 <div class="card mb-4">
                     <a href="@Url.Action("Profile", "Account", new { UserId = cv.UserId })" style="color: rgb(255, 167, 38);">
@@ -93,11 +93,14 @@
 
         <div class="col-12 col-md-6">
             <h2 class="fw-normal">Senaste projektet:</h2>
+            <div class="card mb-4">
             @if (Model.ProjectLatest != null)
             {
                 <h3 class="fw-normal">@Model.ProjectLatest.Title</h3>
-                <p>@Model.ProjectLatest.Description</p>
-                <p>Skapad: @Model.ProjectLatest.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
+                <p><strong>Projektbeskrivning:</strong> @Model.ProjectLatest.Description</p>
+                <p><strong>Skapad:</strong> @Model.ProjectLatest.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</p>
+			    <p><strong>Projektledare:</strong> @Model.ProjectLatest.Owner.UserName</p>
+                <p><strong>Antal medlemmar:</strong> @Model.ProjectLatest.ProjectUsers.Count()</p>
 
                 @if (!Model.IsUserInProject && User.Identity.IsAuthenticated)
                 {
@@ -123,6 +126,7 @@
             {
                 <p>Inga projekt skapade ännu.</p>
             }
+        </div>
         </div>
     </div>
 
