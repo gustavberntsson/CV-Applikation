@@ -7,13 +7,16 @@ namespace CV_Applikation.Models
     {
         [Key]
         public int CVId { get; set; }
+
         [Required(ErrorMessage = "Namn för CV är obligatoriskt.")]
+        [StringLength(100, ErrorMessage = "CV-namn får inte vara längre än 100 tecken.")]
         public string CVName { get; set; }
-        //public string OwnerId { get; set; } email? eller bara user och kan ta bort?
+
         [Required(ErrorMessage = "Status för CV är obligatoriskt.")]
         public Boolean IsPrivate { get; set; }
         public string? ImagePath { get; set; }
 
+        [Required] //UserId ska alltid vara kopplat till en användare
         public string? UserId { get; set; }
         
         [ForeignKey(nameof(UserId))]

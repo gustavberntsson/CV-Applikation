@@ -11,7 +11,7 @@ namespace CV_Applikation.Models
         [Required(ErrorMessage = "Avsändare är obligatoriskt.")]
         public string? SenderId { get; set; }
 
-        //[Required(ErrorMessage = "MottagarID är obligatoriskt.")]
+        
         public string? ReceiverId { get; set; }
 
         [Required(ErrorMessage = "Meddelandeinnehåll är obligatoriskt.")]

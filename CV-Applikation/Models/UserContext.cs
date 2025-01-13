@@ -19,7 +19,7 @@ namespace CV_Applikation.Models
         public DbSet<Message> Message { get; set; }
 
         public DbSet<ProjectUser> ProjectUsers { get; set; }
-        //message inte lagt till än
+       
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

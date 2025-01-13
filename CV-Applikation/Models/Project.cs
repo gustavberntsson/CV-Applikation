@@ -19,8 +19,6 @@ namespace CV_Applikation.Models
         [Required]
         public DateTime CreatedAt { get; set; }
 
-        // Koppling till användare (vem som skapade projektet)
-        //[Required(ErrorMessage = "ID är obligatoriskt.")]
         public string? OwnerId { get; set; }
 
         [ForeignKey(nameof(OwnerId))] 
@@ -28,6 +26,6 @@ namespace CV_Applikation.Models
 
         public virtual ICollection<ProjectUser> ProjectUsers { get; set; } = new List<ProjectUser>();
         [NotMapped]
-        public List<string> ParticipantIds { get; set; } = new List<string>();// Ny egenskap
+        public List<string> ParticipantIds { get; set; } = new List<string>();
     }
 }
