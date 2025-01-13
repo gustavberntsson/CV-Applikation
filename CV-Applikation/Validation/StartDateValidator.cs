@@ -32,3 +32,4 @@ namespace CV_Applikation.Validation
             return false; // Ifall värdet inte parsas till ett giltigt datum, ogiltigt datum då.
         }
     }
+}
