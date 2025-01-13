@@ -147,7 +147,7 @@ namespace CV_Applikation.Controllers
                     else
                     {
                         // Lägger till felmeddelande vid misslyckad inloggning
-                        ModelState.AddModelError("", "Fel användarnamn/lösenord.");
+                        ModelState.AddModelError("", "Fel användarnamn/lösenord. Notera att användarnamn och lösenord är skiftlägeskänsliga");
                     }
                 }
                 // Returnerar vyn med eventuella felmeddelanden
