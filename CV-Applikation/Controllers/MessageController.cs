@@ -67,7 +67,7 @@ namespace CV_Applikation.Controllers
                 // Kontrollera avsändare (inloggad eller gäst)
                 if (currentUser != null)
                 {
-                    //senderUsername = currentUser.UserName;
+                   
                     senderUsername = model.SenderId;
                 }
                 else if (!string.IsNullOrEmpty(model.SenderId)) // Hantera gästavsändare
