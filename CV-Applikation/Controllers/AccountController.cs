@@ -701,7 +701,7 @@ namespace CV_Applikation.Controllers
                 if (!similarUsers.Any())
                 {
                     // Om inga användare hittades, visas ett felmeddelande
-                    TempData["ErrorMessage"] = "Inga användare från samma skola hittades.";
+                    TempData["ErrorMessage"] = "Inga användare med liknande utbildning hittades";
                     return RedirectToAction("Profile", new { userId });
                 }
 
