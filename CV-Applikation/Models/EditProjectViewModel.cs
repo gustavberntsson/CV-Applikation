@@ -15,10 +15,9 @@ namespace CV_Applikation.Models
         [StringLength(500, ErrorMessage = "Beskrivning får inte överskrida 500 tecken.")]
         public string Description { get; set; }
 
-        [MinLength(1, ErrorMessage = "Minst en deltagare måste väljas.")]
+ 
         public List<SelectListItem> CurrentParticipants { get; set; } = new List<SelectListItem>();
 
-        [MinLength(1, ErrorMessage = "Minst en tillgänglig användare måste finnas.")]
         public List<SelectListItem> AvailableUsers { get; set; } = new List<SelectListItem>();
 
         public List<string> ParticipantsToAdd { get; set; } = new List<string>();
