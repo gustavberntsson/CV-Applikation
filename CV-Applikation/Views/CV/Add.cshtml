@@ -176,25 +176,7 @@
     color: white;
 }
 
- (max-width: 768px) /*{
-    .container {
-        flex-direction: column; 
-    }
-
-    .form-section {
-        flex: 1 100%;
-    }
-}*/
-
-   /* .flex-container {
-        display: flex;
-        gap: 30px; 
-        justify-content: space-between;
-    }
-
-    .section /*{
-        flex: 1; 
-    }*/
+ (max-width: 768px) 
 
     .input-row {
         display: flex;
@@ -221,77 +203,104 @@
 <script>
 
 
+    //Funktion - kollar ifall ett värde är giltigt. 
     function hasValue(value) {
+        
+        //True returneras ifall värdet inte är null, tomma mellanslag eller undefined.
         return value !== undefined && value !== null && value.trim() !== '';
     }
 
+   
+    //Funktion - Validera en sektion tex utbildning, arbetslivserfarenhet, språk osv.
     function validateSection(containerId, addButtonId, requiredFields = []) {
+          //Container-elementet hämtas där sektionerna finns.
         const container = document.getElementById(containerId);
+         //Sektioner (barn) inom containern hämtas.
         const sections = container.children;
+        //Knappen för att lägga till nya sektioner hämtas.
         const addButton = document.getElementById(addButtonId);
-
+          //Kollar ifall det existerar minst en sektion i containern.
         if (sections.length > 0) {
+             //Den senaste sektionen hämtas.
             const lastSection = sections[sections.length - 1];
+             //Alla input-fält hämtas i senaste sektionen.
             const inputs = lastSection.getElementsByTagName('input');
 
-            // Om requiredFields är tom, kontrollera alla fält
+           
+             //Kollar vilka inmatningsfält som ska valideras.
             const fieldsToCheck = requiredFields.length > 0 ?
+           
+           //Bara de input-fält i inputs filtreras som har id som matchar något av fältnamnen i requiredFields.
                 Array.from(inputs).filter(input => requiredFields.some(field => input.id.includes(field))) :
+                
+                //Ifall requiredFields tomt, ska alla input-fält bli inkluderade i inputs.
                 Array.from(inputs);
 
+           //Kollar ifall alla fält i fieldsToCheck innehåller giltiga värden.
             const allFieldsHaveValue = fieldsToCheck.every(input => hasValue(input.value));
 
-            // Uppdatera knappens tillstånd
+            //Knappens tillstånd (uppdateras).
+
+            //Ifall allFieldsHaveValue är false ska knappen inaktiveras.
+            //Ifall allFieldsHaveValue är true ska knappen aktiveras.
             addButton.disabled = !allFieldsHaveValue;
         }
     }
-
+  
+    //Knapp för att ta bort en sektion skapas.
     function createRemoveButton() {
         return `<button type="button" class="remove-button" onclick="removeSection(this)">Ta bort</button>`;
     }
+  
+    //Funktion - Radera specifik sektion.
+    function removeSection(button) {             
+        const section = button.closest('div'); //Det närmaste <div>-elementet runt knappen hittas (aktuella sektionen).
+        const container = section.parentElement;  //Container-elementet hittas som har sektionen. 
+            const addButtonId = container.id.replace('Container', ''); //Containers ID hämtas tex "languagesContainer" och raderar "Container" från slutet.
+    //Används för skapande av ID för relaterade "lägg till"-knappen.
 
-    function removeSection(button) {
-        const section = button.closest('div');
-        const container = section.parentElement;
-        const addButtonId = container.id.replace('Container', '');
-        section.remove();
-        validateSection(container.id, 'add' + addButtonId);
+        section.remove(); //Radera den aktuella sektionen som knappen hör till.
+        validateSection(container.id, 'add' + addButtonId); //Validerar sektionen som återstår för och kolla om "lägg till"-knappen ska vara aktiverad.
     }
 
-    // Lägg till eventlyssnare för alla inputfält
+   
+    //När sidan har laddats klart körs eventen.
     document.addEventListener('DOMContentLoaded', function () {
-        // Validera sektioner vid sidladdning
+         //Vid sidladdning, validera alla sektioner.
         validateSection('languagesContainer', 'addLanguage', ['LanguageName']);
         validateSection('educationsContainer', 'addEducation', ['School']);
         validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName']);
         validateSection('skillsContainer', 'addSkill', ['SkillName']);
 
-        // Lägg till eventlyssnare för alla inputfält för att trigga validering vid ändring
+      
+         
+          //Alla input-Element på sidan hämtas.
         document.querySelectorAll("input").forEach(input => {
-            input.addEventListener("input", function() {
-                // Här anropas validateSection för alla containers som finns
-                validateSection('languagesContainer', 'addLanguage', ['LanguageName']);
-                validateSection('educationsContainer', 'addEducation', ['School']);
-                validateSection('workExperiencesContainer', 'addWorkExperience', ['CompanyName']);
-                validateSection('skillsContainer', 'addSkill', ['SkillName']);
-            });
         });
     });
 
     // Färdigheter
     document.getElementById("addSkill").addEventListener("click", function () {
+         
+        //Elementet hämtas för containern där alla skills ska bli lagrade.
         let container = document.getElementById("skillsContainer");
+      
+        //Index beräknas utifrån antalet redan existerande sektioner i containern.
         let index = container.children.length;
+
+        //Ny div skapas som kommer att ha det nya inputfältet för en skill.
         let newSkill = document.createElement('div');
+         //Nya diven fylls med HTML-Innehåll.
         newSkill.innerHTML = `
             <div class="input-row">
                 <label for="Skills[${index}].SkillName">Färdighet:</label>
                 <input name="Skills[${index}].SkillName" id="Skills[${index}].SkillName" onchange="validateSection('skillsContainer', 'addSkill', ['SkillName'])" oninput="validateSection('skillsContainer', 'addSkill', ['SkillName'])" />
                 ${createRemoveButton()}
             </div>`;
+         //Nya sektionen (med inputfältet) läggs till containern.
         container.appendChild(newSkill);
 
-        // Validera direkt när nytt fält lagts till
+        //Kontrollerar ifall alla obligatoriska fält i sektionen fyllts i.
         validateSection('skillsContainer', 'addSkill', ['SkillName']);
     });
 
