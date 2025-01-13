@@ -9,7 +9,7 @@
 
     <h1 class="fw-normal fs-5 mt-2">Redigera CV</h1>
 
-    <!-- CV-namn -->
+    @*  CV Namn *@
     <label for="CVName">CV Namn:</label>
     <input asp-for="CVName" id="CVName" />
     <span asp-validation-for="CVName" class="text-danger"></span>
@@ -22,13 +22,13 @@
     <div class="d-flex justify-content-between">
 
         <div style="width: 48%;">
-            <!-- Utbildningar -->
+           @*  Utbildningar *@
             <h3 class="fw-normal fs-5 mt-2">Utbildningar</h3>
             <div id="educationsContainer">
                 @for (int i = 0; i < Model.Educations.Count; i++)
                 {
                     <div class="education">
-                        <!-- Dolt fält för ID -->
+                      
                         <input type="hidden" asp-for="Educations[@i].Id" />
 
                         <label for="Educations[@i].School">Skola:</label>
@@ -67,13 +67,13 @@
 
 
         <div style="width: 48%;">
-            <!-- Arbetslivserfarenheter -->
+            @*  Arbetserfarenhet *@
             <h3 class="fw-normal fs-5 mt-2">Arbetslivserfarenheter</h3>
             <div id="workExperiencesContainer">
                 @for (int i = 0; i < Model.WorkExperiences.Count; i++)
                 {
                     <div class="work-experience">
-                        <!-- Dolt fält för ID -->
+                        
                         <input type="hidden" asp-for="WorkExperiences[@i].Id" style="margin-bottom: 15px;" />
 
                         <label for="WorkExperiences[@i].CompanyName">Företagsnamn:</label>
@@ -114,13 +114,13 @@
 
     <div class="d-flex justify-content-between">
         <div style="width: 48%;">
-            <!-- Språk -->
+          @*   Språk *@
             <h3 class="fw-normal fs-5 mt-2">Språk</h3>
             <div id="languagesContainer">
                 @for (int i = 0; i < Model.Languages.Count; i++)
                 {
                     <div class="language">
-                        <!-- Dolt fält för ID -->
+                       
                         <input type="hidden" asp-for="Languages[@i].Id" />
 
                         <label for="Languages[@i].LanguageName">Språk:</label>
@@ -142,13 +142,13 @@
         </div>
 
         <div style="width: 48%;">
-            <!-- Färdigheter -->
+          @* Färdigheter *@
             <h3 class="fw-normal fs-5 mt-2">Färdigheter</h3>
             <div id="skillsContainer">
                 @for (int i = 0; i < Model.Skills.Count; i++)
                 {
                     <div class="skill">
-                        <!-- Dolt fält för ID -->
+                       
                         <input type="hidden" asp-for="Skills[@i].Id" />
 
                         <label for="Skills[@i].SkillName">Färdighet:</label>
@@ -161,19 +161,19 @@
             </div>
             <button type="button" class="btn" id="addSkill" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;" style="margin-bottom: 15px;">Lägg till ny färdighet</button>
             <br />
-            <!-- Submit -->
+            <div class="form-group">
+                <label class="fw-normal fs-5" for="IsPrivate">Synlighet</label>
+                <select class="form-control" id="IsPrivate" name="IsPrivate">
+                    <option value="false">Offentligt</option>
+                    <option value="true">Privat</option>
+                </select>
+                <span asp-validation-for="IsPrivate" class="text-danger"></span>
+            </div>
             <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white; float: right;" style="margin-bottom: 15px;">Spara ändringar</button>
 
         </div>
     </div>
-    <div class="form-group">
-        <label class="fw-normal fs-5" for="IsPrivate">Synlighet</label>
-        <select class="form-control" id="IsPrivate" name="IsPrivate">
-            <option value="false">Offentligt</option>
-            <option value="true">Privat</option>
-        </select>
-        <span asp-validation-for="IsPrivate" class="text-danger"></span>
-    </div>
+
 
 
 </form>
