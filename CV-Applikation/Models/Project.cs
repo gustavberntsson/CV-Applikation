@@ -13,7 +13,7 @@ namespace CV_Applikation.Models
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Beskrivning är obligatoriskt.")]
-        [StringLength(1000, ErrorMessage = "Titel får inte vara över 1000 tecken.")]
+        [StringLength(1000, ErrorMessage = "Beskrivning får inte vara över 1000 tecken.")]
         public string Description { get; set; }
 
         [Required]
