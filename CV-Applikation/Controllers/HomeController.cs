@@ -73,6 +73,7 @@ namespace CV_Applikation.Controllers
         {
             try
             {
+                //Hämtar nuvarande användare, om ingen hittas, omdirigerar till login
                 var currentUser = userManager.GetUserAsync(User).Result;
                 if (currentUser == null)
                     return RedirectToAction("Login", "Account");
