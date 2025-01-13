@@ -44,7 +44,14 @@ namespace CV_Applikation.Controllers
                     }).ToList();
 
                 // Skapar en SelectList för att skicka till vyn.
-                ViewBag.Users = new SelectList(users, "Value", "Text");
+                //Kollar ifall listan users har användare.
+                //Ifall användare existerar i listan skapas en SelectList utifrån users.
+                //Ifall det inte existerar användare blir ViewBag.Users null.
+                ViewBag.Users = users.Any() ? new SelectList(users, "Value", "Text") : null;
+               
+                //Om det finns användare i listan får ViewBag.HasUsers värdet true, blir false annars.
+                ViewBag.HasUsers = users.Any();
+
                 Project project = new Project();
                 return View(project);
             }
@@ -77,8 +84,9 @@ namespace CV_Applikation.Controllers
                             Text = u.UserName
                         }).ToList();
 
-                    // Skapar en SelectList för att skicka till vyn.
-                    ViewBag.Users = new SelectList(users, "Value", "Text");
+                   
+                    ViewBag.Users = users.Any() ? new SelectList(users, "Value", "Text") : null;
+                    ViewBag.HasUsers = users.Any(); // Kontrollera om det finns några användare.
                     return View(project);
                 }
 
