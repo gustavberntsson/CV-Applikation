@@ -13,6 +13,7 @@
     <!-- CV-namn -->
     <label for="CVName">CV Namn:</label>
     <input asp-for="CVName" id="CVName" />
+    <span asp-validation-for="CVName" class="text-danger"></span>
     <br />
     <h3 class="fw-normal fs-5 mt-2">Bild för cv: </h3>
     <input type="file" asp-for="ImagePath" />
@@ -33,23 +34,28 @@
 
                         <label for="Educations[@i].School">Skola:</label>
                         <input asp-for="Educations[@i].School" id="Educations[@i].School" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="Educations[@i].School" class="text-danger"></span>
 
                         <br />
 
                         <label for="Educations[@i].Degree">Examen:</label>
                         <input asp-for="Educations[@i].Degree" id="Educations[@i].Degree" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="Educations[@i].Degree" class="text-danger"></span>
                         <br />
 
                         <label for="Educations[@i].FieldOfStudy">Ämnesområde:</label>
                         <input asp-for="Educations[@i].FieldOfStudy" id="Educations[@i].FieldOfStudy" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="Educations[@i].FieldOfStudy" class="text-danger"></span>
                         <br />
 
                         <label for="Educations[@i].StartDate">Startdatum:</label>
                         <input type="date" asp-for="Educations[@i].StartDate" id="Educations[@i].StartDate" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="Educations[@i].StartDate" class="text-danger"></span>
                         <br />
 
                         <label for="Educations[@i].EndDate">Slutdatum:</label>
                         <input type="date" asp-for="Educations[@i].EndDate" id="Educations[@i].EndDate" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="Educations[@i].EndDate" class="text-danger"></span>
                         <br />
 
                     </div>
@@ -73,22 +79,27 @@
 
                         <label for="WorkExperiences[@i].CompanyName">Företagsnamn:</label>
                         <input asp-for="WorkExperiences[@i].CompanyName" id="WorkExperiences[@i].CompanyName" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="WorkExperiences[@i].CompanyName" class="text-danger"></span>
                         <br />
 
                         <label for="WorkExperiences[@i].Position">Position:</label>
                         <input asp-for="WorkExperiences[@i].Position" id="WorkExperiences[@i].Position" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="WorkExperiences[@i].Position" class="text-danger"></span>
                         <br />
 
                         <label for="WorkExperiences[@i].Description">Beskrivning:</label>
                         <textarea asp-for="WorkExperiences[@i].Description" id="WorkExperiences[@i].Description" style="margin-bottom: 15px;"></textarea>
+                        <span asp-validation-for="WorkExperiences[@i].Description" class="text-danger"></span>
                         <br />
 
                         <label for="WorkExperiences[@i].StartDate">Startdatum:</label>
                         <input type="date" asp-for="WorkExperiences[@i].StartDate" id="WorkExperiences[@i].StartDate" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="WorkExperiences[@i].StartDate" class="text-danger"></span>
                         <br />
 
                         <label for="WorkExperiences[@i].EndDate">Slutdatum:</label>
                         <input type="date" asp-for="WorkExperiences[@i].EndDate" id="WorkExperiences[@i].EndDate" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="WorkExperiences[@i].EndDate" class="text-danger"></span>
                         <br />
 
                     </div>
@@ -115,10 +126,12 @@
 
                         <label for="Languages[@i].LanguageName">Språk:</label>
                         <input asp-for="Languages[@i].LanguageName" id="Languages[@i].LanguageName" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="Languages[@i].LanguageName" class="text-danger"></span>
                         <br />
 
                         <label for="Languages[@i].Level">Nivå:</label>
                         <input asp-for="Languages[@i].Level" id="Languages[@i].Level" type="number" min="1" max="5" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="Languages[@i].Level" class="text-danger"></span>
                         <br />
 
                     </div>
@@ -141,6 +154,7 @@
 
                         <label for="Skills[@i].SkillName">Färdighet:</label>
                         <input asp-for="Skills[@i].SkillName" id="Skills[@i].SkillName" style="margin-bottom: 15px;" />
+                        <span asp-validation-for="Skills[@i].SkillName" class="text-danger"></span>
                         <br />
 
                     </div>
