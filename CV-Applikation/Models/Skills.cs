@@ -9,7 +9,6 @@ namespace CV_Applikation.Models
         public int Id { get; set; }
         [Required(ErrorMessage = "Färdighet är obligatoriskt.")]
         public string SkillName { get; set; }
-        public int SkillID { get; set; }
         public int CVId { get; set; }
 
         [ForeignKey(nameof(CVId))]
