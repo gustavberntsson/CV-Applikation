@@ -226,7 +226,7 @@ namespace CV_Applikation.Controllers
             }
             catch (Exception ex)
             {
-                // Loggar eventuella fel och visa användarvänligt felmeddelande
+                // Loggar eventuella fel och visar felmeddelande
                 _logger.LogError(ex, "Ett fel uppstod vid hämtning av profil");
                 TempData["ErrorMessage"] = "Ett fel uppstod vid hämtning av profilen. Försök igen senare.";
                 return RedirectToAction("Index", "Home");
