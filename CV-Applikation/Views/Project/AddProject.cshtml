@@ -6,23 +6,23 @@
 <form asp-action="AddProject" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
-        <label for="Title">Title</label>
+        <label for="Title">Titel</label>
         <input type="text" class="form-control" id="Title" name="Title" value="@Model.Title" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label for="Description">Description</label>
+        <label for="Description">Beskrivning</label>
         <textarea class="form-control" id="Description" name="Description">@Model.Description</textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label for="Participants">Select Participants</label>
+        <label for="Participants">Välj deltagare</label>
         <select asp-for="ParticipantIds" asp-items="@ViewBag.Users" class="form-control" multiple="multiple"></select>
      
     </div>
 
 
-    <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Create Project</button>
+    <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">Skapa projekt</button>
 </form>
 
 <style>
