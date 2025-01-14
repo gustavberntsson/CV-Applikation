@@ -28,7 +28,7 @@ namespace CV_Applikation.Models
         public string Adress { get; set; }
 
         [Required(ErrorMessage = "Du måste ange ett telefonnummer")]
-        [Validation.PhoneValidation(ErrorMessage = "Ogiltigt telefonnummer, korrekt format är 070-1234567")]
+        [Validation.PhoneValidation(ErrorMessage = "Ogiltigt telefonnummer, korrekt format är 070-1234567, den får max vara 10 siffror")]
         [Display(Name = "Telefon")]
         public string TelefonNummer { get; set; }
 
