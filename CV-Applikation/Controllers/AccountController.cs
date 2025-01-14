@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using CV_Applikation.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Data.SqlClient;
-using CV_Applikation.Migrations;
 using System.Xml;
 using System.Xml.Serialization;
 

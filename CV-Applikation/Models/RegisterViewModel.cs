@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CV_Applikation.Validation;
-using Microsoft.AspNetCore.Identity;
 
 namespace CV_Applikation.Models
 {
