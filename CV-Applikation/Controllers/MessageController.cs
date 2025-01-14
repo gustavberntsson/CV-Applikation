@@ -1,5 +1,4 @@
-﻿using CV_Applikation.Migrations;
-using CV_Applikation.Models;
+﻿using CV_Applikation.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

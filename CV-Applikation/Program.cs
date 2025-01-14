@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var databasePath = Path.Combine(Directory.GetCurrentDirectory(), "Databas");
+AppDomain.CurrentDomain.SetData("DataDirectory", databasePath);
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<UserContext>(options =>

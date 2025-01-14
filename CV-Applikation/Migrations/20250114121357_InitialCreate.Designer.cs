@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CV_Applikation.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20241228131626_message")]
-    partial class message
+    [Migration("20250114121357_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,28 +28,6 @@ namespace CV_Applikation.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CV_Applikation.Models.AboutMe", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CVId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CVId");
-
-                    b.ToTable("AboutMes");
-                });
-
             modelBuilder.Entity("CV_Applikation.Models.CV", b =>
                 {
                     b.Property<int>("CVId")
@@ -60,13 +38,16 @@ namespace CV_Applikation.Migrations
 
                     b.Property<string>("CVName")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsPrivate")
                         .HasColumnType("bit");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("CVId");
@@ -78,31 +59,45 @@ namespace CV_Applikation.Migrations
 
             modelBuilder.Entity("CV_Applikation.Models.ContactInformation", b =>
                 {
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("Address")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Adress")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CVId")
-                        .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Email");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("CVId");
+                    b.Property<int?>("ViewCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ContactInformation");
                 });
@@ -120,18 +115,21 @@ namespace CV_Applikation.Migrations
 
                     b.Property<string>("Degree")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("EndDate")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FieldOfStudy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("School")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("StartDate")
                         .IsRequired()
@@ -157,7 +155,8 @@ namespace CV_Applikation.Migrations
 
                     b.Property<string>("LanguageName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Level")
                         .HasColumnType("int");
@@ -179,22 +178,25 @@ namespace CV_Applikation.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Receiver")
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReceiverId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Sender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("Sender");
+                    b.HasIndex("ReceiverId");
 
                     b.ToTable("Message");
                 });
@@ -212,15 +214,16 @@ namespace CV_Applikation.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("OwnerId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("ProjectId");
 
@@ -262,12 +265,10 @@ namespace CV_Applikation.Migrations
                     b.Property<int>("CVId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SkillID")
-                        .HasColumnType("int");
-
                     b.Property<string>("SkillName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -293,6 +294,15 @@ namespace CV_Applikation.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPrivate")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -511,18 +521,16 @@ namespace CV_Applikation.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CV_Applikation.Models.AboutMe", b =>
+            modelBuilder.Entity("CV_Applikation.Models.CV", b =>
                 {
-                    b.HasOne("CV_Applikation.Models.CV", "Cv")
+                    b.HasOne("CV_Applikation.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("CVId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
-                    b.Navigation("Cv");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CV_Applikation.Models.CV", b =>
+            modelBuilder.Entity("CV_Applikation.Models.ContactInformation", b =>
                 {
                     b.HasOne("CV_Applikation.Models.User", "User")
                         .WithMany()
@@ -531,17 +539,6 @@ namespace CV_Applikation.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CV_Applikation.Models.ContactInformation", b =>
-                {
-                    b.HasOne("CV_Applikation.Models.CV", "Cv")
-                        .WithMany()
-                        .HasForeignKey("CVId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cv");
                 });
 
             modelBuilder.Entity("CV_Applikation.Models.Education", b =>
@@ -568,22 +565,19 @@ namespace CV_Applikation.Migrations
 
             modelBuilder.Entity("CV_Applikation.Models.Message", b =>
                 {
-                    b.HasOne("CV_Applikation.Models.User", "User")
+                    b.HasOne("CV_Applikation.Models.User", "Receiver")
                         .WithMany()
-                        .HasForeignKey("Sender")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("User");
+                    b.Navigation("Receiver");
                 });
 
             modelBuilder.Entity("CV_Applikation.Models.Project", b =>
                 {
                     b.HasOne("CV_Applikation.Models.User", "Owner")
                         .WithMany("OwnedProjects")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
                 });
