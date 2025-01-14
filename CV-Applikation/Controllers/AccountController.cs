@@ -153,7 +153,6 @@ namespace CV_Applikation.Controllers
             }
             catch (Exception ex)
             {
-                // Loggar fel och visar användarvänligt felmeddelande
                 _logger.LogError(ex, "Ett fel uppstod vid inloggning");
                 ModelState.AddModelError("", "Ett fel uppstod vid inloggning. Försök igen senare.");
                 return View(loginViewModel);
@@ -353,7 +352,6 @@ namespace CV_Applikation.Controllers
             }
             catch (Exception ex)
             {
-                // Loggar fel och visar användarvänligt felmeddelande
                 _logger.LogError(ex, "Ett fel uppstod vid åtkomst av lösenordsändringssidan");
                 TempData["ErrorMessage"] = "Ett fel uppstod. Försök igen senare.";
                 return RedirectToAction("Profile");
@@ -405,7 +403,6 @@ namespace CV_Applikation.Controllers
             }
             catch (Exception ex)
             {
-                // Loggar fel och visar användarvänligt felmeddelande
                 _logger.LogError(ex, "Ett fel uppstod vid ändring av lösenord");
                 ModelState.AddModelError("", "Ett fel uppstod vid ändring av lösenord. Försök igen senare.");
                 return View(model);
@@ -444,7 +441,6 @@ namespace CV_Applikation.Controllers
             }
             catch (Exception ex)
             {
-                // Loggar fel och visar användarvänligt felmeddelande
                 _logger.LogError(ex, "Ett fel uppstod vid hämtning av profilredigeringssidan");
                 TempData["ErrorMessage"] = "Ett fel uppstod. Försök igen senare.";
                 return RedirectToAction("Profile");
@@ -476,7 +472,6 @@ namespace CV_Applikation.Controllers
             }
             catch (Exception ex)
             {
-                // Loggar fel och visar användarvänligt felmeddelande
                 _logger.LogError(ex, "Ett fel uppstod vid uppdatering av profil");
                 ModelState.AddModelError("", "Ett fel uppstod vid uppdatering av profilen. Försök igen senare.");
                 return View(model);
