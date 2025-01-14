@@ -231,77 +231,115 @@ namespace CV_Applikation.Controllers
             }
         }
 
-        
+
         [HttpGet]
         public async Task<IActionResult> Search(string SearchString)
         {
-            try
+
+            if (string.IsNullOrWhiteSpace(SearchString))
             {
-                // Returnera till söksidan om ingen sökterm anges
-                if (string.IsNullOrWhiteSpace(SearchString))
-                {
-                    return View("Search", "Home");
-                }
+                return View("Search", "Home");
+            }
 
-                // Kontrollerar om användaren är inloggad
-                var currentUser = await userManager.GetUserAsync(User);
-                var isUserLoggedIn = currentUser != null;
+            // Hämta användaren baserat på användarnamnet
+            var SearchTerms = SearchString.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var currentUser = await userManager.GetUserAsync(User);
+            var isUserLoggedIn = currentUser != null;
+            var matchingUsers = await context.Users
+    .Where(u =>
+        (!u.IsPrivate || isUserLoggedIn) &&
+        SearchTerms.All(term =>
+            u.UserName.ToLower().Contains(term) || // Kontrollera användarnamn
+            context.CVs.Any(cv =>
+                cv.UserId == u.Id &&
+                (!cv.IsPrivate || isUserLoggedIn) &&
+                (
+                    cv.Skills.Any(s => s.SkillName.ToLower().Contains(term)) || // Kontrollera färdigheter
+                    cv.Educations.Any(e =>
+                        e.FieldOfStudy.ToLower().Contains(term) || // Kontrollera studieriktning
+                        e.Degree.ToLower().Contains(term)          // Kontrollera examen
+                    ) ||
+                    cv.WorkExperiences.Any(we =>
+                        we.Position.ToLower().Contains(term) ||    // Kontrollera arbetsposition
+                        we.Description.ToLower().Contains(term)    // Kontrollera arbetsbeskrivning
+                    )
+                )
+            )
+        )
+    )
+    .ToListAsync();
 
-                // Hämtar matchande användare baserat på söksträngen
-                // Filtrerar bort inaktiverade användare och privata profiler för ej inloggade
-                var matchingUsers = await context.Users
-                    .Where(u => u.IsEnabled)
-                    .Where(u => (isUserLoggedIn || !u.IsPrivate) &&
-                            u.UserName.Contains(SearchString))
+
+            if (matchingUsers.Count == 1)
+            {
+                var user = matchingUsers.First();
+                // Hämta kontaktinformation
+                var contactInfo = await context.ContactInformation
+                    .FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+                // Hämta användarens CV:n
+                var CVs = await context.CVs
+                    .Where(cv => cv.UserId == user.Id && (isUserLoggedIn || !cv.IsPrivate))
+                    .Include(cv => cv.Educations)
+                    .Include(cv => cv.Languages)
+                    .Include(cv => cv.Skills)
+                    .Include(cv => cv.WorkExperiences)
                     .ToListAsync();
 
-                // Om exakt en användare hittas, visar direkt deras profil
-                if (matchingUsers.Count == 1)
-                {
-                    var user = matchingUsers.First();
-                    // Ökar visningsräknaren om det inte är användarens egen profil
-                    if (!isUserLoggedIn || currentUser.Id != user.Id)
-                    {
-                        var contactInfo = await GetContactInformationAsync(user.Id);
-                        if (contactInfo != null)
-                        {
-                            contactInfo.ViewCount = (contactInfo.ViewCount ?? 0) + 1;
-                            await context.SaveChangesAsync();
-                        }
-                    }
-                    var profileViewModel = await BuildProfileViewModelAsync(user, currentUser);
-                    return View("Profile", profileViewModel);
-                }
+                // Hämta användarens projekt
+                var projects = await context.Projects
+                    .Include(p => p.ProjectUsers)
+                    .ThenInclude(pu => pu.UserProject)
+                    .Where(p => p.OwnerId == user.Id || p.ProjectUsers.Any(pu => pu.UserId == user.Id))
+                    .OrderByDescending(p => p.CreatedAt)
+                    .ToListAsync();
 
-                // Om flera användare hittas, hämtar deras CV:n
-                var allCVs = await GetAllCVsForUsersAsync(matchingUsers, isUserLoggedIn);
-
-                // Skapar sökresultat för varje matchande användare
-                var searchResults = matchingUsers.Select(u => new SearchResult
+                // Bygg profilmodellen
+                var pmodel = new ProfileViewModel
                 {
-                    UserId = u.Id,
-                    ProfileName = u.UserName,
-                    ImageUrl = u.ImageUrl,
-                    Cvs = allCVs.Where(cv => cv.UserId == u.Id).ToList(),
-                    IsPrivate = u.IsPrivate,
-                }).ToList();
-
-                // Bygger upp sökresultatvyn
-                var model = new SearchViewModel
-                {
-                    SearchString = SearchString,
-                    Results = searchResults
+                    ProfileName = user.UserName,
+                    ProfileId = user.Id,
+                    ImageUrl = user.ImageUrl,
+                    IsPrivate = user.IsPrivate,
+                    FirstName = contactInfo?.FirstName ?? "Ej angivet",
+                    LastName = contactInfo?.LastName ?? "Ej angivet",
+                    Adress = contactInfo?.Adress ?? "Ej angivet",
+                    Email = contactInfo?.Email ?? "Ej angivet",
+                    PhoneNumber = contactInfo?.PhoneNumber ?? "Ej angivet",
+                    Cvs = CVs,
+                    Projects = projects,
+                    CurrentUserId = currentUser?.Id
                 };
 
-                return View("Search", model);
+                return View("Profile", pmodel);
+
             }
-            catch (Exception ex)
+
+            var userIds = matchingUsers.Select(u => u.Id).ToList();
+            var allCVs = await context.CVs
+                .Where(cv => userIds.Contains(cv.UserId) && (isUserLoggedIn || !cv.IsPrivate))
+                .Include(cv => cv.Languages)
+                .Include(cv => cv.Skills)
+                .Include(cv => cv.Educations)
+                .Include(cv => cv.WorkExperiences)
+                .ToListAsync();
+
+            var searchResults = matchingUsers.Select(u => new SearchResult
             {
-                // Loggar eventuella fel och visa användarvänligt felmeddelande
-                _logger.LogError(ex, "Ett fel uppstod vid sökning");
-                TempData["ErrorMessage"] = "Ett fel uppstod vid sökning. Försök igen senare.";
-                return RedirectToAction("Index", "Home");
-            }
+                UserId = u.Id,
+                ProfileName = u.UserName,
+                ImageUrl = u.ImageUrl,
+                Cvs = allCVs.Where(cv => cv.UserId == u.Id).ToList(),
+                IsPrivate = u.IsPrivate,
+            }).ToList();
+
+            var model = new SearchViewModel
+            {
+                SearchString = SearchString,
+                Results = searchResults
+            };
+
+            return View("Search", model);
         }
 
         // Visar sidan för lösenordsändring
