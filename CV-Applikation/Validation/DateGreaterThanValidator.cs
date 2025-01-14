@@ -1,8 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CV_Applikation.Migrations;
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace CV_Applikation.Validation
 {
-    public class DateGreaterThanValidator : ValidationAttribute
+    //Anpassade regler skapas för att validera egenskaper i modeller. 
+    public class DateGreaterThanValidator : ValidationAttribute 
     {
         //Håller namnet för egenskapen som ska jämföras med.
         private readonly string comparison_property;
