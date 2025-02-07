@@ -20,6 +20,26 @@
     {
         <p class="text-muted">Inga deltagare i projektet.</p>
     }
+    @if (!Model.IsUserInProject && User.Identity.IsAuthenticated)
+    {
+        <form asp-action="JoinProject" asp-controller="Project" method="post">
+            <input type="hidden" name="projectId" value="@Model.ProjectId" />
+            <button type="submit" class="btn" style="background-color: rgb(255, 167, 38); border-color: rgb(255, 167, 38); color: white;">
+                Gå med i projektet
+            </button>
+        </form>
+    }
+    else if (!User.Identity.IsAuthenticated)
+    {
+        <a asp-controller="Account" asp-action="LogIn" style="color: rgb(255, 167, 38);">
+            Logga in för att delta i projektet
+        </a>
+    }
+    else
+    {
+        <p class="text-success">Du är redan med i detta projekt.</p>
+    }
+   
 </div>
 <br />
 <p> <a asp-controller="Project" asp-action="ProjectList" style="color: rgb(255, 167, 38);"> Tillbaka </a>

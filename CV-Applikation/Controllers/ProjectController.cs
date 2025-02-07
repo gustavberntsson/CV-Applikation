@@ -177,7 +177,7 @@ namespace CV_Applikation.Controllers
                 {
                     return NotFound();
                 }
-
+                bool isUserInProject = current_user != null && project.ProjectUsers.Any(pu => pu.UserId == current_user.Id);
                 // Skapar en vy-modell för projektdetaljer.
                 var projectDetailsViewModel = new ProjectDetailsViewModel
                 {
@@ -195,7 +195,8 @@ namespace CV_Applikation.Controllers
                                     : "Okänd användare")
                                 : "Inaktiverat konto"
                         })
-                        .ToList()
+                        .ToList(),
+                        IsUserInProject = isUserInProject
                 };
 
                 return View(projectDetailsViewModel);

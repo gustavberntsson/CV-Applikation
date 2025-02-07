@@ -7,5 +7,6 @@
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<ParticipantViewModel> Participants { get; set; }
+        public bool IsUserInProject { get; set; }
     }
 }
