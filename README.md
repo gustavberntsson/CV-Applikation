@@ -1,4 +1,4 @@
-# CV Platform
+# CV Application
 
 University project - a LinkedIn-light platform for creating and sharing CVs.
 
